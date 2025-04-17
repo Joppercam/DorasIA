@@ -1,0 +1,65 @@
+/* Estilos para el logo DorasIA */
+.navbar-brand svg {
+    vertical-align: middle;
+}
+
+/* Animación para el elemento circular de IA */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+.navbar-brand svg g circle:first-child {
+    animation: pulse 3s infinite ease-in-out;
+}
+
+/* Animación sutil para el símbolo asiático */
+@keyframes glow {
+    0% {
+        stroke: #556270;
+    }
+    50% {
+        stroke: #7B8996;
+    }
+    100% {
+        stroke: #556270;
+    }
+}
+
+.navbar-brand svg path {
+    animation: glow 5s infinite ease-in-out;
+}
+
+/* Resaltar la "IA" al hacer hover */
+.navbar-brand:hover svg text tspan {
+    animation: highlight 1.5s infinite ease-in-out;
+}
+
+@keyframes highlight {
+    0% {
+        fill: #4ECDC4;
+    }
+    50% {
+        fill: #6EE9E2;
+    }
+    100% {
+        fill: #4ECDC4;
+    }
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 576px) {
+    .navbar-brand svg {
+        width: 120px;
+    }
+}

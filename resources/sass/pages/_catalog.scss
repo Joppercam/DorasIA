@@ -1,0 +1,29 @@
+.catalog-header {
+    margin-bottom: 2rem;
+    
+    .catalog-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .catalog-description {
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 800px;
+    }
+}
+
+.filters-sidebar {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: $border-radius;
+    
+    .filter-section {
+        margin-bottom: 1.5rem;
+        
+        .filter-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+.dark-theme {
+    --background-color: #{$dark};
+    --text-color: #{$light};
+    --card-background: rgba(0, 0, 0, 0.2);
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    background-color: var(--background-color);
+    color: var(--text-color);
+}

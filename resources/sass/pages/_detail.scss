@@ -1,0 +1,100 @@
+.content-detail {
+    position: relative;
+    
+    .content-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70vh;
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(20, 20, 20, 0.7) 0%,
+                rgba(20, 20, 20, 1) 100%
+            );
+        }
+    }
+    
+    .content-header {
+        padding-top: 30vh;
+        
+        .content-poster {
+            border-radius: $border-radius;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            
+            img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+        }
+        
+        .content-info {
+            .content-title {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .content-original-title {
+                font-size: 1.2rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 1rem;
+            }
+            
+            .content-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                
+                .meta-item {
+                    color: rgba(255, 255, 255, 0.7);
+                    font-size: 0.9rem;
+                }
+            }
+            
+            .content-actions {
+                display: flex;
+                gap: 1rem;
+                margin: 1.5rem 0;
+            }
+        }
+    }
+    
+    .content-body {
+        margin-top: 2rem;
+        
+        .content-tabs {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            
+            .nav-link {
+                color: rgba(255, 255, 255, 0.7);
+                
+                &.active {
+                    background-color: transparent;
+                    border-color: transparent;
+                    border-bottom: 2px solid $primary;
+                    color: $primary;
+                }
+                
+                &:hover {
+                    color: $primary;
+                    border-color: transparent;
+                }
+            }
+        }
+    }
+}
