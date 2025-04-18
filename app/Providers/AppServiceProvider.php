@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Configurar el certificado SSL para todas las peticiones HTTP
+        \Illuminate\Support\Facades\Http::globalOptions([
+            'verify' => storage_path('app/private/cert/cacert-2025-02-25.pem')
+        ]);
     }
 }

@@ -1,3 +1,5 @@
+// En resources/js/components/WatchlistButton.vue
+
 <template>
   <button 
     class="btn btn-sm" 

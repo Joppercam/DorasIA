@@ -50,19 +50,19 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('movies.index') }}">{{ __('Películas') }}</a>
+                            <a class="nav-link" href="{{ route('catalog.movies') }}">{{ __('Películas') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('tv-shows.index') }}">{{ __('Series') }}</a>
+                            <a class="nav-link" href="{{ route('catalog.series') }}">{{ __('Series') }}</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ __('Países') }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" href="{{ route('movies.index') }}?country=china">China</a></li>
-                                <li><a class="dropdown-item" href="{{ route('movies.index') }}?country=japan">Japón</a></li>
-                                <li><a class="dropdown-item" href="{{ route('movies.index') }}?country=korea">Corea</a></li>
+                                <li><a class="dropdown-item" href="{{ route('catalog.movies') }}?country=china">China</a></li>
+                                <li><a class="dropdown-item" href="{{ route('catalog.movies') }}?country=japan">Japón</a></li>
+                                <li><a class="dropdown-item" href="{{ route('catalog.movies') }}?country=korea">Corea</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -139,8 +139,8 @@
                     <div class="col-md-2 mb-4">
                         <h6>Explorar</h6>
                         <ul class="list-unstyled">
-                            <li><a href="{{ route('movies.index') }}" class="text-decoration-none text-muted">Películas</a></li>
-                            <li><a href="{{ route('tv-shows.index') }}" class="text-decoration-none text-muted">Series</a></li>
+                            <li><a href="{{ route('catalog.movies') }}" class="text-decoration-none text-muted">Películas</a></li>
+                            <li><a href="{{ route('catalog.series') }}" class="text-decoration-none text-muted">Series</a></li>
                             <li><a href="{{ route('discover') }}" class="text-decoration-none text-muted">Descubrir</a></li>
                         </ul>
                     </div>

@@ -1,3 +1,5 @@
+// En resources/js/components/FavoriteButton.vue
+
 <template>
   <button 
     class="btn btn-sm" 

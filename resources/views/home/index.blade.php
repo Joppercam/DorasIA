@@ -35,8 +35,8 @@
                                 <span class="text-xs font-semibold px-2 py-1 bg-pink-600 rounded-md">Serie</span>
                             @endif
                             
-                            @if($item->release_date)
-                                <span class="text-gray-300 text-sm">{{ date('Y', strtotime($item->release_date)) }}</span>
+                            @if($item->year)
+                                <span class="text-gray-300 text-sm">{{ $item->year }}</span>
                             @endif
                         </div>
                         
@@ -45,7 +45,7 @@
                         <p class="text-gray-300 text-lg mb-6 line-clamp-3">{{ $item->overview }}</p>
                         
                         <div class="flex flex-wrap gap-4">
-                            <a href="{{ route('movies.show', $item->id) }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition shadow-lg hover:shadow-xl">
+                            <a href="{{ $item->link }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition shadow-lg hover:shadow-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                                 </svg>
@@ -185,10 +185,117 @@
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
             @foreach($platforms as $platform)
                 <a href="{{ route('platforms.show', $platform->slug) }}" class="flex flex-col items-center opacity-70 hover:opacity-100 transition">
-                    <img src="{{ $platform->logo_url }}" alt="{{ $platform->name }}" class="h-16 object-contain mb-3">
+                    <img src="{{ $platform->logo_path ? asset('storage/'.$platform->logo_path) : asset('images/platform-placeholder.png') }}" alt="{{ $platform->name }}" class="h-16 object-contain mb-3">
                     <span class="text-sm text-gray-300">{{ $platform->name }}</span>
                 </a>
             @endforeach
         </div>
     </section>
+@endsection
+
+@section('styles')
+<style>
+    /* Estilos para el slider principal */
+    .hero-slider {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Estilos para carruseles */
+    .carousel-container {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .carousel-wrapper {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .carousel-wrapper::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .carousel-wrapper::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+    
+    .carousel-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+    
+    .carousel-wrapper::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(1.05); }
+        to { transform: scale(1); }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .animate-scale-in {
+        animation: scaleIn 0.8s ease-out forwards;
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar carruseles con botones de navegación
+        // Esta función se puede implementar si decides agregar botones de navegación
+        // a los carruseles en lugar de solo permitir scroll horizontal
+        
+        // Ejemplo de cómo podrías agregar botones de navegación:
+        /*
+        const carousels = document.querySelectorAll('.carousel-container');
+        carousels.forEach(carousel => {
+            const wrapper = carousel.querySelector('.carousel-wrapper');
+            const nextBtn = document.createElement('button');
+            const prevBtn = document.createElement('button');
+            
+            nextBtn.classList.add('carousel-next', 'absolute', 'right-0', 'top-1/2', 'transform', '-translate-y-1/2', 'bg-gray-900', 'bg-opacity-50', 'p-2', 'rounded-full', 'z-10');
+            prevBtn.classList.add('carousel-prev', 'absolute', 'left-0', 'top-1/2', 'transform', '-translate-y-1/2', 'bg-gray-900', 'bg-opacity-50', 'p-2', 'rounded-full', 'z-10');
+            
+            nextBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
+            prevBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>';
+            
+            nextBtn.addEventListener('click', () => {
+                wrapper.scrollBy({
+                    left: wrapper.offsetWidth * 0.8,
+                    behavior: 'smooth'
+                });
+            });
+            
+            prevBtn.addEventListener('click', () => {
+                wrapper.scrollBy({
+                    left: -wrapper.offsetWidth * 0.8,
+                    behavior: 'smooth'
+                });
+            });
+            
+            carousel.appendChild(nextBtn);
+            carousel.appendChild(prevBtn);
+        });
+        */
+    });
+</script>
 @endsection

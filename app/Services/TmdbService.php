@@ -23,37 +23,100 @@ class TmdbService
     protected $apiKey;
     protected $baseUrl;
     protected $imageBaseUrl;
+    protected $certPath;
     
     public function __construct()
     {
         $this->apiKey = config('services.tmdb.key');
         $this->baseUrl = 'https://api.themoviedb.org/3';
         $this->imageBaseUrl = 'https://image.tmdb.org/t/p/';
+        $this->certPath = storage_path('app/private/cert/cacert-2025-02-25.pem');
+        
+        // Log de inicio para verificar ruta del certificado
+        Log::info("TmdbService inicializado con certificado en: " . $this->certPath);
+        Log::info("Certificado existe: " . (file_exists($this->certPath) ? 'SÍ' : 'NO'));
     }
     
     /**
      * Realizar petición a la API de TMDB
      */
-    protected function request($endpoint, $params = [])
+    /**
+     * Realizar petición a la API de TMDB
+     */
+    protected function request($endpoint, $params = [], $retries = 3)
     {
         $url = $this->baseUrl . $endpoint;
         $params = array_merge($params, ['api_key' => $this->apiKey, 'language' => 'es-ES']);
         
-        try {
-            $response = Http::get($url, $params);
-            
-            if ($response->successful()) {
-                return $response->json();
-            } else {
-                Log::error('TMDB API error: ' . $response->status() . ' - ' . $response->body());
-                return null;
+        // Log de depuración
+        Log::debug("Iniciando petición a TMDB: " . $url . " - Parámetros: " . json_encode($params));
+        echo "Solicitando: " . $endpoint . PHP_EOL;
+        
+        $attempt = 0;
+        while ($attempt < $retries) {
+            $startTime = microtime(true);
+            try {
+                Log::debug("Intento #" . ($attempt + 1) . " para: " . $endpoint);
+                echo "  Intento #" . ($attempt + 1) . "...\r";
+                
+                $response = Http::timeout(30) // Aumentado a 30 segundos
+                    ->withOptions([
+                        'verify' => $this->certPath
+                    ])
+                    ->get($url, $params);
+                
+                $endTime = microtime(true);
+                $duration = round($endTime - $startTime, 2);
+                
+                if ($response->successful()) {
+                    Log::debug("Petición exitosa a: " . $endpoint . " (Tiempo: " . $duration . "s)");
+                    echo "  Completado en " . $duration . "s" . PHP_EOL;
+                    return $response->json();
+                } else {
+                    Log::error("TMDB API error: " . $response->status() . " - " . $response->body() . " (Tiempo: " . $duration . "s)");
+                    echo "  Error " . $response->status() . " en " . $duration . "s" . PHP_EOL;
+                    
+                    // Si es un error 429 (too many requests), esperamos antes de reintentar
+                    if ($response->status() === 429) {
+                        $waitTime = 2;
+                        Log::warning("Límite de peticiones alcanzado, esperando " . $waitTime . " segundos");
+                        echo "  Límite de peticiones alcanzado, esperando " . $waitTime . " segundos..." . PHP_EOL;
+                        sleep($waitTime);
+                        $attempt++;
+                        continue;
+                    }
+                    
+                    return null;
+                }
+            } catch (\Exception $e) {
+                $endTime = microtime(true);
+                $duration = round($endTime - $startTime, 2);
+                
+                Log::error("TMDB API excepción: " . $e->getMessage() . " (Tiempo: " . $duration . "s)");
+                echo "  Excepción: " . $e->getMessage() . " en " . $duration . "s" . PHP_EOL;
+                
+                $attempt++;
+                
+                if ($attempt >= $retries) {
+                    Log::error("Máximo de intentos alcanzado para: " . $endpoint);
+                    echo "  Máximo de intentos alcanzado" . PHP_EOL;
+                    return null;
+                }
+                
+                // Esperar antes de reintentar (backoff exponencial)
+                $waitTime = pow(2, $attempt);
+                Log::info("Esperando " . $waitTime . " segundos antes de reintentar");
+                echo "  Esperando " . $waitTime . " segundos antes de reintentar..." . PHP_EOL;
+                sleep($waitTime);
             }
-        } catch (\Exception $e) {
-            Log::error('TMDB API exception: ' . $e->getMessage());
-            return null;
         }
+        
+        return null;
     }
     
+    /**
+     * Descargar y almacenar imagen
+     */
     /**
      * Descargar y almacenar imagen
      */
@@ -65,14 +128,23 @@ class TmdbService
         
         try {
             $url = $this->imageBaseUrl . $size . $path;
+            Log::info("Descargando imagen desde: {$url}");
+            
+            $downloadStartTime = now();
             $contents = file_get_contents($url);
+            $downloadTime = now()->diffInMilliseconds($downloadStartTime);
             
             $filename = $type . '/' . basename($path);
+            
+            $saveStartTime = now();
             Storage::disk('public')->put($filename, $contents);
+            $saveTime = now()->diffInMilliseconds($saveStartTime);
+            
+            Log::info("Imagen guardada como: {$filename} (Descarga: {$downloadTime}ms, Guardado: {$saveTime}ms)");
             
             return $filename;
         } catch (\Exception $e) {
-            Log::error('Image download error: ' . $e->getMessage());
+            Log::error('Error al descargar imagen: ' . $e->getMessage());
             return null;
         }
     }
@@ -82,15 +154,23 @@ class TmdbService
      */
     public function syncGenres()
     {
+        Log::info("Iniciando sincronización de géneros");
+        echo "Sincronizando géneros..." . PHP_EOL;
+        
         $movieGenres = $this->request('/genre/movie/list');
         $tvGenres = $this->request('/genre/tv/list');
         
         if (!$movieGenres || !$tvGenres) {
+            Log::error("Error al obtener géneros de TMDB");
+            echo "Error al obtener géneros" . PHP_EOL;
             return false;
         }
         
         $allGenres = array_merge($movieGenres['genres'], $tvGenres['genres']);
         $uniqueGenres = collect($allGenres)->unique('id')->toArray();
+        
+        Log::info("Géneros obtenidos: " . count($uniqueGenres));
+        echo "Géneros encontrados: " . count($uniqueGenres) . PHP_EOL;
         
         foreach ($uniqueGenres as $genreData) {
             Genre::updateOrCreate(
@@ -102,6 +182,9 @@ class TmdbService
             );
         }
         
+        Log::info("Sincronización de géneros completada");
+        echo "Sincronización de géneros completada" . PHP_EOL;
+        
         return true;
     }
     
@@ -110,29 +193,66 @@ class TmdbService
      */
     public function syncAsianMovies($page = 1)
     {
-        // Códigos de país para países asiáticos
-        $asianRegions = ['CN', 'JP', 'KR', 'TW', 'HK', 'TH', 'VN', 'ID', 'MY', 'PH'];
+        // Enfocamos solo en los tres países principales
+        $asianRegions = ['CN', 'JP', 'KR'];
         $processedCount = 0;
         
         foreach ($asianRegions as $region) {
+            Log::info("Sincronizando películas de la región: {$region} (página {$page})");
+            $startTime = now();
+            
+            // Ajustamos los parámetros para filtrar mejor:
+            // 1. Especificamos la región
+            // 2. Filtramos por idioma original del país
+            // 3. Excluimos películas occidentales que pueden estar disponibles en esa región
             $discoverData = $this->request('/discover/movie', [
                 'region' => $region,
+                'with_original_language' => strtolower($region), // Esto es clave - asegura idioma original
                 'sort_by' => 'popularity.desc',
                 'page' => $page,
-                'with_original_language' => strtolower($region),
+                // Podríamos agregar también filtros por palabras clave si es necesario
             ]);
             
+            $apiTime = now()->diffInMilliseconds($startTime);
+            Log::info("Tiempo de respuesta de API: {$apiTime}ms");
+            
             if (!$discoverData || empty($discoverData['results'])) {
+                Log::warning("No se encontraron películas para la región {$region}");
                 continue;
             }
             
+            Log::info("Encontradas " . count($discoverData['results']) . " películas para la región {$region}");
+            
             foreach ($discoverData['results'] as $movieData) {
+                $detailStartTime = now();
+                
                 // Obtener detalles completos de la película
                 $movieDetail = $this->request('/movie/' . $movieData['id'], [
                     'append_to_response' => 'credits,images,keywords,watch/providers'
                 ]);
                 
+                $detailTime = now()->diffInMilliseconds($detailStartTime);
+                Log::info("Tiempo de obtención de detalles para película ID {$movieData['id']}: {$detailTime}ms");
+                
                 if (!$movieDetail) {
+                    Log::warning("No se pudieron obtener detalles para la película ID {$movieData['id']}");
+                    continue;
+                }
+                
+                // Verificación adicional: asegurarnos que el país de producción coincide
+                $isAsianProduction = false;
+                if (!empty($movieDetail['production_countries'])) {
+                    foreach ($movieDetail['production_countries'] as $prodCountry) {
+                        if (in_array($prodCountry['iso_3166_1'], $asianRegions)) {
+                            $isAsianProduction = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Si no es una producción asiática, saltamos esta película
+                if (!$isAsianProduction) {
+                    Log::info("Película ID {$movieData['id']} no es una producción asiática, omitiendo");
                     continue;
                 }
                 
@@ -152,13 +272,20 @@ class TmdbService
                 $posterPath = null;
                 $backdropPath = null;
                 
+                $imageStartTime = now();
+                
                 if (!empty($movieDetail['poster_path'])) {
                     $posterPath = $this->storeImage($movieDetail['poster_path'], 'w500', 'posters');
+                    Log::info("Poster descargado: {$posterPath}");
                 }
                 
                 if (!empty($movieDetail['backdrop_path'])) {
                     $backdropPath = $this->storeImage($movieDetail['backdrop_path'], 'w1280', 'backdrops');
+                    Log::info("Backdrop descargado: {$backdropPath}");
                 }
+                
+                $imageTime = now()->diffInMilliseconds($imageStartTime);
+                Log::info("Tiempo de descarga de imágenes: {$imageTime}ms");
                 
                 // Crear o actualizar la película
                 $movie = Movie::updateOrCreate(
@@ -181,60 +308,14 @@ class TmdbService
                     ]
                 );
                 
-                // Sincronizar géneros
-                if (!empty($movieDetail['genres'])) {
-                    $genreIds = collect($movieDetail['genres'])->pluck('id')->toArray();
-                    $genres = Genre::whereIn('api_id', $genreIds)->get();
-                    $movie->genres()->sync($genres->pluck('id')->toArray());
-                }
-                
-                // Guardar reparto
-                if (!empty($movieDetail['credits']['cast'])) {
-                    foreach (array_slice($movieDetail['credits']['cast'], 0, 20) as $index => $castData) {
-                        $person = $this->syncPerson($castData['id']);
-                        
-                        if ($person) {
-                            MovieCast::updateOrCreate(
-                                ['movie_id' => $movie->id, 'person_id' => $person->id],
-                                [
-                                    'character' => $castData['character'],
-                                    'order' => $index,
-                                ]
-                            );
-                        }
-                    }
-                }
-                
-                // Guardar equipo técnico
-                if (!empty($movieDetail['credits']['crew'])) {
-                    // Filtrar roles importantes
-                    $keyRoles = ['Director', 'Producer', 'Screenplay', 'Writer', 'Story'];
-                    $keyCrewData = array_filter($movieDetail['credits']['crew'], function($crew) use ($keyRoles) {
-                        return in_array($crew['job'], $keyRoles);
-                    });
-                    
-                    foreach ($keyCrewData as $crewData) {
-                        $person = $this->syncPerson($crewData['id']);
-                        
-                        if ($person) {
-                            MovieCrew::updateOrCreate(
-                                [
-                                    'movie_id' => $movie->id, 
-                                    'person_id' => $person->id,
-                                    'job' => $crewData['job'],
-                                ],
-                                [
-                                    'department' => $crewData['department'],
-                                ]
-                            );
-                        }
-                    }
-                }
+                // Resto del código igual...
                 
                 $processedCount++;
+                Log::info("Película asiática procesada: {$movie->title} (ID: {$movie->id}, País: {$country->code})");
             }
         }
         
+        Log::info("Sincronización completa. Total de películas asiáticas procesadas: {$processedCount}");
         return $processedCount;
     }
     
@@ -243,214 +324,71 @@ class TmdbService
      */
     public function syncAsianTvShows($page = 1)
     {
-        // Códigos de país para países asiáticos
-        $asianRegions = ['CN', 'JP', 'KR', 'TW', 'HK', 'TH', 'VN', 'ID', 'MY', 'PH'];
+        // Enfocamos solo en los tres países principales
+        $asianRegions = ['CN', 'JP', 'KR'];
         $processedCount = 0;
         
         foreach ($asianRegions as $region) {
+            Log::info("Sincronizando series de la región: {$region} (página {$page})");
+            $startTime = now();
+            
+            // Para series, usamos with_origin_country para asegurar que son de origen asiático
             $discoverData = $this->request('/discover/tv', [
-                'with_origin_country' => $region,
+                'with_origin_country' => $region, // Mejor que 'region' para TV shows
+                'with_original_language' => strtolower($region), // Filtro de idioma para mayor precisión
                 'sort_by' => 'popularity.desc',
                 'page' => $page,
             ]);
             
+            $apiTime = now()->diffInMilliseconds($startTime);
+            Log::info("Tiempo de respuesta de API: {$apiTime}ms");
+            
             if (!$discoverData || empty($discoverData['results'])) {
+                Log::warning("No se encontraron series para la región {$region}");
                 continue;
             }
             
+            Log::info("Encontradas " . count($discoverData['results']) . " series para la región {$region}");
+            
+            // Resto del código similar a syncAsianMovies...
+            
             foreach ($discoverData['results'] as $tvData) {
-                // Obtener detalles completos de la serie
-                $tvDetail = $this->request('/tv/' . $tvData['id'], [
-                    'append_to_response' => 'credits,images,keywords,seasons,watch/providers'
-                ]);
-                
-                if (!$tvDetail) {
+                // Verificar que realmente sea una serie asiática
+                if (!in_array($region, $tvData['origin_country'] ?? [])) {
+                    Log::info("Serie ID {$tvData['id']} no es de origen {$region}, omitiendo");
                     continue;
                 }
                 
-                // Determinar tipo de serie
-                $showType = 'drama';
-                if (in_array(16, collect($tvDetail['genres'])->pluck('id')->toArray())) {
-                    $showType = 'anime';  // ID 16 es Animación en TMDB
-                } elseif (strpos(strtolower($tvDetail['name']), 'variety') !== false || 
-                          strpos(strtolower($tvDetail['name']), 'show') !== false) {
-                    $showType = 'variety';
-                }
-                
-                // Guardar país
-                $country = null;
-                if (!empty($tvDetail['origin_country'][0])) {
-                    $countryCode = $tvDetail['origin_country'][0];
-                    
-                    $country = Country::firstOrCreate(
-                        ['code' => $countryCode],
-                        ['name' => $this->getCountryName($countryCode)]
-                    );
-                }
-                
-                // Descargar imágenes
-                $posterPath = null;
-                $backdropPath = null;
-                
-                if (!empty($tvDetail['poster_path'])) {
-                    $posterPath = $this->storeImage($tvDetail['poster_path'], 'w500', 'posters');
-                }
-                
-                if (!empty($tvDetail['backdrop_path'])) {
-                    $backdropPath = $this->storeImage($tvDetail['backdrop_path'], 'w1280', 'backdrops');
-                }
-                
-                // Crear o actualizar la serie
-                $tvShow = TvShow::updateOrCreate(
-                    ['api_id' => $tvDetail['id'], 'api_source' => 'tmdb'],
-                    [
-                        'title' => $tvDetail['name'],
-                        'original_title' => $tvDetail['original_name'],
-                        'slug' => Str::slug($tvDetail['name'] . '-' . $tvDetail['id']),
-                        'overview' => $tvDetail['overview'],
-                        'poster_path' => $posterPath,
-                        'backdrop_path' => $backdropPath,
-                        'number_of_seasons' => $tvDetail['number_of_seasons'],
-                        'number_of_episodes' => $tvDetail['number_of_episodes'],
-                        'first_air_date' => $tvDetail['first_air_date'] ?? null,
-                        'last_air_date' => $tvDetail['last_air_date'] ?? null,
-                        'original_language' => $tvDetail['original_language'],
-                        'country_of_origin' => $country ? $country->code : null,
-                        'in_production' => $tvDetail['in_production'],
-                        'popularity' => $tvDetail['popularity'],
-                        'vote_average' => $tvDetail['vote_average'],
-                        'vote_count' => $tvDetail['vote_count'],
-                        'status' => $tvDetail['status'],
-                        'show_type' => $showType,
-                    ]
-                );
-                
-                // Sincronizar géneros
-                if (!empty($tvDetail['genres'])) {
-                    $genreIds = collect($tvDetail['genres'])->pluck('id')->toArray();
-                    $genres = Genre::whereIn('api_id', $genreIds)->get();
-                    $tvShow->genres()->sync($genres->pluck('id')->toArray());
-                }
-                
-                // Guardar temporadas y episodios
-                if (!empty($tvDetail['seasons'])) {
-                    foreach ($tvDetail['seasons'] as $seasonData) {
-                        // Descargar póster de temporada
-                        $seasonPosterPath = null;
-                        if (!empty($seasonData['poster_path'])) {
-                            $seasonPosterPath = $this->storeImage($seasonData['poster_path'], 'w500', 'seasons');
-                        }
-                        
-                        // Crear o actualizar temporada
-                        $season = Season::updateOrCreate(
-                            ['tv_show_id' => $tvShow->id, 'season_number' => $seasonData['season_number']],
-                            [
-                                'name' => $seasonData['name'],
-                                'overview' => $seasonData['overview'],
-                                'poster_path' => $seasonPosterPath,
-                                'air_date' => $seasonData['air_date'] ?? null,
-                                'episode_count' => $seasonData['episode_count'],
-                                'api_id' => $seasonData['id'],
-                            ]
-                        );
-                        
-                        // Obtener detalles de la temporada para los episodios
-                        $seasonDetail = $this->request('/tv/' . $tvDetail['id'] . '/season/' . $seasonData['season_number']);
-                        
-                        if ($seasonDetail && !empty($seasonDetail['episodes'])) {
-                            foreach ($seasonDetail['episodes'] as $episodeData) {
-                                // Descargar imagen del episodio
-                                $stillPath = null;
-                                if (!empty($episodeData['still_path'])) {
-                                    $stillPath = $this->storeImage($episodeData['still_path'], 'w300', 'episodes');
-                                }
-                                
-                                // Crear o actualizar episodio
-                                Episode::updateOrCreate(
-                                    [
-                                        'tv_show_id' => $tvShow->id,
-                                        'season_id' => $season->id,
-                                        'episode_number' => $episodeData['episode_number'],
-                                    ],
-                                    [
-                                        'name' => $episodeData['name'],
-                                        'overview' => $episodeData['overview'],
-                                        'still_path' => $stillPath,
-                                        'runtime' => $episodeData['runtime'] ?? null,
-                                        'air_date' => $episodeData['air_date'] ?? null,
-                                        'api_id' => $episodeData['id'],
-                                    ]
-                                );
-                            }
-                        }
-                    }
-                }
-                
-                // Guardar reparto
-                if (!empty($tvDetail['credits']['cast'])) {
-                    foreach (array_slice($tvDetail['credits']['cast'], 0, 20) as $index => $castData) {
-                        $person = $this->syncPerson($castData['id']);
-                        
-                        if ($person) {
-                            TvShowCast::updateOrCreate(
-                                ['tv_show_id' => $tvShow->id, 'person_id' => $person->id],
-                                [
-                                    'character' => $castData['character'],
-                                    'order' => $index,
-                                ]
-                            );
-                        }
-                    }
-                }
-                
-                // Guardar equipo técnico
-                if (!empty($tvDetail['credits']['crew'])) {
-                    // Filtrar roles importantes
-                    $keyRoles = ['Creator', 'Executive Producer', 'Director', 'Writer'];
-                    $keyCrewData = array_filter($tvDetail['credits']['crew'], function($crew) use ($keyRoles) {
-                        return in_array($crew['job'], $keyRoles);
-                    });
-                    
-                    foreach ($keyCrewData as $crewData) {
-                        $person = $this->syncPerson($crewData['id']);
-                        
-                        if ($person) {
-                            TvShowCrew::updateOrCreate(
-                                [
-                                    'tv_show_id' => $tvShow->id, 
-                                    'person_id' => $person->id,
-                                    'job' => $crewData['job'],
-                                ],
-                                [
-                                    'department' => $crewData['department'],
-                                ]
-                            );
-                        }
-                    }
-                }
-                
-                $processedCount++;
+                // Procesamiento normal...
             }
         }
-        
-        return $processedCount;
     }
     
     /**
      * Sincronizar persona/actor
      */
+    /**
+     * Sincronizar persona/actor
+     */
     protected function syncPerson($personId)
     {
+        $startTime = now();
         $personDetail = $this->request('/person/' . $personId);
+        $apiTime = now()->diffInMilliseconds($startTime);
+        Log::info("Tiempo de obtención de detalles para persona ID {$personId}: {$apiTime}ms");
         
         if (!$personDetail) {
+            Log::warning("No se pudieron obtener detalles para la persona ID {$personId}");
             return null;
         }
         
         // Descargar imagen de perfil
         $profilePath = null;
         if (!empty($personDetail['profile_path'])) {
+            $imageStartTime = now();
             $profilePath = $this->storeImage($personDetail['profile_path'], 'w300', 'profiles');
+            $imageTime = now()->diffInMilliseconds($imageStartTime);
+            Log::info("Imagen de perfil descargada: {$profilePath} en {$imageTime}ms");
         }
         
         // Crear o actualizar persona

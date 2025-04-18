@@ -1,3 +1,5 @@
+// En resources/js/components/RatingStars.vue
+
 <template>
     <div class="rating-stars">
       <div class="stars">

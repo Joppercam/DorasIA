@@ -1,3 +1,4 @@
+// resources/js/components/ContentCarousel.vue
 <template>
   <div class="content-carousel mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -10,7 +11,7 @@
     <div class="position-relative">
       <!-- Botones de navegación -->
       <button 
-        v-show="showPrevButton"
+        v-show="showPrevButton && items.length > itemsPerView"
         @click="prevSlide" 
         class="carousel-control carousel-control-prev" 
         type="button">
@@ -18,7 +19,7 @@
       </button>
       
       <!-- Contenedor de slides -->
-      <div class="carousel-container">
+      <div class="carousel-container" ref="container">
         <div class="carousel-track" :style="trackStyle" ref="track">
           <div 
             v-for="(item, index) in items" 
@@ -29,18 +30,41 @@
             <div class="content-card h-100">
               <div class="position-relative">
                 <img 
-                  :src="item.poster_path ? '/storage/' + item.poster_path : '/images/placeholder-poster.jpg'" 
+                  :src="item.poster_path ? item.poster_path : '/images/placeholder-poster.jpg'" 
                   class="card-img-top" 
-                  :alt="item.title">
+                  :alt="item.title"
+                  loading="lazy">
                 <div class="content-type-badge">{{ item.type }}</div>
                 <div v-if="item.vote_average" class="rating-badge">
-                  <i class="bi bi-star-fill"></i> {{ Number(item.vote_average).toFixed(1) }}
+                  <i class="bi bi-star-fill"></i> {{ parseFloat(item.vote_average).toFixed(1) }}
+                </div>
+                
+                <!-- Overlay con acciones -->
+                <div class="card-actions">
+                  <div class="action-buttons" v-if="isAuthenticated">
+                    <button 
+                      @click.stop="toggleFavorite(item)" 
+                      class="btn btn-sm action-btn"
+                      :class="{'btn-danger': isFavorite(item.id), 'btn-outline-light': !isFavorite(item.id)}"
+                      :title="isFavorite(item.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'">
+                      <i class="bi" :class="[isFavorite(item.id) ? 'bi-heart-fill' : 'bi-heart']"></i>
+                    </button>
+                    
+                    <button 
+                      @click.stop="toggleWatchlist(item)" 
+                      class="btn btn-sm action-btn"
+                      :class="{'btn-primary': isInWatchlist(item.id), 'btn-outline-light': !isInWatchlist(item.id)}"
+                      :title="isInWatchlist(item.id) ? 'Quitar de Mi Lista' : 'Añadir a Mi Lista'">
+                      <i class="bi" :class="[isInWatchlist(item.id) ? 'bi-bookmark-check-fill' : 'bi-bookmark-plus']"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
+              
               <div class="card-body p-2">
                 <h6 class="card-title text-truncate">{{ item.title }}</h6>
                 <p class="card-text small text-muted">
-                  {{ item.country_of_origin }} • {{ formatYear(item.release_date || item.first_air_date) }}
+                  {{ item.country }} • {{ item.year }}
                 </p>
                 <a :href="item.link" class="stretched-link"></a>
               </div>
@@ -51,7 +75,7 @@
       </div>
       
       <button 
-        v-show="showNextButton"
+        v-show="showNextButton && items.length > itemsPerView"
         @click="nextSlide" 
         class="carousel-control carousel-control-next" 
         type="button">
@@ -62,6 +86,8 @@
 </template>
 
 <script>
+import { useUserContentStore } from '../stores/userContent';
+
 export default {
   props: {
     title: {
@@ -82,6 +108,16 @@ export default {
     }
   },
   
+  setup() {
+    const userContentStore = useUserContentStore();
+    
+    return { 
+      userContentStore,
+      isFavorite: (id) => userContentStore.isFavorite(id),
+      isInWatchlist: (id) => userContentStore.isInWatchlist(id)
+    };
+  },
+  
   data() {
     return {
       currentIndex: 0,
@@ -89,7 +125,10 @@ export default {
       trackWidth: 0,
       containerWidth: 0,
       itemsToScroll: 1,
-      resizeObserver: null
+      touchStartX: 0,
+      touchEndX: 0,
+      animating: false,
+      isAuthenticated: window.isAuthenticated || false // Tomar el estado de autenticación de window
     }
   },
   
@@ -97,7 +136,8 @@ export default {
     trackStyle() {
       return {
         transform: `translateX(-${this.currentIndex * this.itemWidth}px)`,
-        width: `${this.trackWidth}px`
+        width: `${this.trackWidth}px`,
+        transition: this.animating ? 'transform 0.5s ease' : 'none'
       }
     },
     
@@ -116,12 +156,18 @@ export default {
   
   mounted() {
     this.calculateDimensions();
+    this.setupTouchEvents();
     
-    // Observar cambios en el tamaño de la ventana
+    // Observar cambios en el tamaño
     this.resizeObserver = new ResizeObserver(this.handleResize);
     this.resizeObserver.observe(this.$el);
     
     window.addEventListener('resize', this.calculateDimensions);
+    
+    // Inicializar store
+    if (this.isAuthenticated) {
+      this.userContentStore.fetchUserContent();
+    }
   },
   
   beforeUnmount() {
@@ -129,6 +175,13 @@ export default {
     
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
+    }
+    
+    // Eliminar eventos táctiles
+    const track = this.$refs.track;
+    if (track) {
+      track.removeEventListener('touchstart', this.handleTouchStart);
+      track.removeEventListener('touchend', this.handleTouchEnd);
     }
   },
   
@@ -163,22 +216,81 @@ export default {
     },
     
     nextSlide() {
+      if (this.animating) return;
+      
+      this.animating = true;
       const nextIndex = this.currentIndex + this.itemsToScroll;
       this.currentIndex = Math.min(nextIndex, this.totalSlides);
+      
+      setTimeout(() => {
+        this.animating = false;
+      }, 500);
     },
     
     prevSlide() {
+      if (this.animating) return;
+      
+      this.animating = true;
       const prevIndex = this.currentIndex - this.itemsToScroll;
       this.currentIndex = Math.max(prevIndex, 0);
+      
+      setTimeout(() => {
+        this.animating = false;
+      }, 500);
     },
     
     handleResize() {
       this.calculateDimensions();
     },
     
-    formatYear(dateString) {
-      if (!dateString) return 'N/A';
-      return new Date(dateString).getFullYear();
+    setupTouchEvents() {
+      const track = this.$refs.track;
+      if (track) {
+        track.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+        track.addEventListener('touchend', this.handleTouchEnd, { passive: true });
+      }
+    },
+    
+    handleTouchStart(e) {
+      this.touchStartX = e.changedTouches[0].screenX;
+    },
+    
+    handleTouchEnd(e) {
+      this.touchEndX = e.changedTouches[0].screenX;
+      this.handleSwipe();
+    },
+    
+    handleSwipe() {
+      const SWIPE_THRESHOLD = 50;
+      if (this.touchStartX - this.touchEndX > SWIPE_THRESHOLD) {
+        // Deslizado hacia la izquierda
+        this.nextSlide();
+      } else if (this.touchEndX - this.touchStartX > SWIPE_THRESHOLD) {
+        // Deslizado hacia la derecha
+        this.prevSlide();
+      }
+    },
+    
+    toggleFavorite(item) {
+      if (!this.isAuthenticated) {
+        window.location.href = '/login';
+        return;
+      }
+      
+      this.userContentStore.toggleFavorite(item.id, this.getContentType(item));
+    },
+    
+    toggleWatchlist(item) {
+      if (!this.isAuthenticated) {
+        window.location.href = '/login';
+        return;
+      }
+      
+      this.userContentStore.toggleWatchlist(item.id, this.getContentType(item));
+    },
+    
+    getContentType(item) {
+      return item.type === 'Película' ? 'movie' : 'tv-show';
     }
   }
 }
@@ -193,7 +305,7 @@ export default {
 
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease;
+  touch-action: pan-y;
 }
 
 .carousel-item {
@@ -215,6 +327,11 @@ export default {
   cursor: pointer;
   z-index: 1;
   border: none;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-control:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .carousel-control-prev {
@@ -266,9 +383,53 @@ export default {
   font-weight: bold;
 }
 
+.card-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.content-card:hover .card-actions {
+  opacity: 1;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .content-card .card-img-top {
     height: 200px;
+  }
+  
+  /* En móvil, mostrar controles solo al tocar */
+  .carousel-control {
+    opacity: 0.5;
+  }
+  
+  /* Hacer más grande el área táctil en móviles */
+  .carousel-control {
+    width: 36px;
+    height: 36px;
   }
 }
 </style>

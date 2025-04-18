@@ -10,6 +10,10 @@ import WatchlistButton from './components/WatchlistButton.vue';
 import RatingStars from './components/RatingStars.vue';
 import SearchAutocomplete from './components/SearchAutocomplete.vue';
 
+// Importar stores
+import { useWatchlistStore } from './stores/watchlistStore';
+import { useUserContentStore } from './stores/userContent';
+
 // Crear instancia de Pinia (state management)
 const pinia = createPinia();
 
@@ -30,6 +34,35 @@ app.use(pinia);
 // Montar la aplicación en elementos con el atributo data-vue
 document.querySelectorAll('[data-vue]').forEach(el => {
     app.mount(el);
+});
+
+// Inicializar las stores si el usuario está autenticado
+window.addEventListener('DOMContentLoaded', () => {
+    const isAuthenticated = document.body.classList.contains('user-authenticated');
+    window.isAuthenticated = isAuthenticated;
+    
+    if (isAuthenticated) {
+        // Inicializar watchlist store
+        const watchlistStore = useWatchlistStore();
+        watchlistStore.initialize();
+        
+        // Agregar store a window para acceso desde Alpine.js
+        window.stores = {
+            watchlist: watchlistStore
+        };
+        
+        // Para Alpine.js - Proporcionar la tienda watchlist
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('watchlist', {
+                exists(id) {
+                    return watchlistStore.exists(id);
+                },
+                toggle(id, type) {
+                    return watchlistStore.toggle(id, type);
+                }
+            });
+        });
+    }
 });
 
 // Funcionalidad para navbar responsiva

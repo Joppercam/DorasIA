@@ -1,3 +1,5 @@
+// En resources/js/stores/userContent.js
+
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -5,6 +7,7 @@ export const useUserContentStore = defineStore('userContent', {
   state: () => ({
     favorites: [],
     watchlist: [],
+    ratings: [],
     isLoading: false,
     error: null
   }),
