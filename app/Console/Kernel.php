@@ -60,6 +60,24 @@ class Kernel extends ConsoleKernel
                  ->description('Update person details daily')
                  ->onOneServer()
                  ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Importar doramas románticos asiáticos cada 2 días
+        $schedule->command('dorasia:import-romantic-dramas --pages=2 --country=all')
+                 ->cron('0 1 */2 * *')
+                 ->description('Import romantic Asian dramas every 2 days')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Importar doramas románticos por subgéneros cada semana
+        $subgenres = ['historical_romance', 'romantic_comedy', 'melodrama', 'office_romance', 'youth_romance'];
+        foreach ($subgenres as $index => $subgenre) {
+            $schedule->command("dorasia:import-romantic-dramas --pages=1 --subgenre={$subgenre}")
+                     ->weekly()->days([$index + 1]) // Monday through Friday for different subgenres
+                     ->at('03:00')
+                     ->description("Import {$subgenre} dramas weekly")
+                     ->onOneServer()
+                     ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+        }
     }
 
     /**
@@ -70,5 +88,25 @@ class Kernel extends ConsoleKernel
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
+    }
+    
+    /**
+     * Get the commands that should be removed from the list of available commands.
+     *
+     * @return array
+     */
+    protected function getRouteMiddleware()
+    {
+        return [
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+            'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+            'can' => \Illuminate\Auth\Middleware\Authorize::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        ];
     }
 }
