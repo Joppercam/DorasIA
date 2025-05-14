@@ -16,7 +16,8 @@ class ImportRecommendations extends Command
      * @var string
      */
     protected $signature = 'dorasia:import-recommendations {--tmdb-id= : TMDB ID of the title to get recommendations for} 
-                          {--limit=5 : Maximum number of recommendations to import}';
+                          {--limit=5 : Maximum number of recommendations to import}
+                          {--skip-existing : Skip titles that already exist in the database}';
 
     /**
      * The console command description.
@@ -94,6 +95,17 @@ class ImportRecommendations extends Command
                     
                     // Use the ImportRomanticAsianDramas command's importDrama method
                     $importCommand = app(ImportRomanticAsianDramas::class);
+                    
+                    // Pass skip-existing flag if it was provided
+                    if ($this->option('skip-existing')) {
+                        $importCommand->getApplication()->getArtisan()->run(
+                            new \Symfony\Component\Console\Input\ArrayInput([
+                                'command' => 'dorasia:import-romantic-dramas',
+                                '--skip-existing' => true
+                            ]),
+                            new \Symfony\Component\Console\Output\NullOutput()
+                        );
+                    }
                     
                     if ($importCommand->importDrama($recommendation)) {
                         $importCount++;
