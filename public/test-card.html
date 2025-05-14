@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba de Imágenes</title>
+    <style>
+        body {
+            background-color: #141414;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            width: 200px;
+            position: relative;
+            margin: 20px;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prueba de Imágenes de Pósters</h1>
+        
+        <h2>Imágenes de Pósters</h2>
+        <div class="poster-container">
+            <div class="card">
+                <img src="posters/poster-1.jpg" alt="Poster 1" class="poster">
+                <p>poster-1.jpg</p>
+            </div>
+            <div class="card">
+                <img src="posters/poster-2.jpg" alt="Poster 2" class="poster">
+                <p>poster-2.jpg</p>
+            </div>
+            <div class="card">
+                <img src="posters/poster-3.jpg" alt="Poster 3" class="poster">
+                <p>poster-3.jpg</p>
+            </div>
+            <div class="card">
+                <img src="posters/poster-4.jpg" alt="Poster 4" class="poster">
+                <p>poster-4.jpg</p>
+            </div>
+            <div class="card">
+                <img src="posters/poster-5.jpg" alt="Poster 5" class="poster">
+                <p>poster-5.jpg</p>
+            </div>
+        </div>
+        
+        <h2>Imágenes de Backdrops</h2>
+        <div class="backdrop-container">
+            <div class="card">
+                <img src="backdrops/backdrop-1.jpg" alt="Backdrop 1" class="poster">
+                <p>backdrop-1.jpg</p>
+            </div>
+            <div class="card">
+                <img src="backdrops/backdrop-2.jpg" alt="Backdrop 2" class="poster">
+                <p>backdrop-2.jpg</p>
+            </div>
+            <div class="card">
+                <img src="backdrops/backdrop-3.jpg" alt="Backdrop 3" class="poster">
+                <p>backdrop-3.jpg</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

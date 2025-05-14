@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test de Ruta de Imágenes</title>
+    <style>
+        body { background: #111; color: white; font-family: Arial; padding: 20px; }
+        .poster { width: 200px; height: 300px; margin: 10px; border: 2px solid red; object-fit: cover; }
+        .path-test { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Test de Ruta de Imágenes</h1>
+    
+    <div class="path-test">
+        <h2>Ruta relativa: posters/poster-1.jpg</h2>
+        <img src="posters/poster-1.jpg" class="poster">
+    </div>
+    
+    <div class="path-test">
+        <h2>Ruta absoluta desde raíz del sitio: /posters/poster-1.jpg</h2>
+        <img src="/posters/poster-1.jpg" class="poster">
+    </div>
+    
+    <div class="path-test">
+        <h2>Ruta con atributo crossorigin: posters/poster-1.jpg</h2>
+        <img src="posters/poster-1.jpg" class="poster" crossorigin="anonymous">
+    </div>
+    
+    <div class="path-test">
+        <h2>Forzar recarga con parámetro de tiempo: posters/poster-1.jpg?t=123456</h2>
+        <img src="posters/poster-1.jpg?t=123456" class="poster">
+    </div>
+    
+    <div class="path-test">
+        <h2>URL completa</h2>
+        <img src="http://localhost:8000/posters/poster-1.jpg" class="poster">
+    </div>
+
+    <script>
+        // Detectar errores de carga de imágenes
+        document.addEventListener('DOMContentLoaded', function() {
+            var images = document.querySelectorAll('img');
+            
+            images.forEach(function(img) {
+                img.addEventListener('error', function() {
+                    var errorDiv = document.createElement('div');
+                    errorDiv.style.color = 'red';
+                    errorDiv.style.marginTop = '10px';
+                    errorDiv.innerHTML = 'Error: La imagen no pudo cargarse. <br>URL: ' + img.src;
+                    img.parentNode.appendChild(errorDiv);
+                    img.style.display = 'none';
+                });
+                
+                img.addEventListener('load', function() {
+                    var successDiv = document.createElement('div');
+                    successDiv.style.color = 'green';
+                    successDiv.style.marginTop = '10px';
+                    successDiv.innerHTML = 'Éxito: La imagen se cargó correctamente. <br>Tamaño: ' + img.naturalWidth + 'x' + img.naturalHeight + 'px';
+                    img.parentNode.appendChild(successDiv);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

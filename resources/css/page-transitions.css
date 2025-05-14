@@ -1,0 +1,191 @@
+/**
+ * Estilos para transiciones de página en Dorasia
+ * Inspirados en las transiciones de Netflix
+ */
+
+/* Clases base para transiciones */
+.transition-active {
+    position: relative;
+    pointer-events: none;
+}
+
+/* Transición básica de fundido */
+.transition-fade-out {
+    animation: fadeOut 300ms forwards ease;
+}
+
+.transition-fade-in {
+    animation: fadeIn 300ms forwards ease;
+}
+
+/* Transición de deslizamiento hacia arriba */
+.transition-slide-up-out {
+    animation: slideUpOut 300ms forwards ease;
+}
+
+.transition-slide-up-in {
+    animation: slideUpIn 300ms forwards ease;
+}
+
+/* Transición de zoom */
+.transition-zoom-out {
+    animation: zoomOut 300ms forwards ease;
+}
+
+.transition-zoom-in {
+    animation: zoomIn 300ms forwards ease;
+}
+
+/* Deshabilitar todas las transiciones */
+.no-transitions .transition-fade-out,
+.no-transitions .transition-fade-in,
+.no-transitions .transition-slide-up-out,
+.no-transitions .transition-slide-up-in,
+.no-transitions .transition-zoom-out,
+.no-transitions .transition-zoom-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Definiciones de animaciones */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes slideUpIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Ajustes específicos para páginas que muestran detalles de títulos */
+.titles-detail-page .transition-slide-up-in {
+    animation-duration: 400ms;
+}
+
+/* Ajustes específicos para el reproductor de video */
+.video-player-page .transition-zoom-in {
+    animation-duration: 500ms;
+}
+
+/* Componente para configurar transiciones */
+.transitions-settings {
+    background-color: rgba(20, 20, 20, 0.9);
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.transitions-settings h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.transitions-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.transitions-toggle label {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.transitions-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.transitions-option {
+    background-color: #333;
+    border: none;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.transitions-option:hover {
+    background-color: #444;
+}
+
+.transitions-option.active {
+    background-color: #E51013;
+}
+
+/* Clases utilitarias para transiciones */
+.transition-delay-100 {
+    animation-delay: 100ms;
+}
+
+.transition-delay-200 {
+    animation-delay: 200ms;
+}
+
+.transition-delay-300 {
+    animation-delay: 300ms;
+}
+
+/* Efecto de escala para elementos dentro de una transición */
+.transition-active .scale-transition {
+    transition: transform 0.3s ease;
+    transform: scale(0.98);
+}
