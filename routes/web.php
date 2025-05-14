@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RomanticDramaController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\UserProfileController;
@@ -31,8 +34,32 @@ Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index
 Route::get('/genre/{slug}', [CatalogController::class, 'genre'])->name('catalog.genre');
 Route::get('/category/{slug}', [CatalogController::class, 'category'])->name('catalog.category');
 
+// Romantic Drama routes
+Route::prefix('romantic-dramas')->name('romantic-dramas.')->group(function () {
+    Route::get('/', [RomanticDramaController::class, 'index'])->name('index');
+    Route::get('/subgenre/{subgenre}', [RomanticDramaController::class, 'showSubgenre'])->name('subgenre');
+    Route::get('/origin/{origin}', [RomanticDramaController::class, 'showByOrigin'])->name('origin');
+    Route::get('/search', [RomanticDramaController::class, 'search'])->name('search');
+    Route::get('/recommendations/{title}', [RomanticDramaController::class, 'recommendations'])->name('recommendations');
+});
+
 // Title routes (public access)
 Route::get('/titles/{slug}', [TitleController::class, 'show'])->name('titles.show');
+
+// Person routes
+Route::prefix('people')->name('people.')->group(function () {
+    Route::get('/', [PersonController::class, 'index'])->name('index');
+    Route::get('/popular', [PersonController::class, 'popular'])->name('popular');
+    Route::get('/search', [PersonController::class, 'search'])->name('search');
+    Route::get('/{slug}', [PersonController::class, 'show'])->name('show');
+});
+
+// News routes
+Route::prefix('news')->name('news.')->group(function () {
+    Route::get('/', [NewsController::class, 'index'])->name('index');
+    Route::get('/person/{slug}', [NewsController::class, 'personNews'])->name('person');
+    Route::get('/{slug}', [NewsController::class, 'show'])->name('show');
+});
 
 // Dashboard route
 Route::get('/dashboard', function () {
@@ -110,6 +137,13 @@ Route::middleware(['auth', 'has.active.profile'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Title CRUD for admins
     Route::resource('titles', TitleController::class)->except(['show']);
+    
+    // News admin routes
+    Route::get('news', [NewsController::class, 'admin'])->name('news.index');
+    Route::resource('news', NewsController::class)->except(['index', 'show']);
+    
+    // Person admin routes
+    Route::resource('people', PersonController::class)->except(['index', 'show']);
 });
 
 // Social Login Routes

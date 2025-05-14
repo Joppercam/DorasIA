@@ -17,8 +17,10 @@ class Person extends Model
         'birthday',
         'deathday',
         'birth_date', // Legacy field
+        'death_date',
         'country',
         'photo',
+        'profile_path',
         'slug',
         'tmdb_id',
         'gender',
@@ -67,4 +69,33 @@ class Person extends Model
             ->wherePivot('role', 'director')
             ->withTimestamps();
     }
+    
+    /**
+     * Get news articles related to this person.
+     */
+    public function news(): BelongsToMany
+    {
+        return $this->belongsToMany(News::class, 'news_person')
+            ->withPivot('primary_subject')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Get news articles where this person is the primary subject.
+     */
+    public function featuredNews()
+    {
+        return $this->news()->wherePivot('primary_subject', true);
+    }
+    
+    /**
+     * Get most popular people based on popularity score.
+     */
+    public static function getPopularPeople($limit = 10)
+    {
+        return self::orderBy('popularity', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+}
 }

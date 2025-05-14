@@ -29,6 +29,18 @@
                         {{ __('Catálogo') }}
                     </x-nav-link>
                     
+                    <x-nav-link :href="route('romantic-dramas.index')" :active="request()->routeIs('romantic-dramas.*')">
+                        {{ __('Doramas Románticos') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('people.index')" :active="request()->routeIs('people.*')">
+                        {{ __('Actores') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
+                        {{ __('Noticias') }}
+                    </x-nav-link>
+                    
                     <!-- Dropdown para categorías -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center text-sm font-medium text-gray-300 hover:text-white focus:outline-none transition duration-150 ease-in-out">
@@ -162,6 +174,18 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('catalog.index')" :active="request()->routeIs('catalog.index')">
                 {{ __('Catálogo') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('romantic-dramas.index')" :active="request()->routeIs('romantic-dramas.*')">
+                {{ __('Doramas Románticos') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('people.index')" :active="request()->routeIs('people.*')">
+                {{ __('Actores') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
+                {{ __('Noticias') }}
             </x-responsive-nav-link>
             
             <!-- Mobile category links -->
