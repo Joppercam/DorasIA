@@ -17,7 +17,11 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
+<<<<<<< HEAD
     public const HOME = '/dashboard';
+=======
+    public const HOME = '/'; // Cambiado de '/home' a '/' para que redirija a la página principal
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.

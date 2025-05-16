@@ -34,6 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+<<<<<<< HEAD
     
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
@@ -76,6 +77,12 @@ return [
     'openai' => [
         'api_key' => env('OPENAI_API_KEY'),
         'organization' => env('OPENAI_ORGANIZATION'),
+=======
+    'tmdb' => [
+        'key' => env('TMDB_API_KEY'),
+        'base_url' => 'https://api.themoviedb.org/3',
+        'image_base_url' => 'https://image.tmdb.org/t/p/',
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     ],
 
 ];

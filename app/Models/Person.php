@@ -4,7 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+=======
+use Illuminate\Database\Eloquent\Relations\HasMany;
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 
 class Person extends Model
 {
@@ -13,6 +17,7 @@ class Person extends Model
     protected $fillable = [
         'name',
         'original_name',
+<<<<<<< HEAD
         'biography',
         'birthday',
         'deathday',
@@ -33,11 +38,27 @@ class Person extends Model
 
     protected $casts = [
         'birth_date' => 'date',
+=======
+        'slug',
+        'biography',
+        'profile_path',
+        'birthday',
+        'deathday',
+        'place_of_birth',
+        'gender',
+        'popularity',
+        'api_id',
+        'api_source',
+    ];
+
+    protected $casts = [
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
         'birthday' => 'date',
         'deathday' => 'date',
         'popularity' => 'float',
     ];
 
+<<<<<<< HEAD
     /**
      * Get the titles associated with this person.
      */
@@ -119,5 +140,25 @@ class Person extends Model
         
         // Si es una ruta de TMDB
         return config('services.tmdb.image_base_url') . 'w185' . $this->profile_path;
+=======
+    public function movieCast(): HasMany
+    {
+        return $this->hasMany(MovieCast::class);
+    }
+
+    public function movieCrew(): HasMany
+    {
+        return $this->hasMany(MovieCrew::class);
+    }
+
+    public function tvShowCast(): HasMany
+    {
+        return $this->hasMany(TvShowCast::class);
+    }
+
+    public function tvShowCrew(): HasMany
+    {
+        return $this->hasMany(TvShowCrew::class);
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     }
 }

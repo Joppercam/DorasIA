@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+<<<<<<< HEAD
         // Importar doramas coreanos diariamente (2 páginas de resultados)
         $schedule->command('import:korean-dramas --pages=2 --update')
                  ->dailyAt('01:00')
@@ -134,6 +135,35 @@ class Kernel extends ConsoleKernel
                  ->description('Import professional reviews for titles')
                  ->onOneServer()
                  ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+=======
+        // Sincronizar géneros una vez por semana (domingo a medianoche)
+        $schedule->command('sync:tmdb genres')
+            ->weekly()
+            ->sundays()
+            ->at('00:00')
+            ->withoutOverlapping()
+            ->onOneServer();
+            
+        // Sincronizar películas populares diariamente
+        $schedule->command('sync:tmdb movies --pages=2')
+            ->dailyAt('01:00')
+            ->withoutOverlapping()
+            ->onOneServer();
+            
+        // Sincronizar series/doramas populares diariamente
+        $schedule->command('sync:tmdb tvshows --pages=2')
+            ->dailyAt('03:00')
+            ->withoutOverlapping()
+            ->onOneServer();
+            
+        // Sincronización completa semanal (sábado en la madrugada)
+        $schedule->command('sync:tmdb all --pages=5')
+            ->weekly()
+            ->saturdays()
+            ->at('02:00')
+            ->withoutOverlapping()
+            ->onOneServer();
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     }
 
     /**
@@ -145,6 +175,7 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+<<<<<<< HEAD
     
     /**
      * Get the commands that should be removed from the list of available commands.
@@ -165,4 +196,6 @@ class Kernel extends ConsoleKernel
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         ];
     }
+=======
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 }

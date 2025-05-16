@@ -1,0 +1,44 @@
+.content-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: $card-border-radius;
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        
+        .content-card-overlay {
+            opacity: 1;
+        }
+    }
+    
+    .content-card-img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    .content-card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+        padding: 1rem;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+    
+    .content-card-title {
+        color: #fff;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .content-card-meta {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+    }
+}

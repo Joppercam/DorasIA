@@ -1,0 +1,39 @@
+.form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: $body-color;
+    
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: $primary;
+        color: $body-color;
+        box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+    }
+    
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+.search-form {
+    position: relative;
+    
+    .search-input {
+        padding-right: 3rem;
+        border-radius: 50px;
+    }
+    
+    .search-button {
+        position: absolute;
+        right: 0.5rem;
+        top: 0;
+        bottom: 0;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        
+        &:hover {
+            color: $primary;
+        }
+    }
+}

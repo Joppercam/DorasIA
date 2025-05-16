@@ -1,0 +1,32 @@
+.home-section {
+    margin: 3rem 0;
+    
+    .section-title {
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+}
+
+.category-tabs {
+    display: flex;
+    overflow-x: auto;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .category-tab {
+        padding: 0.75rem 1.5rem;
+        white-space: nowrap;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        
+        &.active {
+            color: $primary;
+            border-bottom: 2px solid $primary;
+        }
+        
+        &:hover {
+            color: $primary;
+        }
+    }
+}

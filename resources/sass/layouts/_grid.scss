@@ -1,0 +1,11 @@
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.main-container {
+    padding-top: $navbar-height + 20px;
+    min-height: 100vh;
+}

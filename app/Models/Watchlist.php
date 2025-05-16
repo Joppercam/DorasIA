@@ -5,11 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+<<<<<<< HEAD
+=======
+use Illuminate\Database\Eloquent\Relations\HasMany;
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 
 class Watchlist extends Model
 {
     use HasFactory;
 
+<<<<<<< HEAD
     /**
      * The attributes that are mass assignable.
      *
@@ -136,5 +141,27 @@ class Watchlist extends Model
     public function scopeSortByPosition($query)
     {
         return $query->orderBy('position', 'asc');
+=======
+    protected $fillable = [
+        'user_id',
+        'name',
+        'slug',
+        'description',
+        'is_public',
+    ];
+
+    protected $casts = [
+        'is_public' => 'boolean',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(WatchlistItem::class)->orderBy('position');
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     }
 }

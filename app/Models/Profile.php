@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\HasMany;
+=======
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 
 class Profile extends Model
 {
     use HasFactory;
 
+<<<<<<< HEAD
     /**
      * The attributes that are mass assignable.
      *
@@ -58,10 +62,28 @@ class Profile extends Model
     /**
      * Get the user that owns the profile.
      */
+=======
+    protected $fillable = [
+        'user_id',
+        'bio',
+        'location',
+        'website',
+        'birth_date',
+        'country_id',
+        'social_links',
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
+        'social_links' => 'array',
+    ];
+
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+<<<<<<< HEAD
     
     /**
      * Get the watchlist items for this profile.
@@ -170,5 +192,11 @@ class Profile extends Model
     public function getUnreadMessagesCountAttribute(): int
     {
         return $this->receivedMessages()->where('is_read', false)->count();
+=======
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     }
 }

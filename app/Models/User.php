@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,26 +15,55 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+=======
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
 
     /**
      * The attributes that are mass assignable.
      *
+<<<<<<< HEAD
      * @var list<string>
+=======
+     * @var array<int, string>
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
      */
     protected $fillable = [
         'name',
         'email',
+<<<<<<< HEAD
         'password',
         'provider',
         'provider_id',
         'avatar',
         'is_admin',
+=======
+        'username',
+        'avatar',
+        'role',
+        'is_active',
+        'password',
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
+<<<<<<< HEAD
      * @var list<string>
+=======
+     * @var array<int, string>
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
      */
     protected $hidden = [
         'password',
@@ -41,6 +71,7 @@ class User extends Authenticatable
     ];
 
     /**
+<<<<<<< HEAD
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -111,3 +142,51 @@ class User extends Authenticatable
         return $this->hasManyThrough(Rating::class, Profile::class);
     }
 }
+=======
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
+    ];
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function preferences(): HasOne
+    {
+        return $this->hasOne(Preference::class);
+    }
+
+    public function watchlists(): HasMany
+    {
+        return $this->hasMany(Watchlist::class);
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->role === 'moderator' || $this->role === 'admin';
+    }
+}
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe

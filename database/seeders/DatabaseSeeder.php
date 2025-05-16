@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+<<<<<<< HEAD
             'is_admin' => true,
         ]);
         
@@ -28,6 +29,8 @@ class DatabaseSeeder extends Seeder
             UpdateStoragePathsSeeder::class,
             CorrectImagePathsSeeder::class,
             FilterAdultContentSeeder::class,
+=======
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe
         ]);
     }
 }

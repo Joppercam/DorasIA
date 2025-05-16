@@ -14,6 +14,7 @@ class Genre extends Model
         'name',
         'slug',
         'description',
+<<<<<<< HEAD
     ];
 
     /**
@@ -24,3 +25,18 @@ class Genre extends Model
         return $this->belongsToMany(Title::class, 'title_genre');
     }
 }
+=======
+        'api_id',
+    ];
+
+    public function movies(): BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class);
+    }
+
+    public function tvShows(): BelongsToMany
+    {
+        return $this->belongsToMany(TvShow::class);
+    }
+}
+>>>>>>> 2bc24813cacc67cfcf0a52d7cddf93db925ae8fe

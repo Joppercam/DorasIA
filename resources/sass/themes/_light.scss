@@ -1,0 +1,18 @@
+.light-theme {
+    --background-color: #{$light};
+    --text-color: #333333;
+    --card-background: #ffffff;
+    --border-color: rgba(0, 0, 0, 0.1);
+    
+    background-color: var(--background-color);
+    color: var(--text-color);
+    
+    .navbar, .site-footer {
+        background-color: #ffffff;
+    }
+    
+    .content-card {
+        background-color: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+}
