@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Alpine</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body>
+    <h1>Alpine.js Test</h1>
+    
+    <div x-data="{ message: 'Alpine is working!' }">
+        <p x-text="message"></p>
+        <button @click="message = 'Clicked!'" style="padding: 10px; background: blue; color: white;">
+            Click me
+        </button>
+    </div>
+    
+    <h2>Comments Component Test</h2>
+    <div x-data="testComments(1)">
+        <p>Title ID: <span x-text="titleId"></span></p>
+        <p>Status: <span x-text="status"></span></p>
+        <button @click="testFetch()" style="padding: 10px; background: green; color: white;">
+            Test API
+        </button>
+    </div>
+    
+    <script>
+    function testComments(titleId) {
+        return {
+            titleId: titleId,
+            status: 'Ready',
+            
+            init() {
+                console.log('Test comments initialized with ID:', this.titleId);
+                this.status = 'Initialized';
+            },
+            
+            async testFetch() {
+                this.status = 'Fetching...';
+                try {
+                    const response = await fetch(`/api/titles/${this.titleId}/comments`);
+                    const data = await response.json();
+                    this.status = `Success! Got ${data.data.length} comments`;
+                } catch (error) {
+                    this.status = `Error: ${error.message}`;
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html>

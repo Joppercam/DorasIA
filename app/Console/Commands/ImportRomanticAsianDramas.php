@@ -224,7 +224,7 @@ class ImportRomanticAsianDramas extends Command
             }
             $title->slug = $slug;
             
-            $title->description = $drama['overview'];
+            $title->synopsis = $drama['overview'];
             $title->release_date = $drama['first_air_date'] ?? null;
             $title->type = 'series';
             $title->tmdb_id = $drama['id'];

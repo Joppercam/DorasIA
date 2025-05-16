@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">
         @if($episode)
-            {{ $title->title }} - S{{ $season->number }}E{{ $episode->number }} - {{ $episode->title }}
+            {{ $title->title }} - S{{ $season->number }}E{{ $episode->number }} - {{ $episode->name ?? '' }}
         @else
             {{ $title->title }}
         @endif

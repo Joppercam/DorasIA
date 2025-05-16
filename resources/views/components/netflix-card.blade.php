@@ -1,48 +1,66 @@
-@props(['title', 'watchHistory' => null])
+@props(['title'])
 
-<div class="group relative w-[140px] xs:w-[160px] sm:w-[200px] md:w-[240px] flex-shrink-0 px-1 transition duration-300 hover:z-10 touch-manipulation" 
-     x-data="{ 
-         showDetails: false, 
-         showCommentForm: false,
-         showTrailerModal: false,
-         showShareMenu: false,
-         hoverActive: false,
-         isTouch: false,
-         watchHistory: @json($watchHistory)
-     }"
-     @touchstart="isTouch = true"
-     @mouseenter="hoverActive = true; if(!isTouch) showDetails = true"
-     @mouseleave="hoverActive = false; if(!isTouch) showDetails = false"
-     @click="if(isTouch && !showDetails) { showDetails = true; $event.preventDefault(); } else if (isTouch && showDetails && $event.target.tagName !== 'BUTTON' && $event.target.tagName !== 'A') { showDetails = false; $event.preventDefault(); }">
+<a href="{{ route('titles.show', $title->slug) }}" class="group relative w-[140px] xs:w-[160px] sm:w-[200px] md:w-[240px] flex-shrink-0 px-1 transition duration-300 hover:z-10 touch-manipulation block cursor-pointer" 
+   x-data="{ 
+       showDetails: false, 
+       showCommentForm: false,
+       showTrailerModal: false,
+       showShareMenu: false,
+       hoverActive: false,
+       isTouch: false,
+   }"
+   @touchstart="isTouch = true"
+   @mouseenter="hoverActive = true; if(!isTouch) showDetails = true"
+   @mouseleave="hoverActive = false; if(!isTouch) showDetails = false"
+   @click.prevent="
+       const target = $event.target;
+       const isButton = target.tagName === 'BUTTON' || target.closest('button');
+       const isInternalLink = (target.tagName === 'A' || target.closest('a')) && target !== $el;
+       const isShareMenu = target.closest('[x-show=\"showShareMenu\"]');
+       
+       if (isButton || isInternalLink || isShareMenu || showCommentForm || showTrailerModal) {
+           $event.stopPropagation();
+           return;
+       }
+       window.location.href = '{{ route('titles.show', $title->slug) }}';
+   ">
     <!-- Tarjeta básica que se expande al hacer hover/tap -->
-    <div class="relative transform transition-transform duration-300" :class="{'scale-110': showDetails || hoverActive}">
+    <div class="relative transform transition-all duration-300" 
+         :class="{
+             'scale-110 shadow-2xl z-20': showDetails || hoverActive,
+             'translate-y-[-5px] shadow-xl': hoverActive && !showDetails
+         }">
         <!-- Imagen de portada -->
         <div class="relative pb-[150%] rounded overflow-hidden shadow-lg bg-gray-800">
             <img src="{{ asset($title->poster) }}" 
                  alt="{{ $title->title }}" 
-                 class="absolute inset-0 h-full w-full object-cover"
+                 class="absolute inset-0 h-full w-full object-cover transform transition-transform duration-700"
+                 :class="{'scale-105': hoverActive || showDetails}"
                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
-                 
-                 
-            <!-- Gradiente superior para mejorar la visibilidad del overlay de texto -->
+            
+            <!-- Gradiente superior permanente para el título -->
+            <div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/90 to-transparent pointer-events-none">
+                <h3 class="text-white text-xs p-2 font-medium line-clamp-2">{{ $title->title }}</h3>
+            </div>
+            
+            <!-- Gradiente superior para mejorar la visibilidad del overlay de texto en hover -->
             <div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/80 to-transparent opacity-0 transition duration-300 pointer-events-none"
                  :class="{'opacity-100': showDetails || hoverActive}"></div>
             
             <!-- Overlay de contenido (visible en hover/tap) -->
-            <div class="absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-between p-2 xs:p-3 text-[10px] xs:text-xs"
-                 :class="{'opacity-100': showDetails || hoverActive}">
+            <div class="absolute inset-0 bg-black/85 opacity-0 transition-all duration-300 flex flex-col justify-between p-2 xs:p-3 text-[10px] xs:text-xs backdrop-blur-sm"
+                 :class="{'opacity-100': showDetails || hoverActive}"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform translate-y-4">
                 <div>
                     <h3 class="font-bold text-xs xs:text-sm">{{ $title->title }}</h3>
                     <div class="flex items-center space-x-2 mt-1">
                         <span class="text-[10px] xs:text-xs">{{ $title->release_year }}</span>
-                        @if($title->vote_average)
-                            <span class="flex items-center text-yellow-400 text-[10px] xs:text-xs">
-                                <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mr-0.5 xs:mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                </svg>
-                                {{ number_format($title->vote_average, 1) }}
-                            </span>
-                        @endif
+                        <x-rating-stars :title-id="$title->id" :show-count="false" size="sm" />
                     </div>
                     
                     <!-- Sinopsis breve -->
@@ -51,47 +69,13 @@
                 
                 <!-- Botones de acción -->
                 <div class="flex flex-col gap-1 mt-2">
-                    <!-- Reproducir/Ver/Continuar -->
-                    @if($title->type === 'movie')
-                        @if(isset($watchHistory) && $watchHistory && $watchHistory->title_id == $title->id && $watchHistory->progress > 0 && $watchHistory->progress < 95)
-                            <a href="{{ route('titles.watch', [$title->slug, null, null, $watchHistory->watched_seconds]) }}" class="bg-dorasia-red text-white hover:bg-dorasia-red-dark px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs font-medium flex items-center justify-center transition-colors">
-                                <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                Continuar ({{ $watchHistory->getFormattedResumeTime() }})
-                            </a>
-                        @else
-                            <a href="{{ route('titles.watch', $title->slug) }}" class="bg-white text-black hover:bg-gray-200 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs font-medium flex items-center justify-center transition-colors">
-                                <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                Reproducir
-                            </a>
-                        @endif
-                    @elseif($title->seasons->count() > 0 && $title->seasons->first()->episodes->count() > 0)
-                        @if(isset($watchHistory) && $watchHistory && $watchHistory->episode_id && $watchHistory->progress > 0 && $watchHistory->progress < 95)
-                            <a href="{{ route('titles.watch', [$title->slug, $watchHistory->season_number, $watchHistory->episode_number, $watchHistory->watched_seconds]) }}" class="bg-dorasia-red text-white hover:bg-dorasia-red-dark px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs font-medium flex items-center justify-center transition-colors">
-                                <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="truncate">Continuar S{{ $watchHistory->season_number }}:E{{ $watchHistory->episode_number }}</span>
-                            </a>
-                        @else
-                            <a href="{{ route('titles.watch', [$title->slug, $title->seasons->first()->number, $title->seasons->first()->episodes->first()->number]) }}" class="bg-white text-black hover:bg-gray-200 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs font-medium flex items-center justify-center transition-colors">
-                                <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                Ver episodios
-                            </a>
-                        @endif
-                    @endif
                     
                     <div class="flex gap-1 justify-between">
                         <!-- Botón de Mi Lista -->
                         @auth
                         <button
                             type="button"
-                            class="watchlist-toggle flex-1 bg-gray-800 hover:bg-gray-700 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-colors active:bg-gray-600"
+                            class="watchlist-toggle flex-1 bg-gray-800/80 hover:bg-red-600 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-all duration-200 active:bg-red-700 hover:scale-105 backdrop-blur-sm"
                             data-title-id="{{ $title->id }}"
                             onclick="toggleWatchlist({{ $title->id }}, this)">
                             <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -106,7 +90,7 @@
                         <button
                             @click="showTrailerModal = true; $event.stopPropagation();"
                             type="button"
-                            class="flex-1 bg-gray-800 hover:bg-gray-700 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-colors active:bg-gray-600">
+                            class="flex-1 bg-gray-800/80 hover:bg-blue-600 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-all duration-200 active:bg-blue-700 hover:scale-105 backdrop-blur-sm">
                             <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
@@ -120,7 +104,7 @@
                         <button
                             @click="showCommentForm = true; $event.stopPropagation();"
                             type="button"
-                            class="flex-1 bg-gray-800 hover:bg-gray-700 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-colors active:bg-gray-600">
+                            class="flex-1 bg-gray-800/80 hover:bg-green-600 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-all duration-200 active:bg-green-700 hover:scale-105 backdrop-blur-sm">
                             <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd"></path>
                             </svg>
@@ -133,7 +117,7 @@
                             <button
                                 @click="showShareMenu = !showShareMenu; $event.stopPropagation();"
                                 type="button"
-                                class="w-full bg-gray-800 hover:bg-gray-700 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-colors active:bg-gray-600">
+                                class="w-full bg-gray-800/80 hover:bg-purple-600 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-all duration-200 active:bg-purple-700 hover:scale-105 backdrop-blur-sm">
                                 <svg class="w-2.5 h-2.5 xs:w-3 xs:h-3 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
                                 </svg>
@@ -167,31 +151,60 @@
                         </div>
                     </div>
                     
-                    <!-- Botón para más información -->
-                    <a 
-                        href="{{ route('titles.show', $title->slug) }}" 
-                        class="mt-1 bg-gray-700 hover:bg-gray-600 px-2 py-1.5 rounded-sm text-center text-[10px] xs:text-xs transition-colors active:bg-gray-500">
-                        Más información
-                    </a>
+                    <!-- Removido botón de detalles ya que toda la tarjeta es clickeable -->
                 </div>
             </div>
             
-            <!-- Country tag (top-right) -->
-            <div class="absolute top-1 right-1 bg-black/80 px-1.5 py-0.5 text-[0.65rem] uppercase font-semibold z-20
-                       @if($title->country == 'Corea del Sur') text-cyan-400
-                       @elseif($title->country == 'Japón') text-red-400
-                       @elseif(in_array($title->country, ['China', 'Taiwán', 'Hong Kong'])) text-amber-400
-                       @else text-white @endif">
-                {{ Str::limit($title->country, 5, '') }}
-            </div>
+            <!-- Etiquetas informativas (mantenidas) -->
+            @php
+                $platforms = !empty($title->streaming_platforms) 
+                    ? (is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms)
+                    : ['netflix'];
+                $firstPlatform = $platforms[0] ?? 'netflix';
+                
+                // Iconos y colores para cada plataforma
+                $platformIcons = [
+                    'netflix' => ['icon' => 'N', 'color' => 'bg-red-600'],
+                    'viki' => ['icon' => 'V', 'color' => 'bg-green-600'],
+                    'disney' => ['icon' => 'D+', 'color' => 'bg-blue-600'],
+                    'hbo' => ['icon' => 'HBO', 'color' => 'bg-purple-800'],
+                    'prime' => ['icon' => 'P', 'color' => 'bg-blue-500'],
+                    'apple' => ['icon' => 'TV+', 'color' => 'bg-gray-700'],
+                    'crunchyroll' => ['icon' => 'CR', 'color' => 'bg-orange-500']
+                ];
+                
+                $platformInfo = $platformIcons[$firstPlatform] ?? ['icon' => 'STR', 'color' => 'bg-purple-600'];
+                
+                // Colores para las valoraciones
+                $ratingColor = 'text-gray-400';
+                $ratingBgColor = 'bg-gray-700';
+                if (!empty($title->vote_average)) {
+                    if ($title->vote_average >= 7) {
+                        $ratingColor = 'text-white';
+                        $ratingBgColor = 'bg-green-600';
+                    } elseif ($title->vote_average >= 5) {
+                        $ratingColor = 'text-black';
+                        $ratingBgColor = 'bg-yellow-400';
+                    } else {
+                        $ratingColor = 'text-white';
+                        $ratingBgColor = 'bg-red-500';
+                    }
+                }
+            @endphp
             
-            <!-- Rating tag (top-left) -->
+            <!-- Etiqueta superior izquierda (Categoría) -->
+            @if($title->category)
+            <div class="absolute top-2 left-2 z-20">
+                <div class="bg-blue-600 px-1.5 py-0.5 text-[0.6rem] uppercase font-semibold text-white rounded shadow-md">
+                    {{ Str::limit($title->category->name, 7, '') }}
+                </div>
+            </div>
+            @endif
+            
+            <!-- Etiqueta superior derecha (Valoración) -->
             @if(!empty($title->vote_average))
-            <div class="absolute top-1 left-1 bg-black/80 rounded-br px-1.5 py-0.5 text-[0.65rem] font-semibold z-20
-                       @if($title->vote_average >= 7) text-green-400
-                       @elseif($title->vote_average >= 5) text-yellow-400
-                       @else text-red-400 @endif">
-                <div class="flex items-center">
+            <div class="absolute top-2 right-2 z-20">
+                <div class="flex items-center {{ $ratingBgColor }} {{ $ratingColor }} text-[0.6rem] font-semibold rounded-full px-1.5 py-0.5 shadow-md">
                     <svg class="w-2 h-2 mr-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                     </svg>
@@ -200,63 +213,45 @@
             </div>
             @endif
             
-            <!-- Category tag (bottom-left) -->
-            @if($title->categories()->count() > 0)
-            <div class="absolute bottom-1 left-1 bg-blue-700/80 rounded px-1.5 py-0.5 text-[0.65rem] uppercase font-semibold z-20">
-                {{ Str::limit($title->categories()->first()->name, 8, '') }}
+            <!-- Etiqueta inferior izquierda (Año) -->
+            <div class="absolute bottom-2 left-2 z-20">
+                <div class="bg-black/70 text-[0.6rem] text-gray-300 font-medium px-1.5 py-0.5 rounded shadow-md">
+                    {{ $title->release_year }}
+                </div>
             </div>
-            @endif
             
-            <!-- Streaming platform tag (bottom-right) -->
-            @if(!empty($title->streaming_platforms))
-            @php
-                $platforms = explode(',', $title->streaming_platforms);
-                $firstPlatform = trim($platforms[0]);
-            @endphp
-            <div class="absolute bottom-1 right-1 bg-purple-700/80 rounded px-1.5 py-0.5 text-[0.65rem] uppercase font-semibold z-20">
-                {{ Str::limit($firstPlatform, 6, '') }}
+            <!-- Etiqueta inferior derecha (Plataforma) con tooltip -->
+            <div class="absolute bottom-2 right-2 z-20">
+                <div class="group/tooltip relative">
+                    <div class="{{ $platformInfo['color'] }} w-5 h-5 flex items-center justify-center text-[0.65rem] font-bold text-white rounded shadow-md cursor-help">
+                        {{ $platformInfo['icon'] }}
+                    </div>
+                    
+                    <!-- Tooltip -->
+                    <div class="absolute hidden group-hover/tooltip:block right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                        @if(count($platforms) > 1)
+                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                <span class="text-gray-300">También en:</span>
+                                <ul class="mt-0.5">
+                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                    @endforeach
+                                    @if(count($platforms) > 4)
+                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                    @endif
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
-            @endif
-            
-            <!-- Category tag (bottom-left) -->
-            @if($title->category)
-            <div class="absolute bottom-1 left-1 bg-blue-600/90 px-1.5 py-0.5 text-[0.65rem] uppercase font-semibold text-white rounded-tr">
-                {{ Str::limit($title->category->name, 8, '') }}
-            </div>
-            @endif
-            
-            <!-- Streaming platform tag (bottom-right) -->
-            @if(!empty($title->streaming_platforms))
-            <div class="absolute bottom-1 right-1 bg-purple-600/90 px-1.5 py-0.5 text-[0.65rem] uppercase font-semibold text-white rounded-tl">
-                @php
-                    $platforms = explode(',', $title->streaming_platforms);
-                    echo Str::limit($platforms[0], 7, '');
-                @endphp
-            </div>
-            @endif
-            
-            <!-- Botón de reproducir trailer -->
-            @if(!empty($title->trailer_url))
-            <div class="absolute bottom-8 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                    @click="showTrailerModal = true; $event.stopPropagation();"
-                    class="bg-black/60 hover:bg-black/80 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg focus:outline-none">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-            </div>
-            @endif
         </div>
         
-        <h3 class="text-xs truncate mt-1 group-hover:hidden">{{ $title->title }}</h3>
+        <!-- Removido el título duplicado que estaba debajo de la tarjeta -->
         
-        <!-- Indicador de progreso -->
-        @if(isset($watchHistory) && $watchHistory && $watchHistory->progress > 0)
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                <div class="absolute left-0 top-0 h-full bg-red-600" style="width: {{ $watchHistory->progress }}%"></div>
-            </div>
-        @endif
+        <!-- Indicador de progreso - ELIMINADO (Portal informativo) -->
     </div>
     
     <!-- Modal para comentarios -->
@@ -433,7 +428,7 @@
             </div>
         </div>
     </div>
-</div>
+</a>
 
 <style>
     [x-cloak] { display: none !important; }
@@ -457,5 +452,15 @@
     .group:hover .absolute.top-1,
     .group:hover .absolute.bottom-1 {
         z-index: 20;
+    }
+    
+    /* Glow effect on hover */
+    .group:hover > div {
+        filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.5));
+    }
+    
+    /* Smooth transitions for card animations */
+    .group > div {
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 </style>

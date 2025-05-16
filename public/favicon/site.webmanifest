@@ -1,11 +1,17 @@
 {
     "name": "Dorasia",
     "short_name": "Dorasia",
-    "description": "La mejor plataforma de streaming de contenido asiático",
+    "description": "La mejor plataforma de streaming de contenido asi\u00e1tico",
     "icons": [
         {
             "src": "/favicon/favicon-192x192.png",
             "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon/favicon-384x384.png",
+            "sizes": "384x384",
             "type": "image/png",
             "purpose": "any maskable"
         },

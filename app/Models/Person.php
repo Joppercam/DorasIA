@@ -97,5 +97,27 @@ class Person extends Model
             ->limit($limit)
             ->get();
     }
-}
+    
+    /**
+     * Get the full profile image path.
+     */
+    public function getProfilePath()
+    {
+        if (!$this->profile_path) {
+            return null;
+        }
+        
+        // Si es una ruta completa local
+        if (str_starts_with($this->profile_path, 'profiles/')) {
+            return asset($this->profile_path);
+        }
+        
+        // Si es solo el nombre del archivo
+        if (strlen($this->profile_path) > 0 && !str_contains($this->profile_path, '/')) {
+            return config('services.tmdb.image_base_url') . 'w185' . '/' . $this->profile_path;
+        }
+        
+        // Si es una ruta de TMDB
+        return config('services.tmdb.image_base_url') . 'w185' . $this->profile_path;
+    }
 }

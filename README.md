@@ -12,6 +12,8 @@ Este es un proyecto completamente nuevo y limpio de Dorasia, una plataforma de s
 - Comentarios en tiempo real
 - Compartir listas de favoritos entre usuarios
 - Integración con TMDB API para importar dramas y películas asiáticas
+- Búsqueda y filtro avanzado de doramas románticos asiáticos
+- Categorización inteligente por subgéneros románticos
 
 ## Requisitos
 
@@ -119,12 +121,20 @@ php artisan import:chinese-dramas
 
 # Importar películas asiáticas (KR=Corea, JP=Japón, CN=China)
 php artisan import:asian-movies --country=KR
+
+# Importar doramas románticos asiáticos
+php artisan dorasia:import-romantic-dramas
+
+# Importar doramas románticos por subgénero específico
+php artisan dorasia:import-romantic-dramas --subgenre=historical_romance
 ```
 
 Opciones disponibles:
 - `--pages=N`: Número de páginas a importar (20 títulos por página)
 - `--update`: Actualizar títulos existentes con nueva información
 - `--force`: Forzar actualización completa incluyendo temporadas, episodios y reparto
+- `--country=KR|JP|CN|TH|all`: Filtrar por país de origen (solo para comandos que lo soportan)
+- `--subgenre=SUBGENRE`: Filtrar por subgénero romántico (historical_romance, romantic_comedy, melodrama, etc.)
 
 Para actualizar información biográfica y fotos del reparto:
 ```bash

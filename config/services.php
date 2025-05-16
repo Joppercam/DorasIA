@@ -67,5 +67,15 @@ return [
         'api_key' => env('MYDRAMALIST_API_KEY'),
         'base_url' => env('MYDRAMALIST_BASE_URL'),
     ],
+    
+    'newsapi' => [
+        'key' => env('NEWSAPI_KEY'),
+        'base_url' => 'https://newsapi.org/v2',
+    ],
+    
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'organization' => env('OPENAI_ORGANIZATION'),
+    ],
 
 ];

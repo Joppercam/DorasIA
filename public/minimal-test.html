@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Comments Test</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        body { padding: 20px; font-family: Arial; }
+        .error { color: red; }
+        .success { color: green; }
+        .box { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Comments Test</h1>
+    
+    <div x-data="testApp()">
+        <button @click="test1()">Test 1: Basic Fetch</button>
+        <button @click="test2()">Test 2: Enhanced Comments Logic</button>
+        <button @click="clearResults()">Clear</button>
+        
+        <div class="box">
+            <h3>Results:</h3>
+            <div x-show="loading">Loading...</div>
+            <div x-show="error" class="error">
+                Error: <span x-text="errorMessage"></span>
+            </div>
+            <div x-show="success" class="success">
+                Success! Comments count: <span x-text="commentsCount"></span>
+            </div>
+            <pre x-text="debugInfo"></pre>
+        </div>
+        
+        <div class="box">
+            <h3>Comments:</h3>
+            <template x-for="comment in comments" :key="comment.id">
+                <div style="border-bottom: 1px solid #eee; padding: 5px;">
+                    <strong x-text="comment.profile.name"></strong>:
+                    <span x-text="comment.content"></span>
+                </div>
+            </template>
+        </div>
+    </div>
+    
+    <script>
+    function testApp() {
+        return {
+            loading: false,
+            error: false,
+            success: false,
+            errorMessage: '',
+            comments: [],
+            commentsCount: 0,
+            debugInfo: '',
+            
+            clearResults() {
+                this.loading = false;
+                this.error = false;
+                this.success = false;
+                this.errorMessage = '';
+                this.comments = [];
+                this.commentsCount = 0;
+                this.debugInfo = '';
+            },
+            
+            async test1() {
+                this.clearResults();
+                this.loading = true;
+                
+                try {
+                    const response = await fetch('/api/titles/1/comments');
+                    const data = await response.json();
+                    
+                    this.comments = data.data || [];
+                    this.commentsCount = this.comments.length;
+                    this.success = true;
+                    this.debugInfo = JSON.stringify(data, null, 2);
+                } catch (err) {
+                    this.error = true;
+                    this.errorMessage = err.message;
+                    this.debugInfo = err.stack;
+                } finally {
+                    this.loading = false;
+                }
+            },
+            
+            async test2() {
+                this.clearResults();
+                this.loading = true;
+                
+                try {
+                    const url = '/api/titles/1/comments?sort=newest&mine=false&page=1';
+                    console.log('Loading comments from:', url);
+                    
+                    const response = await fetch(url);
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        
+                        if (response.status === 403 || response.status === 401) {
+                            this.comments = [];
+                            this.errorMessage = 'Auth error - but continuing';
+                            return;
+                        }
+                        
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.comments = data.data || [];
+                    this.commentsCount = this.comments.length;
+                    this.success = true;
+                    this.debugInfo = JSON.stringify(data, null, 2);
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                    this.error = true;
+                    this.errorMessage = error.message;
+                    this.debugInfo = error.stack;
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html>

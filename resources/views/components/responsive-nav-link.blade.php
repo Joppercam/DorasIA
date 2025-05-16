@@ -1,4 +1,4 @@
-@props(['active'])
+@props(['active' => false])
 
 @php
 $classes = ($active ?? false)
@@ -7,5 +7,5 @@ $classes = ($active ?? false)
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }}>
-    {{ $slot }}
+    {{ $slot ?? '' }}
 </a>

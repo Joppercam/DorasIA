@@ -33,6 +33,18 @@
                 @if($title->type === 'movie' && $title->duration)
                     <span class="text-xs sm:text-sm">{{ $title->duration }} min</span>
                 @endif
+                
+                <!-- Platform badges for hero -->
+                @if(!empty($title->streaming_platforms))
+                    @php
+                        $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                    @endphp
+                    @foreach($platforms as $platform)
+                        <span class="text-xs sm:text-sm bg-purple-700 px-2 py-0.5 rounded-sm text-white">
+                            {{ Str::title($platform) }}
+                        </span>
+                    @endforeach
+                @endif
             </div>
             
             <div class="flex flex-wrap gap-1.5 xs:gap-2 mb-3 sm:mb-4">
@@ -49,9 +61,9 @@
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:space-x-4">
                 <a href="{{ route('titles.show', $title->slug) }}" class="inline-flex items-center justify-center w-full sm:w-auto px-3 xs:px-4 sm:px-5 py-2 sm:py-2.5 bg-dorasia-red hover:bg-dorasia-red-dark text-white font-medium rounded-md transition-colors">
                     <svg class="w-4 h-4 xs:w-5 xs:h-5 mr-1.5 xs:mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
-                    {{ $title->type === 'movie' ? 'Ver ahora' : 'Ver detalles' }}
+                    Más información
                 </a>
                 
                 @auth

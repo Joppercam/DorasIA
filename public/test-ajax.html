@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AJAX Test</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        function testFetch() {
+            console.log('Starting fetch test...');
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Testing...';
+            
+            fetch('/api/titles/1/comments')
+                .then(response => {
+                    console.log('Response:', response);
+                    console.log('Status:', response.status);
+                    console.log('Headers:', response.headers);
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Response text:', text);
+                    resultsDiv.innerHTML = `<pre>${text}</pre>`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultsDiv.innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
+                });
+        }
+        
+        window.onload = function() {
+            // Show current location
+            const locDiv = document.getElementById('location');
+            locDiv.innerHTML = `
+                Protocol: ${window.location.protocol}<br>
+                Host: ${window.location.host}<br>
+                Pathname: ${window.location.pathname}<br>
+                Full URL: ${window.location.href}
+            `;
+        };
+    </script>
+</head>
+<body>
+    <h1>AJAX Comments Test</h1>
+    
+    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
+        <h3>Location Info:</h3>
+        <div id="location"></div>
+    </div>
+    
+    <button onclick="testFetch()">Test Fetch API</button>
+    
+    <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+        <h3>Results:</h3>
+        <div id="results">Click the button to test</div>
+    </div>
+    
+    <div style="background: #ffffe0; padding: 10px; margin: 10px 0;">
+        <h3>Instructions:</h3>
+        <p>1. Open browser console (F12)</p>
+        <p>2. Click the test button</p>
+        <p>3. Check console for detailed logs</p>
+        <p>4. Look for any CORS errors or redirect issues</p>
+    </div>
+</body>
+</html>

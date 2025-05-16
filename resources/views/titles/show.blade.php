@@ -62,41 +62,64 @@
                         @endforeach
                     </div>
                     
-                    <p class="text-gray-300 mb-6">{{ $title->synopsis }}</p>
+                    <!-- Valoración -->
+                    <div class="mb-4">
+                        <x-rating-stars :title-id="$title->id" :show-count="true" size="lg" />
+                    </div>
+                    
+                    <!-- Sinopsis / Resumen -->
+                    @if($title->synopsis)
+                        <div class="mb-6 bg-gray-900/50 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-3 text-white">Sinopsis</h3>
+                            <p class="text-gray-300 leading-relaxed text-base">
+                                {{ $title->synopsis }}
+                            </p>
+                        </div>
+                    @else
+                        <div class="mb-6 bg-gray-900/50 rounded-lg p-4">
+                            <p class="text-gray-500 italic">No hay sinopsis disponible para este título.</p>
+                        </div>
+                    @endif
                     
                     <!-- Botones de acción -->
                     <div class="flex flex-wrap gap-3">
-                        @if($title->type === 'movie')
-                            <a href="{{ route('titles.watch', $title->slug) }}" class="inline-flex items-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                Ver ahora
-                            </a>
-                        @elseif($title->seasons->count() > 0 && $title->seasons->first()->episodes->count() > 0)
-                            <a href="{{ route('titles.watch', [$title->slug, $title->seasons->first()->number, $title->seasons->first()->episodes->first()->number]) }}" class="inline-flex items-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                                Ver primer episodio
-                            </a>
-                        @endif
                         
                         @auth
-                            <button
-                                type="button"
-                                class="watchlist-toggle inline-flex items-center px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-md"
-                                data-title-id="{{ $title->id }}"
-                                onclick="toggleWatchlist({{ $title->id }}, this)">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    @if($watchStatus)
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    @endif
-                                </svg>
-                                Mi Lista
-                            </button>
+                            @if(auth()->user()->getActiveProfile())
+                                <form action="{{ route('watchlist.toggle') }}" method="POST" class="inline-block" id="watchlist-form-{{ $title->id }}">
+                                    @csrf
+                                    <input type="hidden" name="title_id" value="{{ $title->id }}">
+                                    <button
+                                        type="submit"
+                                        class="watchlist-toggle inline-flex items-center px-4 py-2.5 font-medium rounded-md transition-colors
+                                            @if($watchStatus)
+                                                bg-red-600 hover:bg-red-700 text-white
+                                            @else
+                                                bg-gray-800 hover:bg-gray-700 text-white
+                                            @endif">
+                                        <svg class="w-5 h-5 mr-2" fill="@if($watchStatus) currentColor @else none @endif" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            @if($watchStatus)
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                            @endif
+                                        </svg>
+                                        @if($watchStatus)
+                                            En mi lista
+                                        @else
+                                            Agregar a mi lista
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('user-profiles.selector') }}" 
+                                   class="inline-flex items-center px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-md">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    Crear Perfil
+                                </a>
+                            @endif
                         @endauth
                         
                         @if($title->trailer_url)
@@ -119,6 +142,144 @@
     
     <!-- Contenido principal -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Sección de resumen y críticas profesionales -->
+        <div class="mb-10 bg-gray-900 rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Acerca de {{ $title->title }}
+                </h2>
+                
+                <div class="prose prose-invert max-w-none text-gray-300">
+                    <!-- Descripción detallada -->
+                    <p class="text-lg">{{ $title->synopsis }}</p>
+                    
+                    <!-- Detalles adicionales en forma de lista -->
+                    <div class="mt-6 grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Detalles</h3>
+                            <ul class="space-y-2">
+                                <li><span class="text-gray-400">Director:</span> {{ $title->directors->implode('name', ', ') ?: 'No disponible' }}</li>
+                                <li><span class="text-gray-400">País:</span> {{ $title->country }}</li>
+                                <li><span class="text-gray-400">Año:</span> {{ $title->release_year }}</li>
+                                @if($title->type === 'movie')
+                                    <li><span class="text-gray-400">Duración:</span> {{ $title->duration }} minutos</li>
+                                @else
+                                    <li><span class="text-gray-400">Temporadas:</span> {{ $title->seasons->count() }}</li>
+                                    <li><span class="text-gray-400">Episodios totales:</span> {{ $title->episodes_count }}</li>
+                                @endif
+                                <li><span class="text-gray-400">Géneros:</span> {{ $title->genres->implode('name', ', ') }}</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Valoración crítica</h3>
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="flex">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= round($title->vote_average / 2))
+                                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        @else
+                                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-lg font-semibold">{{ number_format($title->vote_average, 1) }}/10</span>
+                                <span class="text-sm text-gray-400">({{ $title->vote_count }} votos)</span>
+                            </div>
+                            
+                            <!-- Críticas profesionales -->
+                            @if($title->professionalReviews->count() > 0)
+                                <div class="space-y-3">
+                                    @foreach($title->professionalReviews as $review)
+                                        <div class="border-l-4 @if($review->rating >= 8) border-red-500 @elseif($review->rating >= 6) border-blue-500 @else border-gray-500 @endif pl-4">
+                                            <div class="italic text-gray-300">"{{ $review->content }}"</div>
+                                            <div class="mt-2 flex items-center justify-between">
+                                                <div class="text-sm text-gray-400">
+                                                    - {{ $review->reviewer_name }}, {{ $review->reviewer_source }}
+                                                </div>
+                                                @if($review->rating)
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-sm font-medium">{{ number_format($review->rating, 1) }}/10</span>
+                                                        <div class="flex">
+                                                            @for($i = 1; $i <= 5; $i++)
+                                                                @if($i <= round($review->rating / 2))
+                                                                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                                    </svg>
+                                                                @else
+                                                                    <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                                    </svg>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <!-- Críticas por defecto si no hay críticas reales -->
+                                <div class="space-y-3">
+                                    <div class="border-l-4 border-red-500 pl-4 italic text-gray-300">
+                                        "{{ $title->title }} es una obra maestra del {{ $title->type === 'movie' ? 'cine' : 'drama' }} asiático, que combina perfectamente elementos dramáticos y culturales."
+                                        <div class="text-sm text-gray-400 mt-1">- CinePanorama</div>
+                                    </div>
+                                    
+                                    <div class="border-l-4 border-blue-500 pl-4 italic text-gray-300">
+                                        "Una narrativa cautivadora que muestra lo mejor de la cultura {{ strtolower($title->country) }}. Imprescindible para los amantes del género."
+                                        <div class="text-sm text-gray-400 mt-1">- Asian Drama Reviews</div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Plataformas de streaming -->
+                @if(!empty($title->streaming_platforms))
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-3">Disponible en</h3>
+                    <div class="flex flex-wrap gap-3">
+                        @php
+                            $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                        @endphp
+                        @foreach($platforms as $platform)
+                            <div class="flex items-center px-3 py-2 bg-gray-800 rounded-lg">
+                                @if($platform == 'netflix')
+                                    <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center mr-2 text-white font-bold">N</div>
+                                @elseif($platform == 'disney')
+                                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mr-2 text-white font-bold">D+</div>
+                                @elseif($platform == 'prime')
+                                    <div class="w-8 h-8 bg-blue-400 rounded flex items-center justify-center mr-2 text-white font-bold">P</div>
+                                @elseif($platform == 'hbo')
+                                    <div class="w-8 h-8 bg-purple-800 rounded flex items-center justify-center mr-2 text-white font-bold">HBO</div>
+                                @elseif($platform == 'apple')
+                                    <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center mr-2 text-white font-bold">TV+</div>
+                                @elseif($platform == 'viki')
+                                    <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center mr-2 text-white font-bold">V</div>
+                                @elseif($platform == 'crunchyroll')
+                                    <div class="w-8 h-8 bg-orange-500 rounded flex items-center justify-center mr-2 text-white font-bold">CR</div>
+                                @else
+                                    <div class="w-8 h-8 bg-gray-600 rounded flex items-center justify-center mr-2 text-white font-bold">{{ strtoupper(substr($platform, 0, 1)) }}</div>
+                                @endif
+                                <span class="text-white">{{ ucfirst($platform) }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+        
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Columna principal -->
             <div class="lg:col-span-8">
@@ -134,8 +295,12 @@
                                 <button 
                                     @click="activeTab = {{ $season->number }}" 
                                     :class="activeTab === {{ $season->number }} ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'"
-                                    class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
-                                    Temporada {{ $season->number }}
+                                    class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap"
+                                    title="{{ $season->name ?? 'Temporada ' . $season->number }}">
+                                    <span>T{{ $season->number }}</span>
+                                    @if($season->name)
+                                        <span class="ml-1 text-xs">{{ Str::limit($season->name, 20) }}</span>
+                                    @endif
                                 </button>
                             @endforeach
                         </div>
@@ -143,7 +308,40 @@
                         <!-- Listado de episodios -->
                         @foreach($title->seasons as $season)
                             <div x-show="activeTab === {{ $season->number }}" class="space-y-4">
-                                <h3 class="text-xl font-semibold mb-4">Temporada {{ $season->number }}: {{ $season->title }}</h3>
+                                <!-- Información de la temporada -->
+                                <div class="mb-6 bg-gray-900/50 rounded-lg p-4">
+                                    <div class="flex gap-6">
+                                        @if($season->poster)
+                                            <div class="w-32 flex-shrink-0">
+                                                <img src="{{ asset($season->poster) }}" 
+                                                     alt="Póster Temporada {{ $season->number }}"
+                                                     class="w-full rounded-lg shadow-lg"
+                                                     onerror="this.style.display='none'">
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="flex-1">
+                                            <h3 class="text-xl font-semibold mb-2">
+                                                Temporada {{ $season->number }}{{ $season->name ? ': ' . $season->name : '' }}
+                                            </h3>
+                                            @if($season->overview)
+                                                <p class="text-gray-400 text-sm mb-3">{{ $season->overview }}</p>
+                                            @endif
+                                            <div class="flex flex-wrap gap-4 text-sm">
+                                                @if($season->air_date)
+                                                    <div>
+                                                        <span class="text-gray-600">Fecha de estreno:</span> 
+                                                        <span class="text-gray-400">{{ \Carbon\Carbon::parse($season->air_date)->format('d/m/Y') }}</span>
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <span class="text-gray-600">Episodios:</span> 
+                                                    <span class="text-gray-400">{{ $season->episodes->count() }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 
                                 @foreach($season->episodes->sortBy('number') as $episode)
                                     <div class="bg-gray-900 rounded-lg p-4 hover:bg-gray-800 transition duration-200">
@@ -159,7 +357,7 @@
                                             </div>
                                             <div class="flex-1">
                                                 <div class="flex justify-between">
-                                                    <h4 class="font-semibold mb-1">{{ $episode->number }}. {{ $episode->title }}</h4>
+                                                    <h4 class="font-semibold mb-1">{{ $episode->number }}. {{ $episode->name ?? 'Episodio '.$episode->number }}</h4>
                                                     <span class="text-sm text-gray-400">{{ $episode->duration }} min</span>
                                                 </div>
                                                 <p class="text-sm text-gray-400 line-clamp-2">{{ $episode->synopsis }}</p>
@@ -172,171 +370,9 @@
                     </div>
                 @endif
                 
-                <!-- Sección de comentarios -->
+                <!-- Sistema de comentarios mejorado -->
                 <div class="mb-8">
-                    <h2 class="text-2xl font-bold mb-6">Comentarios</h2>
-                    
-                    @auth
-                        <div class="bg-gray-900 rounded-lg p-4 mb-6">
-                            <form id="comment-form" action="{{ route('comments.store') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="commentable_type" value="App\Models\Title">
-                                <input type="hidden" name="commentable_id" value="{{ $title->id }}">
-                                
-                                <textarea 
-                                    name="content" 
-                                    rows="3" 
-                                    class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
-                                    placeholder="Escribe un comentario..."></textarea>
-                                
-                                <div class="mt-2 flex justify-end">
-                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
-                                        Publicar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    @else
-                        <div class="bg-gray-900 rounded-lg p-4 mb-6 text-center">
-                            <p class="text-gray-400 mb-2">Para comentar, debes iniciar sesión.</p>
-                            <a href="{{ route('login') }}" class="text-red-600 hover:text-red-500 font-medium">Iniciar sesión</a>
-                        </div>
-                    @endauth
-                    
-                    <!-- Lista de comentarios -->
-                    <div class="space-y-4" id="comments-container">
-                        @forelse($title->comments->where('parent_id', null)->sortByDesc('created_at') as $comment)
-                            <div class="bg-gray-900 rounded-lg p-4" id="comment-{{ $comment->id }}">
-                                <div class="flex items-start gap-3">
-                                    <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-800 flex-shrink-0">
-                                        <img src="{{ asset('images/profiles/' . ($comment->profile->avatar ?? 'default.jpg')) }}" alt="{{ $comment->profile->name }}" class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="font-medium">{{ $comment->profile->name }}</span>
-                                            <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
-                                        </div>
-                                        <p class="text-sm text-gray-300">{{ $comment->content }}</p>
-                                        
-                                        <!-- Acciones -->
-                                        <div class="mt-2 flex items-center gap-4 text-sm text-gray-400">
-                                            @auth
-                                                <button onclick="toggleReplyForm({{ $comment->id }})" class="hover:text-white">Responder</button>
-                                                
-                                                @if(auth()->user()->getActiveProfile() && $comment->profile_id === auth()->user()->getActiveProfile()->id)
-                                                    <button onclick="toggleEditForm({{ $comment->id }})" class="hover:text-white">Editar</button>
-                                                    
-                                                    <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="hover:text-white" onclick="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">Eliminar</button>
-                                                    </form>
-                                                @endif
-                                            @endauth
-                                        </div>
-                                        
-                                        <!-- Formulario de respuesta (oculto por defecto) -->
-                                        @auth
-                                            <div id="reply-form-{{ $comment->id }}" class="mt-3 hidden">
-                                                <form action="{{ route('comments.reply', $comment) }}" method="POST">
-                                                    @csrf
-                                                    <textarea 
-                                                        name="content" 
-                                                        rows="2" 
-                                                        class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
-                                                        placeholder="Escribe una respuesta..."></textarea>
-                                                    
-                                                    <div class="mt-2 flex justify-end space-x-2">
-                                                        <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="text-gray-400 hover:text-white text-sm">Cancelar</button>
-                                                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Responder</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        @endauth
-                                        
-                                        <!-- Formulario de edición (oculto por defecto) -->
-                                        @auth
-                                            @if(auth()->user()->getActiveProfile() && $comment->profile_id === auth()->user()->getActiveProfile()->id)
-                                                <div id="edit-form-{{ $comment->id }}" class="mt-3 hidden">
-                                                    <form action="{{ route('comments.update', $comment) }}" method="POST">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <textarea 
-                                                            name="content" 
-                                                            rows="2" 
-                                                            class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-red-500 resize-none">{{ $comment->content }}</textarea>
-                                                        
-                                                        <div class="mt-2 flex justify-end space-x-2">
-                                                            <button type="button" onclick="toggleEditForm({{ $comment->id }})" class="text-gray-400 hover:text-white text-sm">Cancelar</button>
-                                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Guardar</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            @endif
-                                        @endauth
-                                        
-                                        <!-- Respuestas al comentario -->
-                                        @if($comment->replies->count() > 0)
-                                            <div class="mt-4 space-y-3">
-                                                @foreach($comment->replies as $reply)
-                                                    <div class="bg-gray-800 rounded-lg p-3" id="comment-{{ $reply->id }}">
-                                                        <div class="flex items-start gap-2">
-                                                            <div class="h-8 w-8 rounded-full overflow-hidden bg-gray-800 flex-shrink-0">
-                                                                <img src="{{ asset('images/profiles/' . ($reply->profile->avatar ?? 'default.jpg')) }}" alt="{{ $reply->profile->name }}" class="h-full w-full object-cover">
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <div class="flex justify-between items-center mb-1">
-                                                                    <span class="font-medium text-sm">{{ $reply->profile->name }}</span>
-                                                                    <span class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
-                                                                </div>
-                                                                <p class="text-sm text-gray-300">{{ $reply->content }}</p>
-                                                                
-                                                                <!-- Acciones para respuestas -->
-                                                                @auth
-                                                                    @if(auth()->user()->getActiveProfile() && $reply->profile_id === auth()->user()->getActiveProfile()->id)
-                                                                        <div class="mt-1 flex items-center gap-4 text-xs text-gray-400">
-                                                                            <button onclick="toggleEditForm({{ $reply->id }})" class="hover:text-white">Editar</button>
-                                                                            
-                                                                            <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="inline">
-                                                                                @csrf
-                                                                                @method('DELETE')
-                                                                                <button type="submit" class="hover:text-white" onclick="return confirm('¿Estás seguro de que quieres eliminar esta respuesta?')">Eliminar</button>
-                                                                            </form>
-                                                                        </div>
-                                                                        
-                                                                        <!-- Formulario de edición para respuestas -->
-                                                                        <div id="edit-form-{{ $reply->id }}" class="mt-2 hidden">
-                                                                            <form action="{{ route('comments.update', $reply) }}" method="POST">
-                                                                                @csrf
-                                                                                @method('PUT')
-                                                                                <textarea 
-                                                                                    name="content" 
-                                                                                    rows="2" 
-                                                                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-red-500 resize-none">{{ $reply->content }}</textarea>
-                                                                                
-                                                                                <div class="mt-1 flex justify-end space-x-2">
-                                                                                    <button type="button" onclick="toggleEditForm({{ $reply->id }})" class="text-gray-400 hover:text-white text-xs">Cancelar</button>
-                                                                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Guardar</button>
-                                                                                </div>
-                                                                            </form>
-                                                                        </div>
-                                                                    @endif
-                                                                @endauth
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center text-gray-400 py-8">
-                                <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
-                            </div>
-                        @endforelse
-                    </div>
+                    <x-enhanced-comments :title="$title" />
                 </div>
             </div>
             
@@ -377,59 +413,7 @@
                 <!-- Valoraciones -->
                 <div class="mb-8">
                     <h2 class="text-xl font-bold mb-4">Valoraciones</h2>
-                    <div class="bg-gray-900 rounded-lg p-4">
-                        @auth
-                            <div class="mb-4">
-                                <h3 class="text-lg font-semibold mb-2">Tu valoración</h3>
-                                <form id="rating-form" action="{{ route('ratings.store') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="title_id" value="{{ $title->id }}">
-                                    
-                                    <div class="flex items-center mb-3" x-data="{ rating: {{ $userRating ? $userRating->rating : 0 }} }">
-                                        @for($i = 1; $i <= 10; $i++)
-                                            <button 
-                                                type="button"
-                                                @click="rating = {{ $i }}; document.getElementById('rating-value').value = {{ $i }}"
-                                                :class="rating >= {{ $i }} ? 'text-red-500' : 'text-gray-600'"
-                                                class="text-2xl hover:text-red-500 focus:outline-none">
-                                                ★
-                                            </button>
-                                        @endfor
-                                        <input type="hidden" id="rating-value" name="rating" :value="rating">
-                                        <span class="ml-2 text-lg" x-text="rating ? rating + '/10' : ''"></span>
-                                    </div>
-                                    
-                                    <textarea 
-                                        name="review" 
-                                        rows="2" 
-                                        class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white text-sm focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
-                                        placeholder="Escribe una reseña (opcional)">{{ $userRating ? $userRating->review : '' }}</textarea>
-                                    
-                                    <div class="mt-2 flex justify-end">
-                                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
-                                            {{ $userRating ? 'Actualizar' : 'Enviar' }}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        @else
-                            <div class="mb-4 text-center">
-                                <p class="text-gray-400 mb-2">Para valorar, debes iniciar sesión.</p>
-                                <a href="{{ route('login') }}" class="text-red-600 hover:text-red-500 font-medium">Iniciar sesión</a>
-                            </div>
-                        @endauth
-                        
-                        <!-- Valoración promedio -->
-                        <div class="flex items-center justify-between py-3 border-t border-gray-800">
-                            <div>
-                                <span class="text-xl font-bold">{{ number_format($title->ratings->avg('rating') ?? 0, 1) }}</span>
-                                <span class="text-gray-400 text-sm">/10</span>
-                            </div>
-                            <div class="text-gray-400 text-sm">
-                                {{ $title->ratings->count() }} valoraciones
-                            </div>
-                        </div>
-                    </div>
+                    <x-rating-statistics :title-id="$title->id" />
                 </div>
                 
                 <!-- Títulos similares -->
@@ -490,31 +474,92 @@
             editForm.classList.toggle('hidden');
         }
         
-        // Funciones para mi lista
-        function toggleWatchlist(titleId, button) {
-            fetch('{{ route('watchlist.toggle') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    title_id: titleId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Actualizar la UI según el resultado
-                if (data.status === 'added') {
-                    button.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
-                } else {
-                    button.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
+        // Opcional: Añadir comportamiento AJAX al formulario de watchlist
+        document.addEventListener('DOMContentLoaded', function() {
+            const watchlistForm = document.querySelector('[id^="watchlist-form-"]');
+            if (watchlistForm) {
+                watchlistForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const button = this.querySelector('button');
+                    const svg = button.querySelector('svg');
+                    const formData = new FormData(this);
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': formData.get('_token'),
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
+                            title_id: formData.get('title_id')
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Actualizar la UI según el resultado
+                        if (data.status === 'added') {
+                            // Cambiar a estado "En mi lista"
+                            button.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+                            button.classList.add('bg-red-600', 'hover:bg-red-700');
+                            svg.setAttribute('fill', 'currentColor');
+                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                            
+                            // Actualizar el texto del botón
+                            const textNode = Array.from(button.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+                            if (textNode) {
+                                textNode.textContent = 'En mi lista';
+                            } else {
+                                button.insertAdjacentText('beforeend', 'En mi lista');
+                            }
+                        } else {
+                            // Cambiar a estado "Agregar a mi lista"
+                            button.classList.remove('bg-red-600', 'hover:bg-red-700');
+                            button.classList.add('bg-gray-800', 'hover:bg-gray-700');
+                            svg.setAttribute('fill', 'none');
+                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>';
+                            
+                            // Actualizar el texto del botón
+                            const textNode = Array.from(button.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+                            if (textNode) {
+                                textNode.textContent = 'Agregar a mi lista';
+                            } else {
+                                button.insertAdjacentText('beforeend', 'Agregar a mi lista');
+                            }
+                        }
+                        
+                        // Mostrar mensaje de confirmación
+                        if (data.message) {
+                            // Podrías usar una notificación más elegante aquí
+                            console.log(data.message);
+                            
+                            // Opcional: mostrar un toast o notificación temporal
+                            const toast = document.createElement('div');
+                            toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                            toast.textContent = data.message;
+                            document.body.appendChild(toast);
+                            
+                            setTimeout(() => {
+                                toast.remove();
+                            }, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Si hay error, enviar el formulario normalmente
+                        this.submit();
+                    });
+                });
+            }
+        });
         
         // Funciones para el trailer
         function showTrailer(url) {

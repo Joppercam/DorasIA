@@ -5,6 +5,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileStatisticsController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RomanticDramaController;
 use App\Http\Controllers\SocialAuthController;
@@ -30,6 +31,21 @@ Route::get('/', function() {
     // Continue to home page
     return app()->make(CatalogController::class)->home();
 })->name('home');
+
+// CSRF token route for AJAX requests
+Route::get('/csrf-token', function() {
+    return csrf_token();
+});
+
+// Test watchlist page
+Route::get('/test-watchlist', function() {
+    return view('test-watchlist');
+})->middleware(['auth']);
+
+// Search routes
+Route::get('/search/advanced', [App\Http\Controllers\Api\SearchController::class, 'advancedSearch'])->name('search.advanced');
+
+// Catalog routes
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/genre/{slug}', [CatalogController::class, 'genre'])->name('catalog.genre');
 Route::get('/category/{slug}', [CatalogController::class, 'category'])->name('catalog.category');
@@ -42,6 +58,41 @@ Route::prefix('romantic-dramas')->name('romantic-dramas.')->group(function () {
     Route::get('/search', [RomanticDramaController::class, 'search'])->name('search');
     Route::get('/recommendations/{title}', [RomanticDramaController::class, 'recommendations'])->name('recommendations');
 });
+
+// Card comparison view
+Route::get('/card-comparison', function() {
+    return view('card-comparison');
+})->name('card.comparison');
+
+// Test simple romantic dramas
+Route::get('/test-romantic-simple', function() {
+    return view('test-romantic-simple');
+});
+
+// Test rating system
+Route::get('/test-ratings', function() {
+    return view('test-ratings');
+})->name('test.ratings');
+
+// Test comments system
+Route::get('/test-comments', function() {
+    return view('test-comments');
+})->name('test.comments');
+
+// Debug title components
+Route::get('/debug-title-components', function() {
+    return view('debug-title-components');
+})->name('debug.title.components');
+
+// Test profile edit
+Route::get('/test-profile-edit', function() {
+    return view('test-profile-edit');
+})->name('test.profile.edit')->middleware('auth');
+
+// Test relationships
+Route::get('/test-relationships', function() {
+    return view('test-relationships');
+})->name('test.relationships');
 
 // Title routes (public access)
 Route::get('/titles/{slug}', [TitleController::class, 'show'])->name('titles.show');
@@ -60,6 +111,16 @@ Route::prefix('news')->name('news.')->group(function () {
     Route::get('/person/{slug}', [NewsController::class, 'personNews'])->name('person');
     Route::get('/{slug}', [NewsController::class, 'show'])->name('show');
 });
+
+// Comments section
+Route::get('/community/comments', function() {
+    return view('comments.index');
+})->name('comments.index');
+
+// Ratings section
+Route::get('/community/ratings', function() {
+    return view('ratings.index');
+})->name('community.ratings');
 
 // Dashboard route
 Route::get('/dashboard', function () {
@@ -124,13 +185,51 @@ Route::middleware(['auth', 'has.active.profile'])->group(function () {
     Route::put('/ratings/{rating}', [RatingController::class, 'update'])->name('ratings.update');
     Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
     
-    // Watch history routes
-    Route::get('/watch-history', [WatchHistoryController::class, 'index'])->name('watch-history.index');
-    Route::post('/watch-history', [WatchHistoryController::class, 'store'])->name('watch-history.store');
-    Route::put('/watch-history/{watchHistory}', [WatchHistoryController::class, 'update'])->name('watch-history.update');
+    // AJAX Rating routes
+    Route::post('/titles/{title}/rate', [RatingController::class, 'rate'])->name('titles.rate');
+    Route::get('/titles/{title}/rating-statistics', [RatingController::class, 'statistics'])->name('titles.rating-statistics');
+    Route::delete('/titles/{title}/rating', [RatingController::class, 'destroy'])->name('titles.rating.destroy');
     
-    // Player/Watch route
-    Route::get('/watch/{slug}/{season?}/{episode?}/{startTime?}', [TitleController::class, 'watch'])->name('titles.watch');
+    // Profile statistics
+    Route::get('/profile/statistics', [ProfileStatisticsController::class, 'index'])->name('profile.statistics');
+    Route::get('/profiles/{profile}/statistics', [ProfileStatisticsController::class, 'show'])->name('profiles.statistics');
+    
+    // Social Profile routes
+    Route::get('/profiles/{profile}', [App\Http\Controllers\SocialProfileController::class, 'show'])->name('profiles.show');
+    Route::get('/profiles/{profile}/edit', [App\Http\Controllers\SocialProfileController::class, 'edit'])->name('profiles.edit')->middleware(['auth', 'has.active.profile']);
+    Route::put('/profiles/{profile}', [App\Http\Controllers\SocialProfileController::class, 'update'])->name('profiles.update')->middleware('can:update,profile');
+    Route::get('/profiles/{profile}/followers', [App\Http\Controllers\SocialProfileController::class, 'followers'])->name('profiles.followers');
+    Route::get('/profiles/{profile}/following', [App\Http\Controllers\SocialProfileController::class, 'following'])->name('profiles.following');
+    Route::post('/profiles/{profile}/follow', [App\Http\Controllers\SocialProfileController::class, 'follow'])->name('profiles.follow');
+    Route::post('/profiles/{profile}/unfollow', [App\Http\Controllers\SocialProfileController::class, 'unfollow'])->name('profiles.unfollow');
+    
+    // Messages routes
+    Route::get('/messages', [App\Http\Controllers\SocialProfileController::class, 'messages'])->name('profiles.messages');
+    Route::get('/messages/{otherUser}', [App\Http\Controllers\SocialProfileController::class, 'conversation'])->name('profiles.messages.conversation');
+    Route::post('/messages', [App\Http\Controllers\SocialProfileController::class, 'sendMessage'])->name('profiles.messages.create');
+    
+    // Activity feed
+    Route::get('/feed', [App\Http\Controllers\SocialProfileController::class, 'feed'])->name('profiles.feed');
+    
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/settings', [App\Http\Controllers\NotificationController::class, 'settings'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\NotificationController::class, 'updateSettings'])->name('settings.update');
+    });
+    
+    // Watch history routes - DISABLED (Portal is information only)
+    // Route::get('/watch-history', [WatchHistoryController::class, 'index'])->name('watch-history.index');
+    // Route::post('/watch-history', [WatchHistoryController::class, 'store'])->name('watch-history.store');
+    // Route::put('/watch-history/{watchHistory}', [WatchHistoryController::class, 'update'])->name('watch-history.update');
+    
+    // Redirect watch routes to show page (Portal is information only)
+    Route::get('/watch/{slug}/{season?}/{episode?}/{startTime?}', function($slug) {
+        return redirect()->route('titles.show', $slug);
+    })->name('titles.watch');
+    
+    // Test route - DISABLED
+    // Route::get('/test-watch/{slug}', [TitleController::class, 'testWatch'])->name('titles.test-watch');
 });
 
 // Admin routes
@@ -147,7 +246,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Social Login Routes
-Route::get('/auth/{provider}', [SocialAuthController::class, 'redirectToProvider'])->name('social.login');
-Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/{provider}', [SocialAuthController::class, 'redirectToProvider'])->name('social.login');
+    Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
+});
 
 require __DIR__.'/auth.php';
+
+// Test enhanced comments component
+Route::get('/test-enhanced-comments', function() {
+    $title = \App\Models\Title::first();
+    if (!$title) {
+        return 'No titles found in database';
+    }
+    return view('test-enhanced-comments', compact('title'));
+});
+
+// Test null title scenario
+Route::get('/test-title-null', function() {
+    return view('test-title-null');
+});

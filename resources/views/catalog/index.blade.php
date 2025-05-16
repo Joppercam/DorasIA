@@ -12,7 +12,57 @@
                 <p class="mt-2 text-gray-400">Filtrando por categoría: {{ $categories->where('id', request('category'))->first()?->name ?? 'Desconocida' }}</p>
             @elseif(request('genre'))
                 <p class="mt-2 text-gray-400">Filtrando por género: {{ $genres->where('id', request('genre'))->first()?->name ?? 'Desconocido' }}</p>
+            @elseif(request('country'))
+                <p class="mt-2 text-gray-400">Filtrando por país: {{ request('country') }}</p>
             @endif
+        </div>
+    </div>
+    
+    <!-- Filtros rápidos de país -->
+    <div class="bg-gray-950 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center space-x-3 overflow-x-auto pb-2">
+                <span class="text-gray-400 text-sm whitespace-nowrap">Filtrar por país:</span>
+                
+                @php
+                    $countries = [
+                        'Corea del Sur' => '🇰🇷',
+                        'Japón' => '🇯🇵',
+                        'China' => '🇨🇳',
+                        'Tailandia' => '🇹🇭',
+                        'Taiwán' => '🇹🇼',
+                        'Indonesia' => '🇮🇩',
+                        'Filipinas' => '🇵🇭',
+                        'Vietnam' => '🇻🇳'
+                    ];
+                    
+                    $currentParams = request()->query();
+                @endphp
+                
+                <!-- Botón "Todos" -->
+                @php
+                    $allParams = $currentParams;
+                    unset($allParams['country']);
+                @endphp
+                <a href="{{ route('catalog.index', $allParams) }}"
+                   class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm transition whitespace-nowrap
+                          {{ !request('country') ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+                    <span>🌏</span>
+                    <span>Todos</span>
+                </a>
+                
+                @foreach($countries as $country => $flag)
+                    @php
+                        $countryParams = array_merge($currentParams, ['country' => $country]);
+                    @endphp
+                    <a href="{{ route('catalog.index', $countryParams) }}"
+                       class="flex items-center space-x-1 px-3 py-1.5 rounded-full text-sm transition whitespace-nowrap
+                              {{ request('country') == $country ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+                        <span>{{ $flag }}</span>
+                        <span>{{ $country }}</span>
+                    </a>
+                @endforeach
+            </div>
         </div>
     </div>
     
@@ -27,6 +77,10 @@
                     <!-- Preservar la búsqueda actual si existe -->
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    <!-- Preservar el país actual si existe -->
+                    @if(request('country'))
+                        <input type="hidden" name="country" value="{{ request('country') }}">
                     @endif
                     
                     <!-- Tipo -->
@@ -116,6 +170,10 @@
                             <!-- Preservar la búsqueda actual si existe -->
                             @if(request('search'))
                                 <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+                            <!-- Preservar el país actual si existe -->
+                            @if(request('country'))
+                                <input type="hidden" name="country" value="{{ request('country') }}">
                             @endif
                             
                             <!-- Tipo -->

@@ -52,4 +52,20 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
+
+    /**
+     * Get the likes for this comment.
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(CommentLike::class);
+    }
+
+    /**
+     * Check if the comment is liked by a specific profile
+     */
+    public function isLikedBy($profileId): bool
+    {
+        return $this->likes()->where('profile_id', $profileId)->exists();
+    }
 }

@@ -1,0 +1,45 @@
+/* Portrait Frame Styles for Actor Photos */
+
+/* Main banner featured actor */
+.portrait-banner {
+    object-fit: cover;
+    object-position: center 25%;
+    transition: transform 0.3s ease;
+}
+
+/* Circle profile photos */
+.portrait-circle {
+    object-fit: cover;
+    object-position: center 30%;
+    transition: transform 0.3s ease;
+}
+
+/* Specific adjustments for Korean actors */
+.portrait-korean {
+    object-position: center 35%;
+}
+
+/* Hover effects */
+.group:hover .portrait-banner {
+    transform: scale(1.05);
+}
+
+.group:hover .portrait-circle {
+    transform: scale(1.1);
+}
+
+/* Face framing optimization */
+.face-frame {
+    clip-path: circle(50% at center 40%);
+}
+
+/* Responsive portrait adjustments */
+@media (max-width: 768px) {
+    .portrait-banner {
+        object-position: center 30%;
+    }
+    
+    .portrait-circle {
+        object-position: center 35%;
+    }
+}

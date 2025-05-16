@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Comments Frontend</title>
+    <meta name="csrf-token" content="test">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <h1 class="text-2xl mb-4">Test Comments for Title ID: 1</h1>
+    
+    <div x-data="commentsTest()">
+        <div class="mb-4">
+            <button @click="loadComments()" class="bg-blue-500 px-4 py-2 rounded">
+                Load Comments
+            </button>
+            
+            <button @click="loadCommentsDirectly()" class="bg-green-500 px-4 py-2 rounded ml-2">
+                Load Comments (Direct URL)
+            </button>
+        </div>
+        
+        <div class="bg-gray-800 p-4 rounded">
+            <h2 class="font-bold mb-2">Status:</h2>
+            <p x-text="status"></p>
+        </div>
+        
+        <div class="bg-gray-800 p-4 rounded mt-4">
+            <h2 class="font-bold mb-2">Response:</h2>
+            <pre x-text="response" class="whitespace-pre-wrap"></pre>
+        </div>
+        
+        <div class="bg-gray-800 p-4 rounded mt-4">
+            <h2 class="font-bold mb-2">Error:</h2>
+            <pre x-text="error" class="whitespace-pre-wrap"></pre>
+        </div>
+        
+        <div class="bg-gray-800 p-4 rounded mt-4">
+            <h2 class="font-bold mb-2">Comments:</h2>
+            <template x-for="comment in comments" :key="comment.id">
+                <div class="border-b border-gray-700 pb-2 mb-2">
+                    <p><strong x-text="comment.profile.name"></strong></p>
+                    <p x-text="comment.content"></p>
+                    <p class="text-sm text-gray-400" x-text="comment.time_ago"></p>
+                </div>
+            </template>
+        </div>
+    </div>
+    
+    <script>
+    function commentsTest() {
+        return {
+            status: 'Ready',
+            response: '',
+            error: '',
+            comments: [],
+            
+            async loadComments() {
+                this.status = 'Loading comments...';
+                this.error = '';
+                this.response = '';
+                
+                try {
+                    const url = '/api/titles/1/comments?sort=newest&mine=false&page=1';
+                    console.log('Fetching:', url);
+                    
+                    const response = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', response.headers);
+                    
+                    const text = await response.text();
+                    console.log('Response text:', text);
+                    
+                    this.status = `Response status: ${response.status}`;
+                    this.response = text;
+                    
+                    if (response.ok) {
+                        const data = JSON.parse(text);
+                        this.comments = data.data || [];
+                        this.status += ` - Found ${this.comments.length} comments`;
+                    } else {
+                        this.error = `HTTP Error: ${response.status}`;
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    this.error = err.toString();
+                    this.status = 'Error occurred';
+                }
+            },
+            
+            async loadCommentsDirectly() {
+                this.status = 'Loading comments directly...';
+                this.error = '';
+                this.response = '';
+                
+                try {
+                    const url = 'http://localhost:8000/api/titles/1/comments';
+                    console.log('Fetching directly:', url);
+                    
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    
+                    this.status = `Direct response status: ${response.status}`;
+                    this.response = text;
+                    
+                    if (response.ok) {
+                        const data = JSON.parse(text);
+                        this.comments = data.data || [];
+                        this.status += ` - Found ${this.comments.length} comments`;
+                    }
+                } catch (err) {
+                    console.error('Direct error:', err);
+                    this.error = err.toString();
+                    this.status = 'Direct error occurred';
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html>

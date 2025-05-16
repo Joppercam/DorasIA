@@ -13,6 +13,7 @@ class Episode extends Model
     use HasFactory;
 
     protected $fillable = [
+        'title_id',
         'season_id',
         'name',
         'number',
@@ -21,6 +22,7 @@ class Episode extends Model
         'runtime',
         'air_date',
         'video_url',
+        'tmdb_id',
     ];
 
     protected $casts = [
@@ -40,9 +42,17 @@ class Episode extends Model
     /**
      * Get the title through the season.
      */
-    public function title()
+    public function title(): BelongsTo
     {
-        return $this->season->title;
+        return $this->belongsTo(Title::class, 'title_id');
+    }
+    
+    /**
+     * Get title attribute through the relationship
+     */
+    public function getTitleAttribute()
+    {
+        return $this->title()->first();
     }
 
     /**

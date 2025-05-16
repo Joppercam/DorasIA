@@ -12,8 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'has.profile' => \App\Http\Middleware\HasActiveProfile::class,
+            'has.active.profile' => \App\Http\Middleware\HasActiveProfile::class,
+            'admin' => \App\Http\Middleware\IsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withProviders([
+        \App\Providers\AppServiceProvider::class,
+    ])
+    ->create();

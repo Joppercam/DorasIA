@@ -8,6 +8,7 @@ use App\Models\Genre;
 use App\Models\Person;
 use App\Models\Season;
 use App\Models\Title;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -87,20 +88,29 @@ class TitleController extends Controller
      */
     public function show(string $slug)
     {
-        $title = Title::where('slug', $slug)
-            ->with(['genres', 'category', 'directors', 'actors' => function ($query) {
-                $query->take(10);
-            }])
-            ->firstOrFail();
-        
-        // Load seasons and episodes if it's a series
-        if ($title->type === 'series') {
-            $title->load(['seasons' => function ($query) {
-                $query->with(['episodes' => function ($q) {
-                    $q->orderBy('number');
-                }])->orderBy('number');
-            }]);
-        }
+        $title = CacheService::rememberTitle($slug, function() use ($slug) {
+            $title = Title::where('slug', $slug)
+                ->with(['genres', 'category', 'directors', 'actors' => function ($query) {
+                    $query->take(10);
+                }, 'professionalReviews' => function ($query) {
+                    $query->where('is_featured', true)
+                        ->where('language', 'es')
+                        ->orderBy('rating', 'desc')
+                        ->limit(3);
+                }])
+                ->firstOrFail();
+            
+            // Load seasons and episodes if it's a series
+            if ($title->type === 'series') {
+                $title->load(['seasons' => function ($query) {
+                    $query->with(['episodes' => function ($q) {
+                        $q->orderBy('number');
+                    }])->orderBy('number');
+                }]);
+            }
+            
+            return $title;
+        });
         
         // Get user's watch status
         $watchStatus = null;
@@ -141,14 +151,16 @@ class TitleController extends Controller
         
         // Get similar titles
         $genreIds = $title->genres->pluck('id')->toArray();
-        $similarTitles = Title::whereHas('genres', function ($query) use ($genreIds) {
-                $query->whereIn('genres.id', $genreIds);
-            })
-            ->where('id', '!=', $title->id)
-            ->with('genres')
-            ->inRandomOrder()
-            ->take(6)
-            ->get();
+        $similarTitles = CacheService::rememberSearch("similar_{$title->id}", $genreIds, function() use ($genreIds, $title) {
+            return Title::whereHas('genres', function ($query) use ($genreIds) {
+                    $query->whereIn('genres.id', $genreIds);
+                })
+                ->where('id', '!=', $title->id)
+                ->with('genres')
+                ->inRandomOrder()
+                ->take(6)
+                ->get();
+        });
         
         // Preparar metadatos para SEO y compartir en redes sociales
         $metaTitle = $title->title;
@@ -240,6 +252,9 @@ class TitleController extends Controller
             $title->genres()->detach();
         }
         
+        // Clear cache for the updated title
+        CacheService::forgetTitle($title->slug);
+        
         return redirect()->route('titles.show', $title->slug)
             ->with('success', 'Título actualizado correctamente.');
     }
@@ -267,6 +282,15 @@ class TitleController extends Controller
     }
     
     /**
+     * Test route for debugging
+     */
+    public function testWatch($slug)
+    {
+        $title = Title::where('slug', $slug)->firstOrFail();
+        return "Testing: {$title->title} (ID: {$title->id})";
+    }
+    
+    /**
      * Display the player for watching a title.
      */
     public function watch(string $slug, ?string $seasonNumber = null, ?string $episodeNumber = null, ?int $startTime = null)
@@ -276,6 +300,25 @@ class TitleController extends Controller
         if (!auth()->check()) {
             return redirect()->route('login')
                 ->with('error', 'Debes iniciar sesión para ver este contenido.');
+        }
+        
+        // If it's a series without episode info, redirect to first episode
+        if ($title->type === 'series' && !$seasonNumber && !$episodeNumber) {
+            $firstSeason = $title->seasons()->orderBy('number')->first();
+            if ($firstSeason) {
+                $firstEpisode = $firstSeason->episodes()->orderBy('number')->first();
+                if ($firstEpisode) {
+                    return redirect()->route('titles.watch', [
+                        $title->slug,
+                        $firstSeason->number,
+                        $firstEpisode->number
+                    ]);
+                }
+            }
+            
+            // If no episodes found, redirect to title page
+            return redirect()->route('titles.show', $title->slug)
+                ->with('error', 'No hay episodios disponibles para esta serie.');
         }
         
         $profile = auth()->user()->getActiveProfile();
@@ -311,7 +354,8 @@ class TitleController extends Controller
             );
             
             // Find next episode for autoplay
-            $nextEpisode = Episode::where('season_id', $season->id)
+            $nextEpisode = Episode::with(['season'])
+                ->where('season_id', $season->id)
                 ->where('number', '>', $episode->number)
                 ->orderBy('number')
                 ->first();
@@ -324,7 +368,8 @@ class TitleController extends Controller
                     ->first();
                     
                 if ($nextSeason) {
-                    $nextEpisode = Episode::where('season_id', $nextSeason->id)
+                    $nextEpisode = Episode::with(['season'])
+                        ->where('season_id', $nextSeason->id)
                         ->orderBy('number')
                         ->first();
                 }

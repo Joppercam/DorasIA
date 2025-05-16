@@ -22,6 +22,191 @@
         #original-layout {
             display: none;
         }
+        
+        /* Estilos para etiquetas de categorías (superior izquierda) */
+        .category-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: rgba(37, 99, 235, 0.95);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Estilos para etiquetas de valoración (superior derecha) */
+        .rating-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(245, 197, 24, 0.95);
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Estilos para etiquetas de año (inferior izquierda) */
+        .year-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #e5e5e5;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Estilos para etiquetas de plataforma de streaming (inferior derecha) */
+        .platform-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            padding: 3px;
+            border-radius: 4px;
+            z-index: 2;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .platform-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .netflix-icon {
+            background-color: #E50914;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .disney-icon {
+            background-color: #0063e5;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .prime-icon {
+            background-color: #00A8E1;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hbo-icon {
+            background-color: #5822b4;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .apple-icon {
+            background-color: #000;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .viki-icon {
+            background-color: #1EBE66;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .crunchyroll-icon {
+            background-color: #F47521;
+            color: white;
+            font-weight: bold;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Efectos hover para tarjetas */
+        .netflix-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .netflix-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        
+        .netflix-card:hover .category-badge,
+        .netflix-card:hover .rating-badge,
+        .netflix-card:hover .year-badge,
+        .netflix-card:hover .platform-badge {
+            opacity: 1;
+        }
+        
+        /* Estilos para tooltips */
+        .group\/tooltip {
+            position: relative;
+        }
+        
+        .group\/tooltip:hover .tooltip-content {
+            display: block;
+        }
+        
+        /* Estilos para insignia de seguir viendo */
+        .continue-badge {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(229, 9, 20, 0.9);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
     </style>
     @endpush
     
@@ -34,7 +219,7 @@
         <!-- Video o imagen de fondo -->
         <div class="netflix-hero-background">
             <!-- Imagen de fondo (siempre visible) -->
-            <img src="{{ asset($featured->backdrop) }}" 
+            <img src="{{ asset($featured->backdrop_path ?? 'backdrops/placeholder.jpg') }}" 
                  alt="{{ $featured->title }}" 
                  class="netflix-hero-image"
                  onerror="this.onerror=null; this.src='{{ asset('backdrops/placeholder.jpg') }}'">
@@ -63,15 +248,35 @@
                 <h2 class="netflix-hero-subtitle">{{ $featured->original_title }}</h2>
             @endif
             
-            <div class="flex items-center space-x-4 mb-4">
-                <span class="bg-red-600 px-2 py-0.5 text-sm rounded">{{ $featured->type === 'movie' ? 'Película' : 'Serie' }}</span>
-                <span class="text-sm">{{ $featured->release_year }}</span>
-                @if($featured->type === 'movie' && $featured->duration)
-                    <span class="text-sm">{{ $featured->duration }} min</span>
+            <div class="flex items-center flex-wrap space-x-2 mb-4">
+                <!-- Tipo de contenido -->
+                <span class="px-3 py-1 text-sm rounded {{ $featured->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white font-bold shadow-md">
+                    {{ $featured->type === 'movie' ? 'Película' : 'Serie' }}
+                </span>
+                
+                <!-- Categoría -->
+                @if($featured->category)
+                <span class="px-3 py-1 text-sm rounded bg-red-700 text-white font-medium shadow-md">
+                    {{ $featured->category->name }}
+                </span>
                 @endif
+                
+                <!-- Año de lanzamiento -->
+                <span class="px-3 py-1 text-sm rounded bg-gray-800 text-white font-medium shadow-md">
+                    {{ $featured->release_year ?? date('Y', strtotime($featured->release_date ?? now())) }}
+                </span>
+                
+                <!-- Duración -->
+                @if($featured->type === 'movie' && $featured->duration)
+                    <span class="px-3 py-1 text-sm rounded bg-gray-800 text-white font-medium shadow-md">
+                        {{ $featured->duration }} min
+                    </span>
+                @endif
+                
+                <!-- Valoración -->
                 @if(!empty($featured->vote_average))
-                    <span class="flex items-center text-sm">
-                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <span class="px-3 py-1 text-sm rounded bg-yellow-500 text-gray-900 font-bold shadow-md flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                         {{ number_format($featured->vote_average, 1) }}
@@ -85,7 +290,36 @@
                 @endforeach
             </div>
             
-            <p class="netflix-hero-description">{{ $featured->synopsis }}</p>
+            <!-- Plataformas de streaming disponibles -->
+            @if(!empty($featured->streaming_platforms))
+            <div class="flex items-center space-x-2 mb-4">
+                <span class="text-sm font-medium text-gray-400">Disponible en:</span>
+                <div class="flex space-x-2">
+                    @php
+                        $platforms = is_string($featured->streaming_platforms) ? json_decode($featured->streaming_platforms) : $featured->streaming_platforms;
+                    @endphp
+                    @foreach($platforms as $platform)
+                        @if($platform == 'netflix')
+                        <div class="w-8 h-8 bg-red-600 text-white font-bold flex items-center justify-center rounded" title="Netflix">N</div>
+                        @elseif($platform == 'disney')
+                        <div class="w-8 h-8 bg-blue-600 text-white font-bold flex items-center justify-center rounded" title="Disney+">D+</div>
+                        @elseif($platform == 'amazon' || $platform == 'prime')
+                        <div class="w-8 h-8 bg-blue-400 text-white font-bold flex items-center justify-center rounded" title="Amazon Prime">P</div>
+                        @elseif($platform == 'hbo')
+                        <div class="w-8 h-8 bg-purple-700 text-white font-bold flex items-center justify-center rounded" title="HBO Max">HBO</div>
+                        @elseif($platform == 'apple')
+                        <div class="w-8 h-8 bg-black text-white font-bold flex items-center justify-center rounded" title="Apple TV+">TV+</div>
+                        @elseif($platform == 'viki')
+                        <div class="w-8 h-8 bg-green-500 text-white font-bold flex items-center justify-center rounded" title="Viki">V</div>
+                        @elseif($platform == 'crunchyroll')
+                        <div class="w-8 h-8 bg-orange-500 text-white font-bold flex items-center justify-center rounded" title="Crunchyroll">CR</div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            
+            <p class="netflix-hero-description">{{ $featured->description }}</p>
             
             @if($featured->type === 'series' && Auth::check())
                 @php
@@ -236,6 +470,39 @@
         @endif
     </section>
     
+    <!-- Últimas Noticias -->
+    @if(isset($latestNews) && $latestNews->count() > 0)
+    <section class="netflix-row">
+        <h2 class="netflix-row-title">Últimas Noticias</h2>
+        <a href="{{ route('news.index') }}" class="text-red-500 hover:text-red-400 text-sm ml-3 inline-flex items-center">
+            Ver todas
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+        
+        <div class="netflix-slider">
+            <div class="netflix-slider-prev">
+                <svg class="netflix-arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 6L12.59 7.41 17.17 12l-4.58 4.59L14 18l6-6z"></path>
+                </svg>
+            </div>
+            
+            <div class="netflix-slider-content">
+                @foreach($latestNews as $news)
+                    <x-netflix-news-card :news="$news" />
+                @endforeach
+            </div>
+            
+            <div class="netflix-slider-next">
+                <svg class="netflix-arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+    @endif
+    
     <!-- Carruseles de títulos -->
     <div class="pb-12">
         <!-- Títulos mejor valorados -->
@@ -248,10 +515,80 @@
                     @foreach($topRatedTitles as $title)
                     <div class="netflix-card">
                         <div class="relative">
-                            <img src="{{ asset($title->poster) }}" 
+                            <img src="{{ asset($title->poster_path ?? 'posters/placeholder.jpg') }}" 
                                  alt="{{ $title->title }}" 
                                  class="netflix-card-img"
                                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
+                                 
+                            <!-- Etiqueta superior izquierda (Categoría) -->
+                            @if($title->category)
+                            <div class="category-badge">
+                                {{ Str::limit($title->category->name, 7, '') }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta superior derecha (Valoración) -->
+                            @if($title->vote_average)
+                            <div class="rating-badge">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {{ number_format($title->vote_average, 1) }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta inferior izquierda (Año) -->
+                            <div class="year-badge">
+                                {{ $title->release_year }}
+                            </div>
+                            
+                            <!-- Etiqueta inferior derecha (Plataforma) -->
+                            @if(!empty($title->streaming_platforms))
+                            <div class="platform-badge">
+                                @php
+                                    $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                                    $firstPlatform = $platforms[0] ?? 'netflix';
+                                @endphp
+                                
+                                <div class="group/tooltip">
+                                    @if($firstPlatform == 'netflix')
+                                    <div class="platform-icon netflix-icon">N</div>
+                                    @elseif($firstPlatform == 'disney')
+                                    <div class="platform-icon disney-icon">D+</div>
+                                    @elseif($firstPlatform == 'amazon' || $firstPlatform == 'prime')
+                                    <div class="platform-icon prime-icon">P</div>
+                                    @elseif($firstPlatform == 'hbo')
+                                    <div class="platform-icon hbo-icon">HBO</div>
+                                    @elseif($firstPlatform == 'apple')
+                                    <div class="platform-icon apple-icon">TV+</div>
+                                    @elseif($firstPlatform == 'viki')
+                                    <div class="platform-icon viki-icon">V</div>
+                                    @elseif($firstPlatform == 'crunchyroll')
+                                    <div class="platform-icon crunchyroll-icon">CR</div>
+                                    @endif
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="tooltip-content absolute hidden right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                                        @if(count($platforms) > 1)
+                                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                                <span class="text-gray-300">También en:</span>
+                                                <ul class="mt-0.5">
+                                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                                    @endforeach
+                                                    @if(count($platforms) > 4)
+                                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
                             @auth
                                 @php
                                     $titleProgress = App\Models\WatchHistory::where('title_id', $title->id)
@@ -270,14 +607,22 @@
                         <div class="netflix-card-content">
                             <h3 class="netflix-card-title">{{ $title->title }}</h3>
                             <div class="netflix-card-info">
-                                <span>{{ $title->release_year }}</span>
-                                @if($title->vote_average)
-                                <span class="flex items-center text-yellow-400">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {{ number_format($title->vote_average, 1) }}
-                                </span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white font-medium">{{ $title->release_year }}</span>
+                                    <span class="text-xs px-1 py-0.5 rounded {{ $title->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white">
+                                        {{ $title->type === 'movie' ? 'Película' : 'Serie' }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Géneros destacados -->
+                                @if($title->genres && $title->genres->count() > 0)
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($title->genres->take(2) as $genre)
+                                    <span class="text-xs px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded-sm">
+                                        {{ $genre->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
                                 @endif
                             </div>
                             <div class="netflix-card-buttons">
@@ -375,10 +720,80 @@
                     @foreach($category->titles as $title)
                     <div class="netflix-card">
                         <div class="relative">
-                            <img src="{{ asset($title->poster) }}" 
+                            <img src="{{ asset($title->poster_path ?? 'posters/placeholder.jpg') }}" 
                                  alt="{{ $title->title }}" 
                                  class="netflix-card-img"
                                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
+                                 
+                            <!-- Etiqueta superior izquierda (Categoría) -->
+                            @if($title->category)
+                            <div class="category-badge">
+                                {{ Str::limit($title->category->name, 7, '') }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta superior derecha (Valoración) -->
+                            @if($title->vote_average)
+                            <div class="rating-badge">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {{ number_format($title->vote_average, 1) }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta inferior izquierda (Año) -->
+                            <div class="year-badge">
+                                {{ $title->release_year }}
+                            </div>
+                            
+                            <!-- Etiqueta inferior derecha (Plataforma) -->
+                            @if(!empty($title->streaming_platforms))
+                            <div class="platform-badge">
+                                @php
+                                    $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                                    $firstPlatform = $platforms[0] ?? 'netflix';
+                                @endphp
+                                
+                                <div class="group/tooltip">
+                                    @if($firstPlatform == 'netflix')
+                                    <div class="platform-icon netflix-icon">N</div>
+                                    @elseif($firstPlatform == 'disney')
+                                    <div class="platform-icon disney-icon">D+</div>
+                                    @elseif($firstPlatform == 'amazon' || $firstPlatform == 'prime')
+                                    <div class="platform-icon prime-icon">P</div>
+                                    @elseif($firstPlatform == 'hbo')
+                                    <div class="platform-icon hbo-icon">HBO</div>
+                                    @elseif($firstPlatform == 'apple')
+                                    <div class="platform-icon apple-icon">TV+</div>
+                                    @elseif($firstPlatform == 'viki')
+                                    <div class="platform-icon viki-icon">V</div>
+                                    @elseif($firstPlatform == 'crunchyroll')
+                                    <div class="platform-icon crunchyroll-icon">CR</div>
+                                    @endif
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="tooltip-content absolute hidden right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                                        @if(count($platforms) > 1)
+                                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                                <span class="text-gray-300">También en:</span>
+                                                <ul class="mt-0.5">
+                                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                                    @endforeach
+                                                    @if(count($platforms) > 4)
+                                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
                             @auth
                                 @php
                                     $titleProgress = App\Models\WatchHistory::where('title_id', $title->id)
@@ -397,14 +812,22 @@
                         <div class="netflix-card-content">
                             <h3 class="netflix-card-title">{{ $title->title }}</h3>
                             <div class="netflix-card-info">
-                                <span>{{ $title->release_year }}</span>
-                                @if($title->vote_average)
-                                <span class="flex items-center text-yellow-400">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {{ number_format($title->vote_average, 1) }}
-                                </span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white font-medium">{{ $title->release_year }}</span>
+                                    <span class="text-xs px-1 py-0.5 rounded {{ $title->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white">
+                                        {{ $title->type === 'movie' ? 'Película' : 'Serie' }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Géneros destacados -->
+                                @if($title->genres && $title->genres->count() > 0)
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($title->genres->take(2) as $genre)
+                                    <span class="text-xs px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded-sm">
+                                        {{ $genre->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
                                 @endif
                             </div>
                             <div class="netflix-card-buttons">
@@ -502,10 +925,80 @@
                     @foreach($mostWatchedTitles as $title)
                     <div class="netflix-card">
                         <div class="relative">
-                            <img src="{{ asset($title->poster) }}" 
+                            <img src="{{ asset($title->poster_path ?? 'posters/placeholder.jpg') }}" 
                                  alt="{{ $title->title }}" 
                                  class="netflix-card-img"
                                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
+                                 
+                            <!-- Etiqueta superior izquierda (Categoría) -->
+                            @if($title->category)
+                            <div class="category-badge">
+                                {{ Str::limit($title->category->name, 7, '') }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta superior derecha (Valoración) -->
+                            @if($title->vote_average)
+                            <div class="rating-badge">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {{ number_format($title->vote_average, 1) }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta inferior izquierda (Año) -->
+                            <div class="year-badge">
+                                {{ $title->release_year }}
+                            </div>
+                            
+                            <!-- Etiqueta inferior derecha (Plataforma) -->
+                            @if(!empty($title->streaming_platforms))
+                            <div class="platform-badge">
+                                @php
+                                    $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                                    $firstPlatform = $platforms[0] ?? 'netflix';
+                                @endphp
+                                
+                                <div class="group/tooltip">
+                                    @if($firstPlatform == 'netflix')
+                                    <div class="platform-icon netflix-icon">N</div>
+                                    @elseif($firstPlatform == 'disney')
+                                    <div class="platform-icon disney-icon">D+</div>
+                                    @elseif($firstPlatform == 'amazon' || $firstPlatform == 'prime')
+                                    <div class="platform-icon prime-icon">P</div>
+                                    @elseif($firstPlatform == 'hbo')
+                                    <div class="platform-icon hbo-icon">HBO</div>
+                                    @elseif($firstPlatform == 'apple')
+                                    <div class="platform-icon apple-icon">TV+</div>
+                                    @elseif($firstPlatform == 'viki')
+                                    <div class="platform-icon viki-icon">V</div>
+                                    @elseif($firstPlatform == 'crunchyroll')
+                                    <div class="platform-icon crunchyroll-icon">CR</div>
+                                    @endif
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="tooltip-content absolute hidden right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                                        @if(count($platforms) > 1)
+                                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                                <span class="text-gray-300">También en:</span>
+                                                <ul class="mt-0.5">
+                                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                                    @endforeach
+                                                    @if(count($platforms) > 4)
+                                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
                             @auth
                                 @php
                                     $titleProgress = App\Models\WatchHistory::where('title_id', $title->id)
@@ -524,14 +1017,22 @@
                         <div class="netflix-card-content">
                             <h3 class="netflix-card-title">{{ $title->title }}</h3>
                             <div class="netflix-card-info">
-                                <span>{{ $title->release_year }}</span>
-                                @if($title->vote_average)
-                                <span class="flex items-center text-yellow-400">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {{ number_format($title->vote_average, 1) }}
-                                </span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white font-medium">{{ $title->release_year }}</span>
+                                    <span class="text-xs px-1 py-0.5 rounded {{ $title->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white">
+                                        {{ $title->type === 'movie' ? 'Película' : 'Serie' }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Géneros destacados -->
+                                @if($title->genres && $title->genres->count() > 0)
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($title->genres->take(2) as $genre)
+                                    <span class="text-xs px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded-sm">
+                                        {{ $genre->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
                                 @endif
                             </div>
                             <div class="netflix-card-buttons">
@@ -628,10 +1129,80 @@
                     @foreach($mostCommentedTitles as $title)
                     <div class="netflix-card">
                         <div class="relative">
-                            <img src="{{ asset($title->poster) }}" 
+                            <img src="{{ asset($title->poster_path ?? 'posters/placeholder.jpg') }}" 
                                  alt="{{ $title->title }}" 
                                  class="netflix-card-img"
                                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
+                                 
+                            <!-- Etiqueta superior izquierda (Categoría) -->
+                            @if($title->category)
+                            <div class="category-badge">
+                                {{ Str::limit($title->category->name, 7, '') }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta superior derecha (Valoración) -->
+                            @if($title->vote_average)
+                            <div class="rating-badge">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {{ number_format($title->vote_average, 1) }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta inferior izquierda (Año) -->
+                            <div class="year-badge">
+                                {{ $title->release_year }}
+                            </div>
+                            
+                            <!-- Etiqueta inferior derecha (Plataforma) -->
+                            @if(!empty($title->streaming_platforms))
+                            <div class="platform-badge">
+                                @php
+                                    $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                                    $firstPlatform = $platforms[0] ?? 'netflix';
+                                @endphp
+                                
+                                <div class="group/tooltip">
+                                    @if($firstPlatform == 'netflix')
+                                    <div class="platform-icon netflix-icon">N</div>
+                                    @elseif($firstPlatform == 'disney')
+                                    <div class="platform-icon disney-icon">D+</div>
+                                    @elseif($firstPlatform == 'amazon' || $firstPlatform == 'prime')
+                                    <div class="platform-icon prime-icon">P</div>
+                                    @elseif($firstPlatform == 'hbo')
+                                    <div class="platform-icon hbo-icon">HBO</div>
+                                    @elseif($firstPlatform == 'apple')
+                                    <div class="platform-icon apple-icon">TV+</div>
+                                    @elseif($firstPlatform == 'viki')
+                                    <div class="platform-icon viki-icon">V</div>
+                                    @elseif($firstPlatform == 'crunchyroll')
+                                    <div class="platform-icon crunchyroll-icon">CR</div>
+                                    @endif
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="tooltip-content absolute hidden right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                                        @if(count($platforms) > 1)
+                                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                                <span class="text-gray-300">También en:</span>
+                                                <ul class="mt-0.5">
+                                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                                    @endforeach
+                                                    @if(count($platforms) > 4)
+                                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
                             @auth
                                 @php
                                     $titleProgress = App\Models\WatchHistory::where('title_id', $title->id)
@@ -650,14 +1221,22 @@
                         <div class="netflix-card-content">
                             <h3 class="netflix-card-title">{{ $title->title }}</h3>
                             <div class="netflix-card-info">
-                                <span>{{ $title->release_year }}</span>
-                                @if($title->vote_average)
-                                <span class="flex items-center text-yellow-400">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {{ number_format($title->vote_average, 1) }}
-                                </span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white font-medium">{{ $title->release_year }}</span>
+                                    <span class="text-xs px-1 py-0.5 rounded {{ $title->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white">
+                                        {{ $title->type === 'movie' ? 'Película' : 'Serie' }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Géneros destacados -->
+                                @if($title->genres && $title->genres->count() > 0)
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($title->genres->take(2) as $genre)
+                                    <span class="text-xs px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded-sm">
+                                        {{ $genre->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
                                 @endif
                             </div>
                             <div class="netflix-card-buttons">
@@ -754,10 +1333,80 @@
                     @foreach($recentTitles as $title)
                     <div class="netflix-card">
                         <div class="relative">
-                            <img src="{{ asset($title->poster) }}" 
+                            <img src="{{ asset($title->poster_path ?? 'posters/placeholder.jpg') }}" 
                                  alt="{{ $title->title }}" 
                                  class="netflix-card-img"
                                  onerror="this.onerror=null; this.src='{{ asset('posters/placeholder.jpg') }}'">
+                                 
+                            <!-- Etiqueta superior izquierda (Categoría) -->
+                            @if($title->category)
+                            <div class="category-badge">
+                                {{ Str::limit($title->category->name, 7, '') }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta superior derecha (Valoración) -->
+                            @if($title->vote_average)
+                            <div class="rating-badge">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {{ number_format($title->vote_average, 1) }}
+                            </div>
+                            @endif
+                            
+                            <!-- Etiqueta inferior izquierda (Año) -->
+                            <div class="year-badge">
+                                {{ $title->release_year }}
+                            </div>
+                            
+                            <!-- Etiqueta inferior derecha (Plataforma) -->
+                            @if(!empty($title->streaming_platforms))
+                            <div class="platform-badge">
+                                @php
+                                    $platforms = is_string($title->streaming_platforms) ? json_decode($title->streaming_platforms) : $title->streaming_platforms;
+                                    $firstPlatform = $platforms[0] ?? 'netflix';
+                                @endphp
+                                
+                                <div class="group/tooltip">
+                                    @if($firstPlatform == 'netflix')
+                                    <div class="platform-icon netflix-icon">N</div>
+                                    @elseif($firstPlatform == 'disney')
+                                    <div class="platform-icon disney-icon">D+</div>
+                                    @elseif($firstPlatform == 'amazon' || $firstPlatform == 'prime')
+                                    <div class="platform-icon prime-icon">P</div>
+                                    @elseif($firstPlatform == 'hbo')
+                                    <div class="platform-icon hbo-icon">HBO</div>
+                                    @elseif($firstPlatform == 'apple')
+                                    <div class="platform-icon apple-icon">TV+</div>
+                                    @elseif($firstPlatform == 'viki')
+                                    <div class="platform-icon viki-icon">V</div>
+                                    @elseif($firstPlatform == 'crunchyroll')
+                                    <div class="platform-icon crunchyroll-icon">CR</div>
+                                    @endif
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="tooltip-content absolute hidden right-0 bottom-6 bg-black/90 text-white text-[0.65rem] px-2 py-1 rounded shadow-lg z-50 min-w-max whitespace-nowrap">
+                                        <div class="absolute -bottom-2 right-1 w-0 h-0 border-x-[5px] border-x-transparent border-t-[5px] border-t-black/90"></div>
+                                        <span>Disponible en {{ Str::title($firstPlatform) }}</span>
+                                        @if(count($platforms) > 1)
+                                            <div class="mt-1 pt-1 border-t border-gray-700">
+                                                <span class="text-gray-300">También en:</span>
+                                                <ul class="mt-0.5">
+                                                    @foreach(array_slice($platforms, 1, 3) as $platform)
+                                                        <li class="text-purple-300">{{ Str::title($platform) }}</li>
+                                                    @endforeach
+                                                    @if(count($platforms) > 4)
+                                                        <li class="text-gray-400">+{{ count($platforms) - 4 }} más</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
                             @auth
                                 @php
                                     $titleProgress = App\Models\WatchHistory::where('title_id', $title->id)
@@ -776,14 +1425,22 @@
                         <div class="netflix-card-content">
                             <h3 class="netflix-card-title">{{ $title->title }}</h3>
                             <div class="netflix-card-info">
-                                <span>{{ $title->release_year }}</span>
-                                @if($title->vote_average)
-                                <span class="flex items-center text-yellow-400">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {{ number_format($title->vote_average, 1) }}
-                                </span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white font-medium">{{ $title->release_year }}</span>
+                                    <span class="text-xs px-1 py-0.5 rounded {{ $title->type === 'movie' ? 'bg-blue-600' : 'bg-red-600' }} text-white">
+                                        {{ $title->type === 'movie' ? 'Película' : 'Serie' }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Géneros destacados -->
+                                @if($title->genres && $title->genres->count() > 0)
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($title->genres->take(2) as $genre)
+                                    <span class="text-xs px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded-sm">
+                                        {{ $genre->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
                                 @endif
                             </div>
                             <div class="netflix-card-buttons">

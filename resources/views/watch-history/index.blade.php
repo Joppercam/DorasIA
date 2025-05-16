@@ -16,7 +16,7 @@
                     @if($history->title)
                         <!-- Película -->
                         <div class="bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-800 transition duration-200">
-                            <a href="{{ route('titles.watch', $history->title->slug) }}" class="flex flex-col sm:flex-row items-start">
+                            <a href="{{ route('titles.show', $history->title->slug) }}" class="flex flex-col sm:flex-row items-start">
                                 <div class="sm:w-48 w-full aspect-video sm:aspect-auto shrink-0 relative">
                                     @if(!empty($history->title->backdrop))
                                         <img src="{{ asset('storage/' . $history->title->backdrop) }}" alt="{{ $history->title->title }}" 
@@ -85,7 +85,7 @@
                     @elseif($history->episode)
                         <!-- Episodio -->
                         <div class="bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-800 transition duration-200">
-                            <a href="{{ route('titles.watch', [$history->episode->season->title->slug, $history->episode->season->number, $history->episode->number]) }}" class="flex flex-col sm:flex-row items-start">
+                            <a href="{{ route('titles.show', $history->episode->season->title->slug) }}" class="flex flex-col sm:flex-row items-start">
                                 <div class="sm:w-48 w-full aspect-video sm:aspect-auto shrink-0 relative">
                                     @if(!empty($history->episode->thumbnail))
                                         <img src="{{ asset('storage/' . $history->episode->thumbnail) }}" alt="{{ $history->episode->season->title->title }}" 
@@ -120,7 +120,7 @@
                                     <div class="flex justify-between items-start">
                                         <div>
                                             <h3 class="font-semibold text-lg">{{ $history->episode->season->title->title }}</h3>
-                                            <p class="text-gray-400 text-sm">T{{ $history->episode->season->number }}:E{{ $history->episode->number }} - {{ $history->episode->title }}</p>
+                                            <p class="text-gray-400 text-sm">T{{ $history->episode->season->number }}:E{{ $history->episode->number }} - {{ $history->episode->name ?? '' }}</p>
                                         </div>
                                         <div class="flex gap-2">
                                             <a href="{{ route('titles.watch', [$history->episode->season->title->slug, $history->episode->season->number, $history->episode->number]) }}" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 rounded-full p-2 text-white">

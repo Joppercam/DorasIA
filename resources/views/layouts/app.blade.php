@@ -12,7 +12,7 @@
         <!-- Favicons -->
         <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
         <link rel="icon" href="{{ asset('favicon/favicon.svg') }}" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="{{ asset('favicon/favicon-180x180.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('favicon/favicon-192x192.png') }}">
         <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}">
         
         <!-- Metadatos para redes sociales (Open Graph) -->
@@ -39,6 +39,7 @@
         
         <!-- CSS de respaldo -->
         <link href="{{ asset('css/fallback.css') }}" rel="stylesheet" />
+        <link href="{{ asset('css/logo-styles.css') }}" rel="stylesheet" />
 
         <!-- Scripts -->
         <script src="{{ asset('js/head-metadata.js') }}" defer></script>
@@ -140,7 +141,8 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                {{ $slot ?? '' }}
+                @yield('content')
             </main>
             
             <!-- Footer -->

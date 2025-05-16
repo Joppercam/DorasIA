@@ -7,6 +7,7 @@ use App\Models\Title;
 use App\Models\Watchlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class WatchlistController extends Controller
 {
@@ -237,12 +238,31 @@ class WatchlistController extends Controller
      */
     public function toggle(Request $request)
     {
+        // Log debug info
+        Log::info('Watchlist toggle called', [
+            'user_id' => auth()->id(),
+            'has_user' => auth()->check(),
+            'request_data' => $request->all(),
+            'session_id' => session()->getId(),
+            'active_profile_id' => session()->get('active_profile_id'),
+            'method' => $request->method(),
+            'headers' => $request->headers->all()
+        ]);
+        
         $validated = $request->validate([
             'title_id' => 'required|exists:titles,id',
             'category' => 'sometimes|string',
         ]);
         
         $profile = auth()->user()->getActiveProfile();
+        
+        if (!$profile) {
+            Log::error('No active profile found for user', ['user_id' => auth()->id()]);
+            return response()->json([
+                'message' => 'No se encontró un perfil activo.',
+                'status' => 'error',
+            ], 400);
+        }
         
         // Check if the title is already in the watchlist
         $watchlistItem = Watchlist::where('profile_id', $profile->id)
@@ -284,7 +304,7 @@ class WatchlistController extends Controller
                 'profile_id' => $profile->id,
                 'title_id' => $validated['title_id'],
                 'category' => $category,
-                'position' => $maxPosition + 1,
+                'position' => ($maxPosition ?? 0) + 1,
             ]);
             
             if ($request->wantsJson()) {

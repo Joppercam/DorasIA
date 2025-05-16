@@ -78,6 +78,62 @@ class Kernel extends ConsoleKernel
                      ->onOneServer()
                      ->emailOutputOnFailure(env('ADMIN_EMAIL'));
         }
+        
+        // Obtener noticias sobre actores populares diariamente
+        $schedule->command('dorasia:fetch-news --source=newsapi --limit=20 --add-images')
+                 ->dailyAt('06:00')
+                 ->description('Fetch daily news about popular actors')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+        
+        // Generar noticias de actores con IA semanalmente
+        $schedule->command('dorasia:fetch-news --source=ai --limit=5')
+                 ->weekly()->sundays()->at('06:30')
+                 ->description('Generate AI news about actors weekly')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+        
+        // Obtener noticias sobre películas y series semanalmente
+        $schedule->command('dorasia:fetch-movie-news --source=newsapi --limit=15 --add-images')
+                 ->weekly()->saturdays()->at('07:00')
+                 ->description('Fetch weekly news about movies and shows')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+        
+        // Obtener noticias sobre lanzamientos de TMDB semanalmente
+        $schedule->command('dorasia:fetch-movie-news --source=tmdb --limit=10')
+                 ->weekly()->fridays()->at('07:30')
+                 ->description('Fetch weekly updates from TMDB about movies and shows')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Generar noticias asiáticas adicionales diariamente
+        $schedule->command('news:generate-more-asian')
+                 ->dailyAt('05:00')
+                 ->description('Generate additional Asian entertainment news daily')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Validar imágenes de actores en noticias (después de todas las importaciones)
+        $schedule->command('news:validate-actor-images --fix --update-generic')
+                 ->dailyAt('08:00')
+                 ->description('Validate and fix actor images in news articles')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Actualizar imágenes de actores semanalmente
+        $schedule->command('actors:update-images --limit=50')
+                 ->weekly()->mondays()->at('09:00')
+                 ->description('Update actor images from TMDB')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
+                 
+        // Importar críticas profesionales diariamente
+        $schedule->command('reviews:import --limit=20')
+                 ->dailyAt('10:00')
+                 ->description('Import professional reviews for titles')
+                 ->onOneServer()
+                 ->emailOutputOnFailure(env('ADMIN_EMAIL'));
     }
 
     /**

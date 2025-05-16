@@ -38,17 +38,43 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <style>
+            /* Estilo para imágenes de fondo en móviles */
+            @media (max-width: 640px) {
+                .auth-background {
+                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url("{{ asset('backdrops/backdrop-1.jpg') }}");
+                    background-size: cover;
+                    background-position: center;
+                    background-attachment: fixed;
+                }
+            }
+        </style>
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+    <body class="font-sans text-gray-200 antialiased">
+        <div class="min-h-screen flex flex-col justify-center items-center py-8 px-4 bg-gradient-to-b from-black to-gray-900 auth-background">
+            <div class="w-full max-w-md flex flex-col items-center">
+                <a href="/" class="mt-4 mb-6">
+                    <div class="flex items-center logo-dorasia-cinema">
+                        <span class="sr-only">Dorasia</span>
+                        <div class="cinema-emblem">
+                            <span class="cinema-letter">D</span>
+                        </div>
+                        <div class="cinema-text-container">
+                            <span class="cinema-text text-white text-3xl">DORASIA</span>
+                            <span class="cinema-tagline text-red-500">Vive el drama asiático</span>
+                        </div>
+                    </div>
                 </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+            
+                <div class="w-full bg-gray-800 bg-opacity-70 backdrop-blur-sm shadow-xl rounded-lg px-6 sm:px-8 py-6 sm:py-8 overflow-hidden border border-gray-700">
+                    {{ $slot }}
+                </div>
+                
+                <div class="mt-6 text-sm text-gray-400 text-center px-2">
+                    <p>© {{ date('Y') }} Dorasia. Todos los derechos reservados.</p>
+                    <p class="mt-1">La mejor plataforma de K-dramas, C-dramas y J-dramas.</p>
+                </div>
             </div>
         </div>
     </body>

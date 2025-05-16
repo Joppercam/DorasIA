@@ -1,0 +1,77 @@
+# Archivos y carpetas a ignorar durante el deploy
+
+# Dependencias locales
+node_modules/
+vendor/
+
+# Archivos de entorno y configuración local
+.env
+.env.local
+.env.*.local
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Logs
+storage/logs/*
+npm-debug.log
+yarn-error.log
+
+# Cache y archivos temporales
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/debugbar/*
+storage/clockwork/*
+
+# Base de datos local
+database/*.sqlite
+database/*.db
+
+# Archivos de compilación
+public/hot
+public/storage
+public/mix-manifest.json
+
+# Tests
+tests/
+phpunit.xml
+
+# Documentación
+docs/
+*.md
+
+# Scripts locales
+deploy-script.sh
+*.sh
+
+# Archivos de desarrollo
+webpack.mix.js
+package-lock.json
+yarn.lock
+.editorconfig
+.gitattributes
+.gitignore
+.styleci.yml
+
+# Backups
+*.bak
+*.old
+backup/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Otros
+.phpunit.result.cache
+.php_cs.cache
+_ide_helper.php

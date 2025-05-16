@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Session;
@@ -92,5 +93,21 @@ class User extends Authenticatable
         if ($profile->user_id === $this->id) {
             Session::put('active_profile_id', $profile->id);
         }
+    }
+
+    /**
+     * Get all comments from all user's profiles.
+     */
+    public function comments(): HasManyThrough
+    {
+        return $this->hasManyThrough(Comment::class, Profile::class);
+    }
+
+    /**
+     * Get all ratings from all user's profiles.
+     */
+    public function ratings(): HasManyThrough
+    {
+        return $this->hasManyThrough(Rating::class, Profile::class);
     }
 }

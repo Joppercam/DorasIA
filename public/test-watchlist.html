@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="">
+    <title>Test Watchlist</title>
+</head>
+<body>
+    <h1>Test Watchlist Toggle</h1>
+    
+    <button id="toggle-btn" onclick="testToggle()">Toggle Watchlist</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        // Obtener el token CSRF
+        fetch('/csrf-token')
+            .then(response => response.text())
+            .then(token => {
+                document.querySelector('meta[name="csrf-token"]').setAttribute('content', token);
+            });
+        
+        function testToggle() {
+            const button = document.getElementById('toggle-btn');
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = 'Enviando solicitud...';
+            
+            fetch('/watchlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    title_id: 1
+                })
+            })
+            .then(response => {
+                resultDiv.innerHTML += '<br>Status: ' + response.status;
+                if (!response.ok) {
+                    throw new Error('Response not OK: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                resultDiv.innerHTML += '<br>Respuesta: ' + JSON.stringify(data, null, 2);
+                console.log('Éxito:', data);
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<br>Error: ' + error.message;
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

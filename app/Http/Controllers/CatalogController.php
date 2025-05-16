@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Title;
+use App\Models\News;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
@@ -15,24 +17,26 @@ class CatalogController extends Controller
     public function home()
     {
         // Get featured titles for the hero section with valid backdrop images
-        $featuredTitles = Title::where('featured', true)
-            ->whereNotNull('backdrop')
-            ->where('backdrop', '!=', '')
-            ->whereRaw('LENGTH(backdrop) > 5') // Asegurarnos que la ruta tenga una longitud razonable
-            ->where(function($query) {
-                $query->where('vote_average', '>=', 7.0)
-                      ->orWhereNull('vote_average');
-            })
-            ->with(['genres'])
-            ->inRandomOrder()
-            ->take(5)
-            ->get();
+        $featuredTitles = CacheService::rememberTrending('featured', function() {
+            return Title::where('is_featured', true)
+                ->whereNotNull('backdrop_path')
+                ->where('backdrop_path', '!=', '')
+                ->whereRaw('LENGTH(backdrop_path) > 5') // Asegurarnos que la ruta tenga una longitud razonable
+                ->where(function($query) {
+                    $query->where('vote_average', '>=', 7.0)
+                          ->orWhereNull('vote_average');
+                })
+                ->with(['genres'])
+                ->inRandomOrder()
+                ->take(5)
+                ->get();
+        }, CacheService::DURATION_MEDIUM);
             
         // Si no hay títulos destacados con imágenes, buscar cualquier título con buena valoración e imagen
         if ($featuredTitles->count() == 0) {
-            $featuredTitles = Title::whereNotNull('backdrop')
-                ->where('backdrop', '!=', '')
-                ->whereRaw('LENGTH(backdrop) > 5')
+            $featuredTitles = Title::whereNotNull('backdrop_path')
+                ->where('backdrop_path', '!=', '')
+                ->whereRaw('LENGTH(backdrop_path) > 5')
                 ->where('vote_average', '>=', 7.0)
                 ->with(['genres'])
                 ->inRandomOrder()
@@ -42,52 +46,58 @@ class CatalogController extends Controller
 
         // Get titles by categories for carousels, ensuring they have poster images
         $categories = Category::with(['titles' => function ($query) {
-            $query->whereNotNull('poster')
-                  ->where('poster', '!=', '')
-                  ->whereRaw('LENGTH(poster) > 5')
+            $query->whereNotNull('poster_path')
+                  ->where('poster_path', '!=', '')
+                  ->whereRaw('LENGTH(poster_path) > 5')
                   ->with('genres')
                   ->orderBy('created_at', 'desc')
                   ->take(10);
         }])
-        ->orderBy('display_order')
+        ->orderBy('id')  // Cambio a id ya que display_order podría no existir
         ->get();
         
         // Obtener los títulos más valorados (con imágenes válidas)
-        $topRatedTitles = Title::whereNotNull('vote_average')
-            ->whereNotNull('poster')
-            ->where('poster', '!=', '')
-            ->whereRaw('LENGTH(poster) > 5')
-            ->with('genres')
-            ->orderByDesc('vote_average')
-            ->take(10)
-            ->get();
+        $topRatedTitles = CacheService::rememberTrending('top_rated', function() {
+            return Title::whereNotNull('vote_average')
+                ->whereNotNull('poster_path')
+                ->where('poster_path', '!=', '')
+                ->whereRaw('LENGTH(poster_path) > 5')
+                ->with('genres')
+                ->orderByDesc('vote_average')
+                ->take(10)
+                ->get();
+        }, CacheService::DURATION_MEDIUM);
         
         // Obtener los títulos más vistos (basado en entradas de historial)
-        $mostWatchedTitles = Title::whereNotNull('poster')
-            ->where('poster', '!=', '')
-            ->whereRaw('LENGTH(poster) > 5')
-            ->withCount('watchHistories')
-            ->with('genres')
-            ->orderByDesc('watch_histories_count')
-            ->take(10)
-            ->get();
+        $mostWatchedTitles = CacheService::rememberTrending('most_watched', function() {
+            return Title::whereNotNull('poster_path')
+                ->where('poster_path', '!=', '')
+                ->whereRaw('LENGTH(poster_path) > 5')
+                ->withCount('watchHistories')
+                ->with('genres')
+                ->orderByDesc('watch_histories_count')
+                ->take(10)
+                ->get();
+        }, CacheService::DURATION_SHORT);
             
         // Obtener los títulos más comentados (los que generan más discusión)
-        $mostCommentedTitles = Title::whereNotNull('poster')
-            ->where('poster', '!=', '')
-            ->whereRaw('LENGTH(poster) > 5')
-            ->withCount('comments')
-            ->with('genres')
-            ->orderByDesc('comments_count')
-            ->take(10)
-            ->get();
+        $mostCommentedTitles = CacheService::rememberTrending('most_commented', function() {
+            return Title::whereNotNull('poster_path')
+                ->where('poster_path', '!=', '')
+                ->whereRaw('LENGTH(poster_path) > 5')
+                ->withCount('comments')
+                ->with('genres')
+                ->orderByDesc('comments_count')
+                ->take(10)
+                ->get();
+        }, CacheService::DURATION_SHORT);
             
         // Obtener las valoraciones más recientes para mostrar en el sidebar
         $recentRatings = \App\Models\Rating::with(['title', 'profile'])
             ->whereHas('title', function($query) {
-                $query->whereNotNull('poster')
-                      ->where('poster', '!=', '')
-                      ->whereRaw('LENGTH(poster) > 5');
+                $query->whereNotNull('poster_path')
+                      ->where('poster_path', '!=', '')
+                      ->whereRaw('LENGTH(poster_path) > 5');
             })
             ->whereNotNull('review')
             ->where('review', '!=', '')
@@ -97,9 +107,9 @@ class CatalogController extends Controller
             
         // Si no hay suficientes títulos con historial o comentarios, obtener los añadidos más recientemente
         if ($mostWatchedTitles->count() < 5 || $mostCommentedTitles->count() < 5) {
-            $recentTitles = Title::whereNotNull('poster')
-                ->where('poster', '!=', '')
-                ->whereRaw('LENGTH(poster) > 5')
+            $recentTitles = Title::whereNotNull('poster_path')
+                ->where('poster_path', '!=', '')
+                ->whereRaw('LENGTH(poster_path) > 5')
                 ->with('genres')
                 ->orderByDesc('created_at')
                 ->take(10)
@@ -110,13 +120,25 @@ class CatalogController extends Controller
         
         // Get categories with counts for display in the featured categories section
         $featuredCategories = Category::withCount('titles')
-            ->orderBy('display_order')
+            ->orderBy('id')
             ->get();
         
         // Get popular genres for the genre showcase section
         $popularGenres = Genre::withCount('titles')
             ->orderByDesc('titles_count')
             ->take(12)
+            ->get();
+            
+        // Get latest news for the news section
+        $latestNews = News::with(['people' => function($query) {
+                $query->limit(3);
+            }])
+            ->where(function($query) {
+                $query->where('featured', true)
+                      ->orWhere('published_at', '>=', now()->subDays(7));
+            })
+            ->orderBy('published_at', 'desc')
+            ->take(6)
             ->get();
 
         return view('home', [
@@ -129,6 +151,7 @@ class CatalogController extends Controller
             'recentRatings' => $recentRatings,
             'featuredCategories' => $featuredCategories,
             'popularGenres' => $popularGenres,
+            'latestNews' => $latestNews,
         ]);
     }
 
@@ -160,6 +183,10 @@ class CatalogController extends Controller
 
         if ($request->has('type')) {
             $query->where('type', $request->type);
+        }
+
+        if ($request->has('country')) {
+            $query->where('origin_country', $request->country);
         }
 
         // Apply sorting

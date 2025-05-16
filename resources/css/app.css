@@ -1,6 +1,112 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Portrait Frame Styles for Actor Photos */
+
+/* Main banner featured actor */
+.portrait-banner {
+    object-fit: cover;
+    object-position: center 25%;
+    transition: transform 0.3s ease;
+}
+
+/* Circle profile photos */
+.portrait-circle {
+    object-fit: cover;
+    object-position: center 30%;
+    transition: transform 0.3s ease;
+}
+
+/* Hover effects */
+.group:hover .portrait-banner {
+    transform: scale(1.05);
+}
+
+.group:hover .portrait-circle {
+    transform: scale(1.1);
+}
+
+/* Custom styles for news cards */
+@layer components {
+    .news-card-container {
+        @apply bg-gray-900/90 backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 h-[520px] hover:scale-[1.05] hover:z-20 border border-gray-800/50;
+    }
+    
+    .news-card-container:hover {
+        @apply shadow-2xl shadow-black/60 border-gray-700;
+    }
+    
+    /* Ajustar el slider para mejor visualización */
+    .netflix-slider .news-card-container {
+        @apply w-[calc(20%-16px)] min-w-[320px] max-w-[380px];
+    }
+    
+    @media (max-width: 1600px) {
+        .netflix-slider .news-card-container {
+            @apply w-[calc(25%-16px)] min-w-[300px];
+        }
+    }
+    
+    @media (max-width: 1200px) {
+        .netflix-slider .news-card-container {
+            @apply w-[calc(33.333%-16px)] min-w-[280px];
+        }
+    }
+    
+    @media (max-width: 900px) {
+        .netflix-slider .news-card-container {
+            @apply w-[calc(50%-16px)] min-w-[260px];
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .netflix-slider .news-card-container {
+            @apply w-full min-w-[240px];
+        }
+    }
+    
+    /* Custom border width */
+    .border-3 {
+        border-width: 3px;
+    }
+    
+    /* Profile image positioning for better face visibility */
+    .profile-face-top {
+        object-position: center 35%;
+    }
+    
+    .profile-face-center {
+        object-position: center center;
+    }
+    
+    /* News card profile images */
+    .news-card-profile {
+        @apply w-16 h-16 rounded-full object-cover border-3 border-gray-900 shadow-lg;
+        object-position: center 30%;
+    }
+    
+    .news-card-profile-featured {
+        @apply w-full h-full object-cover opacity-60;
+        object-position: center 25%;
+    }
+    
+    /* Remove underline from news content */
+    .news-card-container p,
+    .news-card-container h3 {
+        text-decoration: none !important;
+    }
+    
+    .news-card-container a {
+        text-decoration: none !important;
+    }
+    
+    /* Actor image overlay styles */
+    .news-card-container .actor-overlay-small {
+        @apply w-12 h-12 rounded-full object-cover border-2 border-gray-900 shadow-lg;
+    }
+}
 
 /* Netflix-style Profile Selector Animations */
 @layer components {
@@ -108,5 +214,3 @@
     }
 }
 
-@import 'page-transitions.css';
-@import 'catalog-enhanced.css';

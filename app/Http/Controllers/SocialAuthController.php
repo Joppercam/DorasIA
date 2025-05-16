@@ -19,21 +19,39 @@ class SocialAuthController extends Controller
      */
     public function redirectToProvider($provider)
     {
-        return Socialite::driver($provider)->redirect();
+        try {
+            return Socialite::driver($provider)->redirect();
+        } catch (Exception $e) {
+            return redirect()->route('login')
+                ->with('error', 'Error al conectar con ' . ucfirst($provider) . '. Por favor, intenta de nuevo.');
+        }
     }
 
     /**
      * Obtain the user information from the provider.
      *
+     * @param Request $request
      * @param string $provider
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback(Request $request, $provider)
     {
+        // Check if there's an error from the provider
+        if ($request->has('error')) {
+            return redirect()->route('login')
+                ->with('error', 'Autenticación cancelada o denegada.');
+        }
+        
         try {
             $socialUser = Socialite::driver($provider)->user();
         } catch (Exception $e) {
-            return redirect()->route('login')->with('error', 'Error al autenticar con ' . ucfirst($provider));
+            \Log::error('Social auth callback error', [
+                'provider' => $provider,
+                'error' => $e->getMessage()
+            ]);
+            
+            return redirect()->route('login')
+                ->with('error', 'Error al autenticar con ' . ucfirst($provider) . '. Por favor, intenta de nuevo.');
         }
 
         // Check if the user already exists in the database
@@ -71,6 +89,9 @@ class SocialAuthController extends Controller
 
         // Login the user
         Auth::login($user, true);
+        
+        // Regenerate session to prevent CSRF issues
+        $request->session()->regenerate();
 
         // Check if the user has any profiles, redirect to create one if not
         if ($user->profiles()->count() === 0) {
@@ -87,6 +108,6 @@ class SocialAuthController extends Controller
             }
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->intended(route('dashboard'));
     }
 }
