@@ -20,11 +20,107 @@
                     </a>
                 </div>
 
+                <!-- Barra de búsqueda global -->
+                <div class="flex-1 max-w-xl mx-4 hidden sm:block">
+                    <div x-data="searchBar()" class="relative">
+                        <input type="text" 
+                               x-model="query"
+                               @input.debounce.300ms="search"
+                               @focus="showResults = true"
+                               @click.away="showResults = false"
+                               placeholder="Buscar títulos, actores, géneros..."
+                               class="w-full bg-gray-800 text-white rounded-full px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        
+                        <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        
+                        <!-- Resultados -->
+                        <div x-show="showResults && (results.length > 0 || query.length > 0)" 
+                             x-transition
+                             class="absolute top-full mt-2 w-full bg-gray-800 rounded-lg shadow-lg overflow-hidden z-50">
+                            
+                            <!-- Loading state -->
+                            <div x-show="loading" class="p-4 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>Buscando...
+                            </div>
+                            
+                            <!-- Resultados -->
+                            <div x-show="!loading && results.length > 0">
+                                <template x-for="result in results" :key="result.id">
+                                    <a :href="`/titles/${result.slug}`" 
+                                       class="flex items-center p-3 hover:bg-gray-700 transition">
+                                        <img :src="result.poster_url" 
+                                             :alt="result.title"
+                                             class="w-10 h-14 object-cover rounded mr-3"
+                                             onerror="this.src='/posters/placeholder.jpg'">
+                                        <div class="flex-1">
+                                            <div class="font-medium" x-text="result.title"></div>
+                                            <div class="text-sm text-gray-400">
+                                                <span x-text="result.release_year"></span>
+                                                <span class="mx-1">•</span>
+                                                <span x-text="result.type === 'movie' ? 'Película' : 'Serie'"></span>
+                                            </div>
+                                        </div>
+                                        <div class="text-sm text-gray-400">
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <span x-text="(result.vote_average / 2).toFixed(1)"></span>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                            
+                            <!-- Sin resultados -->
+                            <div x-show="!loading && results.length === 0 && query.length > 0" 
+                                 class="p-4 text-center text-gray-400">
+                                No se encontraron resultados para "<span x-text="query"></span>"
+                            </div>
+                            
+                            <!-- Enlace a búsqueda avanzada -->
+                            <div class="p-3 border-t border-gray-700">
+                                <a href="{{ route('search.advanced') }}" 
+                                   class="flex items-center justify-center text-sm text-red-500 hover:text-red-400 transition">
+                                    <i class="fas fa-sliders-h mr-2"></i>
+                                    Búsqueda avanzada
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                function searchBar() {
+                    return {
+                        query: '',
+                        results: [],
+                        showResults: false,
+                        loading: false,
+                        
+                        async search() {
+                            if (this.query.length < 2) {
+                                this.results = [];
+                                return;
+                            }
+                            
+                            this.loading = true;
+                            
+                            try {
+                                const response = await fetch(`/api/search?q=${encodeURIComponent(this.query)}`);
+                                const data = await response.json();
+                                this.results = data.data || [];
+                            } catch (error) {
+                                console.error('Error searching:', error);
+                                this.results = [];
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                    }
+                }
+                </script>
+
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:ms-10 sm:flex items-center">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('Inicio') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('catalog.index')" :active="request()->routeIs('catalog.index')">
                         {{ __('Catálogo') }}
                     </x-nav-link>
@@ -41,47 +137,33 @@
                         {{ __('Noticias') }}
                     </x-nav-link>
                     
-                    <!-- Dropdown para categorías -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center text-sm font-medium text-gray-300 hover:text-white focus:outline-none transition duration-150 ease-in-out">
-                            <span>Categorías</span>
-                            <svg class="h-4 w-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" 
-                             @click.away="open = false"
-                             class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-black border border-gray-700">
-                            <div class="py-1">
-                                <a href="{{ route('catalog.category', 'k-drama') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">K-Drama</a>
-                                <a href="{{ route('catalog.category', 'j-drama') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">J-Drama</a>
-                                <a href="{{ route('catalog.category', 'c-drama') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">C-Drama</a>
-                                <a href="{{ route('catalog.category', 'peliculas') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">Películas</a>
-                            </div>
-                        </div>
-                    </div>
+                    <x-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.*')">
+                        {{ __('Comunidad') }}
+                    </x-nav-link>
+                    
                     
                     <!-- Enlaces para usuarios autenticados -->
                     @auth
                         <x-nav-link :href="route('watchlist.index')" :active="request()->routeIs('watchlist.index')">
                             {{ __('Mi Lista') }}
                         </x-nav-link>
+                        {{-- Portal Informativo - No hay reproducción
                         <x-nav-link :href="route('watch-history.index')" :active="request()->routeIs('watch-history.index')">
                             {{ __('Continuar Viendo') }}
                         </x-nav-link>
+                        --}}
                     @endauth
                 </div>
             </div>
 
             <div class="flex items-center space-x-4">
-                <!-- Search -->
-                <div class="relative">
-                    <form action="{{ route('catalog.index') }}" method="GET">
-                        <input type="text" name="search" placeholder="Buscar..." 
-                               class="bg-gray-900 border border-gray-700 text-white text-sm rounded-full px-4 py-1 focus:outline-none focus:ring-1 focus:ring-red-500">
-                    </form>
-                </div>
+                <!-- Keyboard shortcuts help -->
+                <button onclick="window.KeyboardShortcuts?.prototype?.showHelp?.call(new KeyboardShortcuts())" 
+                        class="hidden lg:inline-flex items-center text-gray-400 hover:text-white text-sm transition-colors px-3 py-1.5 rounded-md hover:bg-gray-800" 
+                        title="Ver atajos de teclado (presiona ?)">
+                    <kbd class="px-1.5 py-0.5 bg-gray-800 rounded text-xs mr-1.5 font-mono">?</kbd>
+                    <span>Atajos</span>
+                </button>
                 
                 @guest
                     <div class="flex items-center space-x-2">
@@ -94,9 +176,9 @@
                         <button @click="profilesOpen = !profilesOpen" class="flex items-center text-sm font-medium text-white focus:outline-none">
                             <div class="h-8 w-8 rounded overflow-hidden mr-2">
                                 @if(Auth::user()->getActiveProfile())
-                                    <img src="{{ asset('images/profiles/' . (Auth::user()->getActiveProfile()->avatar ?? 'default.jpg')) }}" alt="Profile" class="h-full w-full object-cover">
+                                    <img src="{{ asset('images/profiles/' . (Auth::user()->getActiveProfile()->avatar_url ?? 'default.jpg')) }}" alt="Perfil" class="h-full w-full object-cover" onerror="this.onerror=null; this.src='{{ asset('images/profiles/default.jpg') }}'">
                                 @else
-                                    <img src="{{ asset('images/profiles/default.jpg') }}" alt="Profile" class="h-full w-full object-cover">
+                                    <img src="{{ asset('images/profiles/default.jpg') }}" alt="Perfil" class="h-full w-full object-cover" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiM0QjU1NjMiLz48cGF0aCBkPSJNNTAgNDVDNTYuNjI3IDQ1IDYyIDM5LjYyNyA2MiAzM0M2MiAyNi4zNzMgNTYuNjI3IDIxIDUwIDIxQzQzLjM3MyAyMSAzOCAyNi4zNzMgMzggMzNDMzggMzkuNjI3IDQzLjM3MyA0NSA1MCA0NVoiIGZpbGw9IiM5Q0E0QjAiLz48cGF0aCBkPSJNMzAgNzkuNUMzMCA2NS45NjkgNDAuOTY5IDU1IDU0LjUgNTVINDUuNUM1OS4wMzEgNTUgNzAgNjUuOTY5IDcwIDc5LjVWODBIMzBWNzkuNVoiIGZpbGw9IiM5Q0E0QjAiLz48L3N2Zz4='">
                                 @endif
                             </div>
                             <div class="ms-1">
@@ -119,7 +201,7 @@
                                             @csrf
                                             <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white flex items-center">
                                                 <div class="h-6 w-6 rounded overflow-hidden mr-2">
-                                                    <img src="{{ asset('images/profiles/' . ($profile->avatar ?? 'default.jpg')) }}" alt="{{ $profile->name }}" class="h-full w-full object-cover">
+                                                    <img src="{{ $profile->avatar_url ?? asset('images/profiles/default.jpg') }}" alt="{{ $profile->name }}" class="h-full w-full object-cover" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiM0QjU1NjMiLz48cGF0aCBkPSJNNTAgNDVDNTYuNjI3IDQ1IDYyIDM5LjYyNyA2MiAzM0M2MiAyNi4zNzMgNTYuNjI3IDIxIDUwIDIxQzQzLjM3MyAyMSAzOCAyNi4zNzMgMzggMzNDMzggMzkuNjI3IDQzLjM3MyA0NSA1MCA0NVoiIGZpbGw9IiM5Q0E0QjAiLz48cGF0aCBkPSJNMzAgNzkuNUMzMCA2NS45NjkgNDAuOTY5IDU1IDU0LjUgNTVINDUuNUM1OS4wMzEgNTUgNzAgNjUuOTY5IDcwIDc5LjVWODBIMzBWNzkuNVoiIGZpbGw9IiM5Q0E0QjAiLz48L3N2Zz4='">
                                                 </div>
                                                 {{ $profile->name }}
                                                 
@@ -139,8 +221,16 @@
                                 <a href="{{ route('user-profiles.index') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">
                                     {{ __('Gestionar Perfiles') }}
                                 </a>
+                                <a href="{{ route('profile.statistics') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">
+                                    {{ __('Mis Estadísticas') }}
+                                </a>
+                                @if(Auth::user()->getActiveProfile())
+                                    <a href="{{ route('profiles.edit', Auth::user()->getActiveProfile()) }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">
+                                        {{ __('Editar Perfil') }}
+                                    </a>
+                                @endif
                                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-900 hover:text-white">
-                                    {{ __('Configuración') }}
+                                    {{ __('Configuración de Cuenta') }}
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -169,9 +259,6 @@
     <!-- Mobile Navigation Menu -->
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                {{ __('Inicio') }}
-            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('catalog.index')" :active="request()->routeIs('catalog.index')">
                 {{ __('Catálogo') }}
             </x-responsive-nav-link>
@@ -188,24 +275,20 @@
                 {{ __('Noticias') }}
             </x-responsive-nav-link>
             
-            <!-- Mobile category links -->
-            <div class="px-4 py-2 border-t border-gray-800">
-                <div class="text-xs text-gray-500 mb-2">Categorías</div>
-                <div class="space-y-1">
-                    <a href="{{ route('catalog.category', 'k-drama') }}" class="block px-2 py-1 text-sm text-gray-300 hover:text-white">K-Drama</a>
-                    <a href="{{ route('catalog.category', 'j-drama') }}" class="block px-2 py-1 text-sm text-gray-300 hover:text-white">J-Drama</a>
-                    <a href="{{ route('catalog.category', 'c-drama') }}" class="block px-2 py-1 text-sm text-gray-300 hover:text-white">C-Drama</a>
-                    <a href="{{ route('catalog.category', 'peliculas') }}" class="block px-2 py-1 text-sm text-gray-300 hover:text-white">Películas</a>
-                </div>
-            </div>
+            <x-responsive-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.*')">
+                {{ __('Comunidad') }}
+            </x-responsive-nav-link>
+            
             
             @auth
                 <x-responsive-nav-link :href="route('watchlist.index')" :active="request()->routeIs('watchlist.index')">
                     {{ __('Mi Lista') }}
                 </x-responsive-nav-link>
+                {{-- Portal Informativo - No hay reproducción
                 <x-responsive-nav-link :href="route('watch-history.index')" :active="request()->routeIs('watch-history.index')">
                     {{ __('Continuar Viendo') }}
                 </x-responsive-nav-link>
+                --}}
             @endauth
         </div>
 
@@ -220,7 +303,7 @@
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 flex items-center text-sm text-gray-300 hover:bg-gray-900 hover:text-white">
                                 <div class="h-6 w-6 rounded overflow-hidden mr-2">
-                                    <img src="{{ asset('images/profiles/' . ($profile->avatar ?? 'default.jpg')) }}" alt="{{ $profile->name }}" class="h-full w-full object-cover">
+                                    <img src="{{ $profile->avatar_url ?? asset('images/profiles/default.jpg') }}" alt="{{ $profile->name }}" class="h-full w-full object-cover" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiM0QjU1NjMiLz48cGF0aCBkPSJNNTAgNDVDNTYuNjI3IDQ1IDYyIDM5LjYyNyA2MiAzM0M2MiAyNi4zNzMgNTYuNjI3IDIxIDUwIDIxQzQzLjM3MyAyMSAzOCAyNi4zNzMgMzggMzNDMzggMzkuNjI3IDQzLjM3MyA0NSA1MCA0NVoiIGZpbGw9IiM5Q0E0QjAiLz48cGF0aCBkPSJNMzAgNzkuNUMzMCA2NS45NjkgNDAuOTY5IDU1IDU0LjUgNTVINDUuNUM1OS4wMzEgNTUgNzAgNjUuOTY5IDcwIDc5LjVWODBIMzBWNzkuNVoiIGZpbGw9IiM5Q0E0QjAiLz48L3N2Zz4='"">
                                 </div>
                                 {{ $profile->name }}
                                 
@@ -247,8 +330,14 @@
                         {{ __('Gestionar Perfiles') }}
                     </x-responsive-nav-link>
                     
+                    @if(Auth::user()->getActiveProfile())
+                        <x-responsive-nav-link :href="route('profiles.edit', Auth::user()->getActiveProfile())">
+                            {{ __('Editar Perfil') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    
                     <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Configuración') }}
+                        {{ __('Configuración de Cuenta') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->
