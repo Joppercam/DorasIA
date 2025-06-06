@@ -566,17 +566,163 @@
             color: white;
         }
 
+        /* Footer Styles */
+        .footer {
+            background-color: #0a0a0a;
+            padding: 3rem 0 1rem;
+            margin-top: 5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 4%;
+        }
+        
+        .footer-section h3,
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .footer-logo .ai-highlight {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 50%, #9d4edd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #fff;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 2rem 4%;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Action Button on Cards */
+        .card-action-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(229, 9, 20, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+        
+        .card:hover .card-action-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .card-action-btn:hover {
+            background: #e50914;
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .card-action-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        /* Remove card click */
+        .card {
+            cursor: default;
+        }
+        
+        /* Streaming Platforms Update */
+        .streaming-platform {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.65rem;
+        }
+        
+        .streaming-platform.netflix {
+            background: linear-gradient(135deg, #e50914 0%, #8b0000 100%);
+        }
+        
+        .streaming-platform.disney {
+            background: linear-gradient(135deg, #113ccf 0%, #0e2a8a 100%);
+        }
+        
+        .streaming-platform.prime {
+            background: linear-gradient(135deg, #00a8e1 0%, #006ca5 100%);
+        }
+        
+        .streaming-platform.viki {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
             
             .hero-description {
-                font-size: 1rem;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+                font-size: 0.9rem;
+                padding: 0.8rem 1.5rem;
             }
             
             .navbar {
-                padding: 1rem 2%;
+                padding: 0.8rem 3%;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
             }
             
             .navbar-nav {
@@ -585,7 +731,7 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: rgba(20,20,20,0.95);
+                background: rgba(20,20,20,0.98);
                 backdrop-filter: blur(10px);
                 flex-direction: column;
                 padding: 1rem;
@@ -595,6 +741,90 @@
             
             .navbar-nav.mobile-open {
                 display: flex;
+            }
+            
+            /* Mobile carousel improvements */
+            .carousel {
+                gap: 0.5rem;
+                padding: 0 1rem;
+            }
+            
+            .card {
+                width: 140px;
+                height: 210px;
+            }
+            
+            .card-info {
+                padding: 0.8rem;
+            }
+            
+            .card-title {
+                font-size: 0.85rem;
+                margin-bottom: 0.3rem;
+            }
+            
+            .card-meta {
+                font-size: 0.65rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .card-cast {
+                font-size: 0.65rem;
+            }
+            
+            .actor-images {
+                margin-bottom: 0.3rem;
+            }
+            
+            .card-streaming-title {
+                font-size: 0.7rem;
+            }
+            
+            .streaming-platform {
+                font-size: 0.55rem;
+                padding: 0.15rem 0.4rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+                padding: 0 1rem;
+            }
+            
+            .content-section {
+                margin-bottom: 2rem;
+            }
+            
+            /* Mobile footer */
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+                padding: 0 1rem;
+            }
+            
+            .footer-section h4 {
+                font-size: 0.9rem;
+            }
+            
+            .footer-section {
+                font-size: 0.8rem;
+            }
+            
+            .footer-bottom {
+                font-size: 0.75rem;
+                padding: 1.5rem 1rem;
+            }
+            
+            /* Mobile action button */
+            .card-action-btn {
+                width: 35px;
+                height: 35px;
+                bottom: 0.5rem;
+                right: 0.5rem;
+            }
+            
+            .card-action-btn svg {
+                width: 18px;
+                height: 18px;
             }
             
             .mobile-menu-toggle {
@@ -683,5 +913,39 @@
         }
     </script>
     {{-- @vite('resources/js/app.js') --}}
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-logo">DORAS<span class="ai-highlight">[IA]</span></h3>
+                <p>Tu portal de K-Dramas con IA</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/categories">Categorías</a></li>
+                    <li><a href="/top-rated">Mejor Calificados</a></li>
+                    <li><a href="/recent">Recientes</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Información</h4>
+                <ul>
+                    <li><a href="/about">Acerca de</a></li>
+                    <li><a href="/contact">Contacto</a></li>
+                    <li><a href="/privacy">Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <p>Pronto en redes sociales</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 DORASIA. Todos los derechos reservados. | Hecho con ❤️ para fans chilenos de K-Dramas</p>
+        </div>
+    </footer>
 </body>
 </html>

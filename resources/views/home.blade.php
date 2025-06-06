@@ -37,9 +37,13 @@
             <div class="carousel" data-current="0">
                 @foreach($popularSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -71,8 +75,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -93,9 +103,13 @@
             <div class="carousel" data-current="0">
                 @foreach($topRatedSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -127,8 +141,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -149,9 +169,13 @@
             <div class="carousel" data-current="0">
                 @foreach($romanceSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -183,8 +207,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -205,9 +235,13 @@
             <div class="carousel" data-current="0">
                 @foreach($dramasSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -239,8 +273,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -261,9 +301,13 @@
             <div class="carousel" data-current="0">
                 @foreach($comedySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -295,8 +339,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -317,9 +367,13 @@
             <div class="carousel" data-current="0">
                 @foreach($actionSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -351,8 +405,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -373,9 +433,13 @@
             <div class="carousel" data-current="0">
                 @foreach($mysterySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -407,8 +471,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -429,9 +499,13 @@
             <div class="carousel" data-current="0">
                 @foreach($historicalSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -463,8 +537,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -485,9 +565,13 @@
             <div class="carousel" data-current="0">
                 @foreach($recentSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="window.location.href='{{ route('series.show', $series->id) }}'">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -519,8 +603,14 @@
                         <div class="card-streaming">
                             <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
-                                <span class="streaming-platform">Solo Info</span>
-                                <span class="streaming-platform">TMDB</span>
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
                             </div>
                         </div>
                     </div>
