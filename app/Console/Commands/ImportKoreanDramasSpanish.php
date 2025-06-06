@@ -502,8 +502,8 @@ class ImportKoreanDramasSpanish extends Command
             'type' => $details['type'] ?? null
         ]);
 
-        // Import cast and crew
-        $this->importSeriesPeople($series);
+        // Import cast and crew (commented out for now)
+        // $this->importSeriesPeople($series);
     }
 
     private function importSeriesPeople(Series $series): void
