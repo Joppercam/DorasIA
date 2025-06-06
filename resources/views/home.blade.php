@@ -48,7 +48,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -114,7 +114,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -180,7 +180,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -246,7 +246,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -312,7 +312,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -378,7 +378,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -444,7 +444,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -510,7 +510,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
@@ -576,7 +576,7 @@
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
                             @if($series->vote_average > 0)
-                            <span class="card-rating">{{ number_format($series->vote_average, 1) }}</span>
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
                             @endif
                             @if($series->first_air_date)
                             <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>

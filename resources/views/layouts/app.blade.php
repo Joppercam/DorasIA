@@ -473,6 +473,9 @@
             font-size: 0.65rem;
             color: #ffd700;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.1rem;
         }
 
         .card-year {
