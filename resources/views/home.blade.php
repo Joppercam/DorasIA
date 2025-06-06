@@ -37,8 +37,8 @@
                 <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
                 <div class="carousel" data-current="0">
                     @foreach($latestNews as $news)
-                    <div class="news-card" 
-                         style="background-image: url('{{ $news->featured_image_url }}')">
+                    <a href="{{ route('news.show', $news->slug) }}" class="news-card" 
+                       style="background-image: url('{{ $news->featured_image_url }}'); text-decoration: none; color: inherit;">
                         <div class="news-card-overlay"></div>
                         <div class="news-card-content">
                             <span class="news-card-category">{{ ucfirst($news->category) }}</span>
@@ -50,7 +50,7 @@
                                 <span>{{ $news->read_time }}</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     @endforeach
                 </div>
             </div>

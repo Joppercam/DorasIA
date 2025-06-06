@@ -887,6 +887,26 @@
             font-size: 1.2rem;
         }
 
+        /* Auth Navbar Styles */
+        .register-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 20px !important;
+            color: white !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3) !important;
+            color: white !important;
+        }
+
+        .dropdown-menu button:hover {
+            background-color: rgba(229, 9, 20, 0.1) !important;
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -1102,6 +1122,31 @@
                         <li><a href="#recientes">Recientes</a></li>
                     </ul>
                 </li>
+                <li><a href="{{ route('news.index') }}">Noticias</a></li>
+                
+                @auth
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">{{ Auth::user()->name }}</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('profile.show') }}">Mi Perfil</a></li>
+                        <li><a href="{{ route('profile.edit') }}">Editar Perfil</a></li>
+                        <li><a href="{{ route('profile.watchlist') }}">Mi Lista</a></li>
+                        <li><a href="{{ route('profile.ratings') }}">Mis Calificaciones</a></li>
+                        <li><hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.2);"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" style="background: none; border: none; color: white; padding: 0.5rem 1rem; width: 100%; text-align: left; cursor: pointer; transition: background-color 0.3s;">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                @else
+                <li><a href="{{ route('login') }}">Iniciar Sesión</a></li>
+                <li><a href="{{ route('register') }}" class="register-btn">Registrarse</a></li>
+                @endauth
             </ul>
         </div>
     </nav>

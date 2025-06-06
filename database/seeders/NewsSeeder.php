@@ -64,6 +64,33 @@ class NewsSeeder extends Seeder
                 'category' => 'tendencias',
                 'is_featured' => true,
                 'published_at' => Carbon::now()->subHours(12),
+            ],
+            [
+                'title' => 'Entrevista exclusiva: Directores revelan secretos de producción',
+                'excerpt' => 'Conversamos con reconocidos directores sobre las técnicas cinematográficas que hacen únicos a los K-Dramas.',
+                'content' => '<p>En una entrevista exclusiva, varios directores de renombre compartieron insights únicos sobre el proceso creativo detrás de los K-Dramas más exitosos. Desde la planificación de escenas emotivas hasta la dirección de actores en momentos intensos.</p><p>Los directores enfatizan la importancia del detalle en cada toma, explicando cómo pequeños gestos y expresiones faciales pueden transmitir emociones profundas que conectan con audiencias de diferentes culturas.</p><p>También discutieron las innovaciones técnicas que están implementando para crear experiencias visuales más inmersivas, incluyendo el uso de drones para tomas aéreas espectaculares y técnicas de iluminación que realzan la belleza natural de los actores.</p>',
+                'featured_image' => 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&h=400&fit=crop',
+                'category' => 'entrevistas',
+                'is_featured' => false,
+                'published_at' => Carbon::now()->subDays(2),
+            ],
+            [
+                'title' => 'OSTs que conquistaron 2024: Las mejores bandas sonoras del año',
+                'excerpt' => 'Un repaso por las canciones que nos emocionaron y se convirtieron en hits mundiales.',
+                'content' => '<p>Las bandas sonoras de los K-Dramas han evolucionado hasta convertirse en fenómenos musicales independientes. Este año hemos sido testigos de OSTs que no solo complementan las series, sino que se han posicionado en charts musicales internacionales.</p><p>Artistas como IU, Davichi y Park Hyo-shin han creado melodías inolvidables que trascienden las barreras del idioma. Sus voces emotivas han logrado transmitir los sentimientos más profundos de los personajes.</p><p>Analizamos las tendencias musicales en los OSTs actuales, desde baladas melancólicas hasta temas pop energéticos que reflejan la diversidad emocional de las historias contemporáneas.</p>',
+                'featured_image' => 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=400&fit=crop',
+                'category' => 'musica',
+                'is_featured' => false,
+                'published_at' => Carbon::now()->subDays(4),
+            ],
+            [
+                'title' => 'Guía de locaciones: Lugares icónicos de tus K-Dramas favoritos',
+                'excerpt' => 'Descubre dónde se filmaron las escenas más memorables y cómo visitarlas en tu próximo viaje a Corea.',
+                'content' => '<p>Corea del Sur se ha convertido en un destino turístico imprescindible para los fanáticos de los K-Dramas. Desde el puente Banpo en Seúl hasta la isla de Jeju, las locaciones de filmación se han transformado en sitios de peregrinaje para admiradores de todo el mundo.</p><p>En esta guía completa, te llevamos por un recorrido virtual de los lugares más emblemáticos. Incluimos consejos prácticos para visitar cada locación, los mejores momentos del día para fotografías, y datos curiosos sobre las filmaciones.</p><p>También exploramos locaciones menos conocidas pero igualmente hermosas, desde cafeterías pintorescas en barrios tradicionales hasta paisajes naturales impresionantes que han servido de escenario para romances inolvidables.</p>',
+                'featured_image' => 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=400&fit=crop',
+                'category' => 'turismo',
+                'is_featured' => false,
+                'published_at' => Carbon::now()->subDays(6),
             ]
         ];
 
