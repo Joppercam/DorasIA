@@ -57,7 +57,11 @@ fi
 show_message "Generando clave de aplicación..."
 php artisan key:generate --force
 
-# 8. Ejecutar migraciones
+# 8. Crear base de datos SQLite y ejecutar migraciones
+show_message "Creando base de datos SQLite..."
+touch database/database.sqlite
+chmod 664 database/database.sqlite
+
 show_message "Ejecutando migraciones..."
 php artisan migrate --force
 
