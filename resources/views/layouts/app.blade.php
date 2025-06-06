@@ -633,10 +633,10 @@
         /* Action Button on Cards */
         .card-action-btn {
             position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            width: 40px;
-            height: 40px;
+            bottom: 1.5rem;
+            right: 0.8rem;
+            width: 32px;
+            height: 32px;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.8) 0%, rgba(123, 104, 238, 0.8) 50%, rgba(157, 78, 221, 0.8) 100%);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -665,8 +665,8 @@
         }
         
         .card-action-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             fill: white;
         }
         
@@ -818,15 +818,15 @@
             
             /* Mobile action button */
             .card-action-btn {
-                width: 35px;
-                height: 35px;
-                bottom: 0.5rem;
-                right: 0.5rem;
+                width: 28px;
+                height: 28px;
+                bottom: 1rem;
+                right: 0.6rem;
             }
             
             .card-action-btn svg {
-                width: 18px;
-                height: 18px;
+                width: 14px;
+                height: 14px;
             }
             
             .mobile-menu-toggle {
