@@ -41,4 +41,10 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
 ];

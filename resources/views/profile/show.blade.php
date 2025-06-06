@@ -12,7 +12,9 @@
                 
                 <!-- Avatar -->
                 <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; font-weight: bold; border: 3px solid rgba(255,255,255,0.2);">
-                    @if($profile && $profile->avatar_path)
+                    @if($user->avatar)
+                        <img src="{{ $user->avatar }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    @elseif($profile && $profile->avatar_path)
                         <img src="{{ Storage::url($profile->avatar_path) }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     @else
                         {{ strtoupper(substr($user->name, 0, 1)) }}
