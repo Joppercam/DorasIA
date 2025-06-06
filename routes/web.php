@@ -37,3 +37,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/usuario/{user}', [ProfileController::class, 'show'])->name('user.profile');
 Route::get('/usuario/{user}/lista-seguimiento', [ProfileController::class, 'watchlist'])->name('user.watchlist');
 Route::get('/usuario/{user}/calificaciones', [ProfileController::class, 'ratings'])->name('user.ratings');
+
+// Rating routes (AJAX)
+Route::middleware('auth')->group(function () {
+    Route::post('/series/{series}/rate', [HomeController::class, 'rateTitle'])->name('series.rate');
+    Route::delete('/series/{series}/rate', [HomeController::class, 'removeRating'])->name('series.rate.remove');
+});

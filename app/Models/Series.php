@@ -122,6 +122,28 @@ class Series extends Model
         return $this->images()->where('type', 'logo');
     }
 
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(TitleRating::class);
+    }
+
+    public function userRating($userId = null): ?TitleRating
+    {
+        if (!$userId) {
+            return null;
+        }
+        return $this->ratings()->where('user_id', $userId)->first();
+    }
+
+    public function getRatingCounts(): array
+    {
+        return [
+            'love' => $this->ratings()->where('rating_type', 'love')->count(),
+            'like' => $this->ratings()->where('rating_type', 'like')->count(),
+            'dislike' => $this->ratings()->where('rating_type', 'dislike')->count(),
+        ];
+    }
+
     // Métodos para obtener contenido en español
     public function getDisplayTitleAttribute(): string
     {

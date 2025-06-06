@@ -80,6 +80,8 @@
                     </div>
                     @endif
                     
+                    @include('components.rating-buttons', ['series' => $series])
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -155,6 +157,8 @@
                         @endforeach
                     </div>
                     @endif
+                    
+                    @include('components.rating-buttons', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -232,6 +236,8 @@
                     </div>
                     @endif
                     
+                    @include('components.rating-buttons', ['series' => $series])
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -307,6 +313,8 @@
                         @endforeach
                     </div>
                     @endif
+                    
+                    @include('components.rating-buttons', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -384,6 +392,8 @@
                     </div>
                     @endif
                     
+                    @include('components.rating-buttons', ['series' => $series])
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -459,6 +469,8 @@
                         @endforeach
                     </div>
                     @endif
+                    
+                    @include('components.rating-buttons', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -536,6 +548,8 @@
                     </div>
                     @endif
                     
+                    @include('components.rating-buttons', ['series' => $series])
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -612,6 +626,8 @@
                     </div>
                     @endif
                     
+                    @include('components.rating-buttons', ['series' => $series])
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -687,6 +703,8 @@
                         @endforeach
                     </div>
                     @endif
+                    
+                    @include('components.rating-buttons', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

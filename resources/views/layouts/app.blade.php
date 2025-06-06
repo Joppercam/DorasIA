@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dorasia - K-Dramas')</title>
     {{-- @vite('resources/css/app.css') --}}
     <style>
@@ -907,6 +908,115 @@
             background-color: rgba(229, 9, 20, 0.1) !important;
         }
 
+        /* Rating Buttons Styles */
+        .card-rating-buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 15;
+        }
+
+        .card:hover .card-rating-buttons {
+            opacity: 1;
+        }
+
+        .rating-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(20,20,20,0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            transform: scale(0.8);
+        }
+
+        .card:hover .rating-btn {
+            transform: scale(1);
+        }
+
+        .rating-btn:hover {
+            transform: scale(1.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .rating-btn.dislike {
+            background: rgba(220, 53, 69, 0.8);
+        }
+
+        .rating-btn.dislike:hover {
+            background: rgba(220, 53, 69, 1);
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .rating-btn.like {
+            background: rgba(0, 212, 255, 0.8);
+        }
+
+        .rating-btn.like:hover {
+            background: rgba(0, 212, 255, 1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .rating-btn.love {
+            background: rgba(255, 105, 180, 0.8);
+        }
+
+        .rating-btn.love:hover {
+            background: rgba(255, 105, 180, 1);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .rating-btn.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .rating-btn.active.dislike {
+            background: rgba(220, 53, 69, 1);
+        }
+
+        .rating-btn.active.like {
+            background: rgba(0, 212, 255, 1);
+        }
+
+        .rating-btn.active.love {
+            background: rgba(255, 105, 180, 1);
+        }
+
+        /* Toast notification */
+        .rating-toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .rating-toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -1104,10 +1214,10 @@
 </head>
 <body>
     <nav class="navbar" id="navbar">
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <a href="{{ route('home') }}" class="navbar-brand">DORAS<span class="ai-highlight">IA</span></a>
+        <div style="display: flex; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto;">
+            <a href="{{ route('home') }}" class="navbar-brand" style="margin-right: 3rem;">DORAS<span class="ai-highlight">IA</span></a>
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-            <ul class="navbar-nav" id="navbar-nav">
+            <ul class="navbar-nav" id="navbar-nav" style="flex: 1; justify-content: flex-start; padding-left: 0;">
                 <li><a href="{{ route('home') }}">Inicio</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle">Series</a>
@@ -1177,6 +1287,75 @@
             img.style.alignItems = 'center';
             img.style.justifyContent = 'center';
             img.innerHTML = '<span style="color: white; font-weight: bold;">📺</span>';
+        }
+
+        // Rating functionality
+        function rateSeries(seriesId, ratingType, button) {
+            fetch(`/series/${seriesId}/rate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    rating_type: ratingType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button states
+                    const card = button.closest('.card');
+                    const ratingButtons = card.querySelectorAll('.rating-btn');
+                    
+                    // Remove active class from all buttons
+                    ratingButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to current button
+                    button.classList.add('active');
+                    
+                    // Show toast notification
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al guardar calificación', 'error');
+            });
+        }
+
+        function showRatingToast(message, type = 'success') {
+            // Remove existing toast
+            const existingToast = document.querySelector('.rating-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = 'rating-toast';
+            toast.textContent = message;
+            
+            if (type === 'error') {
+                toast.style.borderColor = 'rgba(220, 53, 69, 0.5)';
+            }
+            
+            document.body.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            // Hide and remove toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
     </script>
     {{-- @vite('resources/js/app.js') --}}
