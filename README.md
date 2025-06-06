@@ -1,61 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🤖 DORASIA - Portal de K-Dramas con IA
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**DORAS[IA]** es una plataforma moderna para fanáticos de los K-Dramas en Chile, diseñada con tecnología de inteligencia artificial y enfoque en la experiencia del usuario.
 
-## About Laravel
+## ✨ Características Principales
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🎬 Contenido Rico
+- **2,340+ K-Dramas** importados desde TMDB
+- **5,860+ actores y directores** con información detallada
+- **Traducciones completas** al español chileno
+- **Categorías organizadas**: Romance, Drama, Acción, Comedia, Misterio, Históricos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🎨 Interfaz Moderna
+- **Logo AI-themed** con destaque en "IA"
+- **Carruseles infinitos** con efectos hover avanzados
+- **Diseño Netflix-style** completamente responsive
+- **Información detallada** con reparto e plataformas de streaming
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🔧 Tecnología
+- **Laravel 11** con PHP 8.2+
+- **MySQL/MariaDB** para persistencia
+- **TMDB API** para contenido actualizado
+- **Localización chilena** completa
 
-## Learning Laravel
+## 🚀 Deploy Rápido
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+# 1. Clonar el repositorio
+git clone [tu-repo] dorasia
+cd dorasia
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# 2. Configurar entorno
+cp .env.production .env
+# Editar .env con tus datos de hosting
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 3. Ejecutar deploy
+chmod +x deploy.sh
+./deploy.sh
 
-## Laravel Sponsors
+# 4. Importar contenido inicial
+php artisan import:korean-dramas --pages=50
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📋 Requisitos del Hosting
 
-### Premium Partners
+- **PHP 8.2+** con extensiones: PDO, MySQL, cURL, JSON
+- **MySQL 5.7+** o **MariaDB 10.3+**
+- **Memoria**: 512MB mínimo
+- **Composer** instalado
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🔮 Roadmap Futuro
 
-## Contributing
+### Fase 2 - Sistema de Usuarios
+- [ ] Registro y autenticación
+- [ ] Perfiles personalizados
+- [ ] Listas de "Favoritos" y "Por Ver"
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Fase 3 - Funciones Sociales
+- [ ] Sistema de comentarios y reseñas
+- [ ] Ratings y puntuaciones
+- [ ] Seguimiento de otros usuarios
+- [ ] Compartir listas
 
-## Code of Conduct
+### Fase 4 - IA Avanzada
+- [ ] Recomendaciones personalizadas
+- [ ] Análisis de preferencias
+- [ ] Notificaciones inteligentes
+- [ ] Chatbot de recomendaciones
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📊 Estado Actual
 
-## Security Vulnerabilities
+```
+✅ Contenido: 2,340+ series, 5,860+ personas
+✅ Interfaz: Netflix-style completamente funcional
+✅ Responsive: Optimizado para móviles
+✅ Localización: Español chileno completo
+✅ Deploy: Script automatizado incluido
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🛠️ Comandos Artisan Personalizados
 
-## License
+```bash
+# Importar por categorías
+php artisan import:romance-dramas
+php artisan import:recent-dramas
+php artisan import:top-rated-dramas
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Traducir contenido existente
+php artisan translate:existing-content
+
+# Importación masiva
+php artisan import:korean-dramas --pages=100 --with-details
+```
+
+## 📁 Estructura del Proyecto
+
+```
+dorasia/
+├── app/
+│   ├── Console/Commands/     # Comandos de importación
+│   ├── Http/Controllers/     # Controladores principales
+│   ├── Models/              # Modelos de datos
+│   └── Services/            # Servicios (TMDB, Traducción)
+├── resources/views/         # Templates Blade
+├── database/migrations/     # Esquema de base de datos
+├── public/                  # Archivos públicos
+├── deploy.sh               # Script de deploy
+└── DEPLOY_GUIDE.md         # Guía detallada
+```
+
+## 🎯 Para Fanáticos Chilenos
+
+Esta plataforma está específicamente diseñada para la comunidad chilena de K-Drama fans, incluyendo:
+
+- **Terminología local** y expresiones chilenas
+- **Horarios GMT-3** (Chile Continental)
+- **Recomendaciones culturalmente relevantes**
+- **Interfaz familiar** para usuarios chilenos
+
+## 📞 Soporte
+
+- **Documentación**: Ver `DEPLOY_GUIDE.md`
+- **Logs**: Revisar `storage/logs/laravel.log`
+- **API Issues**: Verificar configuración TMDB
+
+---
+
+🤖 **Hecho con ❤️ para la comunidad K-Drama de Chile**
+
+*DORASIA - Donde la inteligencia artificial se encuentra con la pasión por los K-Dramas*
