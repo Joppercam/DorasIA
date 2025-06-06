@@ -637,8 +637,8 @@
             right: 1rem;
             width: 40px;
             height: 40px;
-            background: rgba(229, 9, 20, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.8) 0%, rgba(123, 104, 238, 0.8) 50%, rgba(157, 78, 221, 0.8) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -647,8 +647,9 @@
             opacity: 0;
             transform: scale(0.8);
             transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
             z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
         }
         
         .card:hover .card-action-btn {
@@ -657,9 +658,10 @@
         }
         
         .card-action-btn:hover {
-            background: #e50914;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 50%, #9d4edd 100%);
             transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 6px 20px rgba(123, 104, 238, 0.4);
         }
         
         .card-action-btn svg {
