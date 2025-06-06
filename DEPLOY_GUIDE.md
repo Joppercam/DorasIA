@@ -66,12 +66,12 @@ php artisan import:recent-dramas
 ### Apache (.htaccess ya incluido)
 El archivo `.htaccess` se crea automáticamente en `public/`
 
-### Nginx
+### Nginx (si aplica)
 ```nginx
 server {
     listen 80;
-    server_name tu-dominio.com;
-    root /home/usuario/public_html/public;
+    server_name dorasia.cl;
+    root /home/n91a0e5/dorasia.cl/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -109,7 +109,7 @@ server {
 crontab -e
 
 # Agrega esta línea para importar contenido diariamente a las 2 AM
-0 2 * * * cd /home/usuario/public_html && php artisan import:korean-dramas --pages=10
+0 2 * * * cd /home/n91a0e5/dorasia.cl && php artisan import:korean-dramas --pages=10
 ```
 
 ## 📊 Estado del Contenido Actual

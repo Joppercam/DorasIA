@@ -7,8 +7,8 @@ echo "🤖 DORASIA - Deploy Script Iniciado"
 echo "=================================="
 
 # Variables de configuración
-PROJECT_DIR="/home/tu_usuario/public_html"
-BACKUP_DIR="/home/tu_usuario/backups/dorasia_$(date +%Y%m%d_%H%M%S)"
+PROJECT_DIR="/home/n91a0e5/dorasia.cl"
+BACKUP_DIR="/home/n91a0e5/backups/dorasia_$(date +%Y%m%d_%H%M%S)"
 
 # Función para mostrar mensajes
 show_message() {
@@ -44,7 +44,7 @@ composer install --no-dev --optimize-autoloader --no-interaction
 show_message "Configurando permisos..."
 chmod -R 755 storage
 chmod -R 755 bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+# En hosting compartido, el usuario ya tiene los permisos correctos
 
 # 6. Configurar base de datos
 show_message "Configurando base de datos..."
@@ -69,7 +69,7 @@ php artisan view:cache
 
 # 10. Crear cron job para importación continua (opcional)
 show_message "Para importación continua, agrega este cron job:"
-echo "0 2 * * * cd $PROJECT_DIR && php artisan import:korean-dramas --pages=10"
+echo "0 2 * * * cd /home/n91a0e5/dorasia.cl && php artisan import:korean-dramas --pages=10"
 
 # 11. Crear .htaccess para Apache
 show_message "Creando archivo .htaccess..."
