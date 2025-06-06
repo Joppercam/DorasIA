@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Series;
 use App\Models\Genre;
+use App\Models\News;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -81,6 +82,12 @@ class HomeController extends Controller
                   ->orWhere('overview', 'LIKE', '%palace%');
         })->orderBy('vote_average', 'desc')->limit(25)->get();
 
+        // Noticias más recientes para el carrusel (6 noticias)
+        $latestNews = News::published()
+            ->latest()
+            ->limit(6)
+            ->get();
+
         return view('home', compact(
             'featuredSeries',
             'popularSeries', 
@@ -91,7 +98,8 @@ class HomeController extends Controller
             'romanceSeries',
             'actionSeries',
             'mysterySeries',
-            'historicalSeries'
+            'historicalSeries',
+            'latestNews'
         ));
     }
 

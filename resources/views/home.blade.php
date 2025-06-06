@@ -27,6 +27,37 @@
 <!-- Content Sections -->
 <div style="margin-top: -100px; position: relative; z-index: 20;">
 
+    <!-- News Carousel -->
+    @if($latestNews->count() > 0)
+    <section class="content-section">
+        <div class="news-carousel">
+            <h2 class="news-section-title">Últimas Noticias K-Drama</h2>
+            <div class="carousel-container">
+                <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
+                <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
+                <div class="carousel" data-current="0">
+                    @foreach($latestNews as $news)
+                    <div class="news-card" 
+                         style="background-image: url('{{ $news->featured_image_url }}')">
+                        <div class="news-card-overlay"></div>
+                        <div class="news-card-content">
+                            <span class="news-card-category">{{ ucfirst($news->category) }}</span>
+                            <h3 class="news-card-title">{{ $news->title }}</h3>
+                            <p class="news-card-excerpt">{{ $news->excerpt }}</p>
+                            <div class="news-card-meta">
+                                <span>{{ $news->published_at->diffForHumans() }}</span>
+                                <span>•</span>
+                                <span>{{ $news->read_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Series Populares -->
     @if($popularSeries->count() > 0)
     <section class="content-section">
@@ -39,6 +70,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -105,6 +146,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -171,6 +222,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -237,6 +298,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -303,6 +374,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -369,6 +450,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -435,6 +526,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -501,6 +602,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -567,6 +678,16 @@
                 <div class="card" 
                      style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -627,17 +748,33 @@
 function slideCarousel(button, direction) {
     const container = button.parentElement;
     const carousel = container.querySelector('.carousel');
-    const cards = carousel.querySelectorAll('.card');
-    const cardWidth = 160 + 16; // card width + gap
-    const visibleCards = Math.floor(carousel.parentElement.offsetWidth / cardWidth);
+    const cards = carousel.querySelectorAll('.card, .news-card');
+    
+    if (cards.length === 0) return;
+    
+    // Determine card width based on card type and screen size
+    let cardWidth;
+    let gap = 16; // gap between cards
+    const isMobile = window.innerWidth <= 768;
+    
+    if (carousel.querySelector('.news-card')) {
+        cardWidth = isMobile ? 250 : 300; // news card width
+    } else {
+        cardWidth = isMobile ? 140 : 220; // regular card width
+    }
+    
+    const totalCardWidth = cardWidth + gap;
+    const containerWidth = carousel.parentElement.offsetWidth;
+    const visibleCards = Math.max(1, Math.floor(containerWidth / totalCardWidth));
     
     let currentSlide = parseInt(carousel.getAttribute('data-current')) || 0;
     currentSlide += direction;
     
-    // Implementar carrusel infinito
+    // Prevent going out of bounds
+    const maxSlide = Math.max(0, cards.length - visibleCards);
     if (currentSlide < 0) {
-        currentSlide = cards.length - visibleCards;
-    } else if (currentSlide > cards.length - visibleCards) {
+        currentSlide = maxSlide;
+    } else if (currentSlide > maxSlide) {
         currentSlide = 0;
     }
     
@@ -645,15 +782,15 @@ function slideCarousel(button, direction) {
     carousel.setAttribute('data-current', currentSlide);
     
     // Apply the transform with smooth transition
-    const translateX = -(currentSlide * cardWidth);
+    const translateX = -(currentSlide * totalCardWidth);
     carousel.style.transform = `translateX(${translateX}px)`;
     
     // Los botones siempre están activos en carrusel infinito
     const prevBtn = container.querySelector('.prev');
     const nextBtn = container.querySelector('.next');
     
-    prevBtn.style.opacity = '1';
-    nextBtn.style.opacity = '1';
+    if (prevBtn) prevBtn.style.opacity = '1';
+    if (nextBtn) nextBtn.style.opacity = '1';
 }
 
 // Auto-slide for infinite carousel (opcional)
@@ -673,17 +810,32 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.carousel-container').forEach(container => {
         const prevBtn = container.querySelector('.prev');
         const nextBtn = container.querySelector('.next');
+        const carousel = container.querySelector('.carousel');
         
-        prevBtn.style.opacity = '1';
-        nextBtn.style.opacity = '1';
+        if (prevBtn) prevBtn.style.opacity = '1';
+        if (nextBtn) nextBtn.style.opacity = '1';
+        
+        // Reset carousel position
+        if (carousel) {
+            carousel.setAttribute('data-current', '0');
+            carousel.style.transform = 'translateX(0px)';
+        }
         
         // Agregar soporte para teclado
         container.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
+            if (e.key === 'ArrowLeft' && prevBtn) {
                 slideCarousel(prevBtn, -1);
-            } else if (e.key === 'ArrowRight') {
+            } else if (e.key === 'ArrowRight' && nextBtn) {
                 slideCarousel(nextBtn, 1);
             }
+        });
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        document.querySelectorAll('.carousel').forEach(carousel => {
+            carousel.setAttribute('data-current', '0');
+            carousel.style.transform = 'translateX(0px)';
         });
     });
     
