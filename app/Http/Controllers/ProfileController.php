@@ -213,4 +213,26 @@ class ProfileController extends Controller
 
         return view('profile.ratings', compact('user', 'ratings'));
     }
+
+    /**
+     * Show user's watched series
+     */
+    public function watchedSeries(User $user = null)
+    {
+        $user = $user ?? Auth::user();
+        $profile = $user->profile;
+
+        // Check privacy settings
+        if (Auth::id() !== $user->id && $profile && !$profile->show_watchlist) {
+            abort(403, 'Este usuario ha configurado su historial como privado.');
+        }
+
+        $watchedSeries = $user->watchHistory()
+            ->with('series')
+            ->where('status', 'completed')
+            ->orderBy('last_watched_at', 'desc')
+            ->paginate(20);
+
+        return view('profile.watched', compact('user', 'watchedSeries'));
+    }
 }

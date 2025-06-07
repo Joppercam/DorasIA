@@ -127,6 +127,26 @@ class Series extends Model
         return $this->hasMany(TitleRating::class);
     }
 
+    public function watchlistItems(): HasMany
+    {
+        return $this->hasMany(Watchlist::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+    
+    public function polymorphicComments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function professionalReviews(): HasMany
+    {
+        return $this->hasMany(ProfessionalReview::class);
+    }
+
     public function userRating($userId = null): ?TitleRating
     {
         if (!$userId) {

@@ -202,12 +202,29 @@
             z-index: 2000;
             list-style: none;
             margin: 0;
-            margin-top: 10px;
+            margin-top: 5px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
 
         .dropdown:hover .dropdown-menu {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
         }
 
         .dropdown-menu li {
@@ -253,15 +270,555 @@
             max-width: 600px;
         }
 
+        .hero-info-box {
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.15) 0%, 
+                rgba(0, 0, 0, 0.35) 50%, 
+                rgba(0, 0, 0, 0.5) 100%);
+            backdrop-filter: blur(15px);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-categories {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-category {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(123, 104, 238, 0.15) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .rating-stars {
+            font-size: 1rem;
+        }
+
+        .rating-number {
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        .hero-year, .hero-episodes, .hero-seasons {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .hero-original-title {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .btn-hero {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.8) 0%, rgba(123, 104, 238, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 1) 0%, rgba(123, 104, 238, 1) 100%);
+        }
+
+        /* Hero Actions */
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 1.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-actions .card-rating-buttons {
+            position: static;
+            transform: none;
+            opacity: 1;
+            gap: 1rem;
+        }
+
+        .hero-actions .rating-btn {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            width: 40px;
+            height: 40px;
+            border-width: 2px;
+        }
+
+        .hero-actions .watchlist-button-container {
+            position: static;
+        }
+
+        .hero-actions .watchlist-btn {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            width: 40px;
+            height: 40px;
+            border-width: 2px;
+        }
+
+        .hero-actions::before {
+            content: '🎬 Acciones:';
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        /* Series Detail Styles */
+        .series-detail-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .series-poster {
+            position: sticky;
+            top: 120px;
+        }
+
+        .detail-poster-img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease;
+        }
+
+        .detail-poster-img:hover {
+            transform: scale(1.02);
+        }
+
+        .detail-poster-placeholder {
+            width: 100%;
+            height: 480px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .detail-section {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-section-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-genres {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .detail-genre-tag {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 104, 238, 0.2) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Cast Grid Styles */
+        .cast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cast-card {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+            display: flex;
+            height: 200px;
+        }
+
+        .cast-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.2);
+        }
+
+        .cast-image {
+            width: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cast-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cast-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .cast-info {
+            width: 50%;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cast-name {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+        }
+
+        .cast-character {
+            color: rgba(0, 212, 255, 0.9);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .cast-bio {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 0.8rem;
+            flex: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .cast-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .cast-birth, .cast-location {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .actor-detail-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.9) 0%, rgba(123, 104, 238, 0.9) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .actor-detail-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .cast-card {
+            position: relative;
+        }
+
+        /* Comments Styles */
+        .comment-form-container {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comment-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .comment-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .comment-form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .spoiler-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .comment-submit-btn {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.8) 0%, rgba(123, 104, 238, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .comment-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .auth-prompt {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(20, 20, 20, 0.3);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .auth-prompt a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .comment {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comment.reply {
+            margin-left: 2rem;
+            margin-top: 1rem;
+            background: rgba(20, 20, 20, 0.2);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .comment-user {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comment-username {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .comment-date {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        .spoiler-badge {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .comment-content {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .spoiler-hidden {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+
+        .spoiler-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .reveal-spoiler-btn {
+            background: rgba(255, 193, 7, 0.8);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
             line-height: 1.1;
         }
 
         .hero-description {
-            font-size: 1.2rem;
+            font-size: 1rem;
             line-height: 1.4;
             margin-bottom: 2rem;
             color: #ccc;
@@ -383,7 +940,7 @@
         }
 
         .card:hover {
-            transform: scale(1.6) translateY(-20px);
+            transform: scale(1.7) translateY(-40px);
             box-shadow: 0 25px 60px rgba(0,0,0,0.9);
             z-index: 1500;
             position: relative;
@@ -483,8 +1040,9 @@
             padding: 0.8rem;
             color: white;
             opacity: 0;
-            transform: translateY(100%);
+            transform: translateY(50%);
             transition: all 0.3s ease;
+            min-height: 120px;
         }
 
         .actor-images {
@@ -695,7 +1253,7 @@
         /* Action Button on Cards */
         .card-action-btn {
             position: absolute;
-            bottom: 1.5rem;
+            bottom: 2.5rem;
             right: 0.8rem;
             width: 32px;
             height: 32px;
@@ -911,9 +1469,9 @@
         /* Rating Buttons Styles */
         .card-rating-buttons {
             position: absolute;
-            top: 50%;
+            bottom: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, 50%);
             display: flex;
             gap: 0.5rem;
             opacity: 0;
@@ -926,73 +1484,41 @@
         }
 
         .rating-btn {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(20,20,20,0.8);
+            border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
-            color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
             transition: all 0.3s ease;
+            opacity: 0;
             transform: scale(0.8);
         }
 
         .card:hover .rating-btn {
+            opacity: 1;
             transform: scale(1);
         }
 
         .rating-btn:hover {
-            transform: scale(1.2);
-            border-color: rgba(255,255,255,0.6);
-        }
-
-        .rating-btn.dislike {
-            background: rgba(220, 53, 69, 0.8);
-        }
-
-        .rating-btn.dislike:hover {
-            background: rgba(220, 53, 69, 1);
-            box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
-        }
-
-        .rating-btn.like {
-            background: rgba(0, 212, 255, 0.8);
-        }
-
-        .rating-btn.like:hover {
-            background: rgba(0, 212, 255, 1);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .rating-btn.love {
-            background: rgba(255, 105, 180, 0.8);
-        }
-
-        .rating-btn.love:hover {
-            background: rgba(255, 105, 180, 1);
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
 
         .rating-btn.active {
-            border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            border-color: rgba(255,255,255,1);
+            box-shadow: 0 0 15px rgba(255,255,255,0.4);
+            opacity: 1 !important;
         }
 
-        .rating-btn.active.dislike {
-            background: rgba(220, 53, 69, 1);
-        }
-
-        .rating-btn.active.like {
-            background: rgba(0, 212, 255, 1);
-        }
-
-        .rating-btn.active.love {
-            background: rgba(255, 105, 180, 1);
+        .rating-btn.active:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,255,255,0.6);
         }
 
         /* Toast notification */
@@ -1017,13 +1543,101 @@
             transform: translateX(0);
         }
 
+        /* Watchlist Button Styles */
+        .watchlist-button-container {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            z-index: 10;
+        }
+
+        .watchlist-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(20,20,20,0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .card:hover .watchlist-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .watchlist-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(0, 212, 255, 0.8);
+        }
+
+        .watchlist-btn.in-list {
+            background: rgba(40, 167, 69, 0.8);
+            border-color: rgba(40, 167, 69, 0.5);
+        }
+
+        .watchlist-btn.in-list:hover {
+            background: rgba(40, 167, 69, 1);
+            border-color: rgba(40, 167, 69, 0.8);
+        }
+
+        .watchlist-status-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: rgba(20,20,20,0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 150px;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        .status-option {
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .status-option:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .status-option.active {
+            background-color: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .status-option.remove {
+            color: #dc3545;
+        }
+
+        .status-option.remove:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .hero-description {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 line-height: 1.4;
             }
             
@@ -1078,6 +1692,7 @@
             
             .card-info {
                 padding: 0.8rem;
+                min-height: 100px;
             }
             
             .card-title {
@@ -1140,7 +1755,7 @@
             .card-action-btn {
                 width: 28px;
                 height: 28px;
-                bottom: 1rem;
+                bottom: 2rem;
                 right: 0.6rem;
             }
             
@@ -1179,7 +1794,7 @@
                 font-size: 1.2rem;
             }
             
-            .mobile-menu-toggle {
+            .mobile-menu-toggle, .mobile-search-toggle {
                 display: block;
                 background: none;
                 border: none;
@@ -1187,6 +1802,23 @@
                 font-size: 1.5rem;
                 cursor: pointer;
                 padding: 0.5rem;
+            }
+            
+            .search-container {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: rgba(20, 20, 20, 0.95);
+                backdrop-filter: blur(10px);
+                z-index: 1500;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .search-container.mobile-active {
+                display: block;
             }
             
             .content-section {
@@ -1197,27 +1829,337 @@
                 padding: 0 2%;
             }
             
+            .hero-info-box {
+                padding: 2rem;
+                border-radius: 20px;
+            }
+            
+            .hero-categories {
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .hero-category {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.7rem;
+                border-radius: 15px;
+            }
+            
+            .hero-meta {
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .hero-rating {
+                padding: 0.4rem 0.8rem;
+                border-radius: 15px;
+            }
+            
+            .btn-hero {
+                padding: 0.8rem 2rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+            }
+            
+            .hero-actions {
+                margin-top: 1.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.5rem;
+                padding: 1rem 0;
+            }
+            
+            .hero-actions::before {
+                content: '🎬';
+                margin-right: 0.3rem;
+            }
+            
+            .hero-actions .rating-btn {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .hero-actions .watchlist-btn {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .series-detail-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .series-poster {
+                position: static;
+                max-width: 280px;
+                margin: 0 auto;
+            }
+            
+            .detail-section {
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .detail-genre-tag {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
+            }
+            
             .carousel-container {
                 margin: 0 20px;
                 padding: 30px 0;
             }
             
             .card:hover {
-                transform: scale(1.3) translateY(-15px);
+                transform: scale(1.4) translateY(-35px);
             }
         }
         
-        .mobile-menu-toggle {
+        /* Mobile Controls */
+        .mobile-controls {
             display: none;
+        }
+        
+        .mobile-menu-toggle, .mobile-search-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .mobile-menu-toggle:hover, .mobile-search-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Desktop Search */
+        .desktop-search {
+            display: block;
+        }
+        
+        /* Mobile Search */
+        .mobile-search {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: rgba(20, 20, 20, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1500;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+            }
+            
+            .desktop-search {
+                display: none;
+            }
+            
+            .navbar-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(20,20,20,0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                z-index: 1400;
+            }
+            
+            .navbar-nav.mobile-open {
+                display: flex;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                display: none;
+                background: rgba(40, 40, 40, 0.95);
+                margin: 0.5rem 0;
+                border-radius: 8px;
+                box-shadow: none;
+            }
+            
+            .dropdown:hover .dropdown-menu {
+                display: block;
+            }
+        }
+        
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            padding-right: 3rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .search-input:focus {
+            border-color: rgba(0, 212, 255, 0.5);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 2000;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+        
+        .search-section {
+            padding: 1rem 0;
+        }
+        
+        .search-section-title {
+            color: rgba(0, 212, 255, 0.9);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+        
+        .search-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .search-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: white;
+        }
+        
+        .search-item-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .search-item-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .search-item-meta {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .search-no-results {
+            padding: 2rem 1rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        .search-loading {
+            padding: 1rem;
+            text-align: center;
+            color: rgba(0, 212, 255, 0.8);
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
-        <div style="display: flex; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto;">
-            <a href="{{ route('home') }}" class="navbar-brand" style="margin-right: 3rem;">DORAS<span class="ai-highlight">IA</span></a>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-            <ul class="navbar-nav" id="navbar-nav" style="flex: 1; justify-content: flex-start; padding-left: 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto;">
+            <!-- Logo -->
+            <a href="{{ route('home') }}" class="navbar-brand">DORAS<span class="ai-highlight">IA</span></a>
+            
+            <!-- Desktop Search Bar -->
+            <div class="search-container desktop-search" style="flex: 1; max-width: 400px; margin: 0 2rem;">
+                <div class="search-input-container">
+                    <input type="text" id="globalSearch" placeholder="Buscar series, actores..." class="search-input">
+                    <div class="search-icon">🔍</div>
+                </div>
+                <div class="search-results" id="searchResults" style="display: none;"></div>
+            </div>
+            
+            <!-- Mobile Toggle Buttons -->
+            <div class="mobile-controls" style="display: flex; gap: 0.5rem;">
+                <button class="mobile-search-toggle" onclick="toggleMobileSearch()">🔍</button>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <ul class="navbar-nav" id="navbar-nav">
                 <li><a href="{{ route('home') }}">Inicio</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle">Series</a>
@@ -1232,7 +2174,7 @@
                         <li><a href="#recientes">Recientes</a></li>
                     </ul>
                 </li>
-                <li><a href="{{ route('news.index') }}">Noticias</a></li>
+                <li><a href="{{ route('actors.index') }}">Actores</a></li>
                 
                 @auth
                 <li class="dropdown">
@@ -1242,6 +2184,7 @@
                         <li><a href="{{ route('profile.edit') }}">Editar Perfil</a></li>
                         <li><a href="{{ route('profile.watchlist') }}">Mi Lista</a></li>
                         <li><a href="{{ route('profile.ratings') }}">Mis Calificaciones</a></li>
+                        <li><a href="{{ route('profile.watched') }}">Series Vistas</a></li>
                         <li><hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.2);"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
@@ -1258,6 +2201,15 @@
                 <li><a href="{{ route('register') }}" class="register-btn">Registrarse</a></li>
                 @endauth
             </ul>
+        </div>
+        
+        <!-- Mobile Search Container -->
+        <div class="search-container mobile-search" id="mobileSearchContainer" style="display: none;">
+            <div class="search-input-container">
+                <input type="text" id="mobileGlobalSearch" placeholder="Buscar series, actores..." class="search-input">
+                <div class="search-icon">🔍</div>
+            </div>
+            <div class="search-results" id="mobileSearchResults" style="display: none;"></div>
         </div>
     </nav>
 
@@ -1277,8 +2229,71 @@
         // Mobile menu toggle
         function toggleMobileMenu() {
             const navbarNav = document.getElementById('navbar-nav');
+            const mobileSearchContainer = document.getElementById('mobileSearchContainer');
+            
             navbarNav.classList.toggle('mobile-open');
+            
+            // Close mobile search if open
+            if (mobileSearchContainer && mobileSearchContainer.style.display === 'block') {
+                mobileSearchContainer.style.display = 'none';
+            }
         }
+
+        // Mobile search toggle
+        function toggleMobileSearch() {
+            const mobileSearchContainer = document.getElementById('mobileSearchContainer');
+            const mobileNav = document.getElementById('navbar-nav');
+            
+            if (mobileSearchContainer.style.display === 'block') {
+                mobileSearchContainer.style.display = 'none';
+            } else {
+                mobileSearchContainer.style.display = 'block';
+                // Close mobile menu if open
+                mobileNav.classList.remove('mobile-open');
+                
+                // Focus on mobile search input
+                const mobileSearchInput = document.getElementById('mobileGlobalSearch');
+                setTimeout(() => {
+                    mobileSearchInput.focus();
+                }, 100);
+            }
+        }
+
+        // Enhanced dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                let timeout;
+                
+                dropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(timeout);
+                    const menu = this.querySelector('.dropdown-menu');
+                    if (menu) {
+                        menu.style.display = 'block';
+                        setTimeout(() => {
+                            menu.style.opacity = '1';
+                            menu.style.transform = 'translateY(0)';
+                            menu.style.pointerEvents = 'auto';
+                        }, 10);
+                    }
+                });
+                
+                dropdown.addEventListener('mouseleave', function() {
+                    const menu = this.querySelector('.dropdown-menu');
+                    if (menu) {
+                        timeout = setTimeout(() => {
+                            menu.style.opacity = '0';
+                            menu.style.transform = 'translateY(-10px)';
+                            menu.style.pointerEvents = 'none';
+                            setTimeout(() => {
+                                menu.style.display = 'none';
+                            }, 300);
+                        }, 150); // 150ms delay before hiding
+                    }
+                });
+            });
+        });
 
         // Image fallback
         function handleImageError(img) {
@@ -1357,6 +2372,350 @@
                 }, 300);
             }, 3000);
         }
+
+        // Watchlist functionality
+        function toggleWatchlist(seriesId, button) {
+            const container = button.closest('.watchlist-button-container');
+            
+            fetch(`/series/${seriesId}/watchlist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    status: 'want_to_watch'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateWatchlistButton(container, data.in_watchlist, data.status);
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al actualizar la lista', 'error');
+            });
+        }
+
+        function updateWatchlistStatus(seriesId, status, option) {
+            fetch(`/series/${seriesId}/watchlist`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update active status in menu
+                    const menu = option.closest('.watchlist-status-menu');
+                    menu.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    // Hide menu
+                    menu.style.display = 'none';
+                    
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al actualizar el estado', 'error');
+            });
+        }
+
+        function removeFromWatchlist(seriesId, option) {
+            fetch(`/series/${seriesId}/watchlist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({}) // Empty body will remove from list
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = option.closest('.watchlist-button-container');
+                    updateWatchlistButton(container, false, 'want_to_watch');
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al eliminar de la lista', 'error');
+            });
+        }
+
+        function updateWatchlistButton(container, inWatchlist, status) {
+            const button = container.querySelector('.watchlist-btn');
+            const icon = button.querySelector('.watchlist-icon');
+            const menu = container.querySelector('.watchlist-status-menu');
+            
+            if (inWatchlist) {
+                button.classList.add('in-list');
+                icon.textContent = '✅';
+                button.title = 'En tu lista - Click derecho para opciones';
+                
+                // Create menu if it doesn't exist
+                if (!menu) {
+                    const seriesId = container.dataset.seriesId;
+                    const menuHTML = `
+                        <div class="watchlist-status-menu" style="display: none;">
+                            <div class="status-option ${status === 'want_to_watch' ? 'active' : ''}" onclick="updateWatchlistStatus(${seriesId}, 'want_to_watch', this)">🎯 Pendiente</div>
+                            <div class="status-option ${status === 'watching' ? 'active' : ''}" onclick="updateWatchlistStatus(${seriesId}, 'watching', this)">👀 Viendo</div>
+                            <div class="status-option ${status === 'completed' ? 'active' : ''}" onclick="updateWatchlistStatus(${seriesId}, 'completed', this)">✅ Completada</div>
+                            <div class="status-option ${status === 'on_hold' ? 'active' : ''}" onclick="updateWatchlistStatus(${seriesId}, 'on_hold', this)">⏸️ En Pausa</div>
+                            <div class="status-option ${status === 'dropped' ? 'active' : ''}" onclick="updateWatchlistStatus(${seriesId}, 'dropped', this)">❌ Abandonada</div>
+                            <hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.2);">
+                            <div class="status-option remove" onclick="removeFromWatchlist(${seriesId}, this)">🗑️ Eliminar de mi lista</div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', menuHTML);
+                }
+            } else {
+                button.classList.remove('in-list');
+                icon.textContent = '➕';
+                button.title = 'Agregar a mi lista';
+                
+                // Remove menu if exists
+                if (menu) {
+                    menu.remove();
+                }
+            }
+        }
+
+        // Show/hide watchlist status menu on right click
+        document.addEventListener('contextmenu', function(e) {
+            const watchlistBtn = e.target.closest('.watchlist-btn.in-list');
+            if (watchlistBtn) {
+                e.preventDefault();
+                const menu = watchlistBtn.closest('.watchlist-button-container').querySelector('.watchlist-status-menu');
+                if (menu) {
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                }
+            }
+        });
+
+        // Hide watchlist menus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.watchlist-button-container')) {
+                document.querySelectorAll('.watchlist-status-menu').forEach(menu => {
+                    menu.style.display = 'none';
+                });
+            }
+        });
+
+        // Mark as watched functionality
+        function markAsWatched(seriesId, button) {
+            fetch(`/series/${seriesId}/watched`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mark button as active
+                    button.classList.add('active');
+                    button.title = 'Ya la viste';
+                    
+                    // Show toast notification
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al marcar como vista', 'error');
+            });
+        }
+
+        // Global search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('globalSearch');
+            const searchResults = document.getElementById('searchResults');
+            const mobileSearchInput = document.getElementById('mobileGlobalSearch');
+            const mobileSearchResults = document.getElementById('mobileSearchResults');
+            let searchTimeout;
+            
+            // Desktop search functionality
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    handleSearchInput(query, searchResults, false);
+                });
+            }
+            
+            // Mobile search functionality
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    handleSearchInput(query, mobileSearchResults, true);
+                });
+            }
+            
+            function handleSearchInput(query, resultsContainer, isMobile) {
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+                
+                // Show loading
+                resultsContainer.style.display = 'block';
+                resultsContainer.innerHTML = '<div class="search-loading">🔍 Buscando...</div>';
+                
+                searchTimeout = setTimeout(() => {
+                    performSearch(query, resultsContainer);
+                }, 300);
+            }
+            
+            // Hide results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    if (searchResults) searchResults.style.display = 'none';
+                    if (mobileSearchResults) mobileSearchResults.style.display = 'none';
+                }
+            });
+            
+            function performSearch(query, resultsContainer) {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displaySearchResults(data, resultsContainer);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    resultsContainer.innerHTML = '<div class="search-no-results">Error en la búsqueda</div>';
+                });
+            }
+            
+            function displaySearchResults(data, resultsContainer) {
+                let html = '';
+                
+                // Series results
+                if (data.series && data.series.length > 0) {
+                    html += '<div class="search-section">';
+                    html += '<div class="search-section-title">📺 Series</div>';
+                    data.series.forEach(series => {
+                        const posterUrl = series.poster_path ? 
+                            `https://image.tmdb.org/t/p/w200${series.poster_path}` : 
+                            '/images/placeholder-poster.jpg';
+                        const year = series.first_air_date ? new Date(series.first_air_date).getFullYear() : '';
+                        
+                        const displayTitle = series.spanish_title || series.display_title || series.title;
+                        html += `
+                            <a href="/series/${series.id}" class="search-item">
+                                <img src="${posterUrl}" alt="${displayTitle}" class="search-item-image" onerror="this.src='/images/placeholder-poster.jpg'">
+                                <div class="search-item-info">
+                                    <div class="search-item-title">${displayTitle}</div>
+                                    <div class="search-item-meta">${year} • ⭐ ${series.vote_average || 'N/A'}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
+                    html += '</div>';
+                }
+                
+                // Actors results
+                if (data.actors && data.actors.length > 0) {
+                    html += '<div class="search-section">';
+                    html += '<div class="search-section-title">🎭 Actores</div>';
+                    data.actors.forEach(actor => {
+                        const profileUrl = actor.profile_path ? 
+                            `https://image.tmdb.org/t/p/w200${actor.profile_path}` : 
+                            '/images/placeholder-actor.jpg';
+                        const birthYear = actor.birthday ? new Date(actor.birthday).getFullYear() : '';
+                        
+                        html += `
+                            <a href="/actors/${actor.id}" class="search-item">
+                                <img src="${profileUrl}" alt="${actor.name}" class="search-item-image" onerror="this.src='/images/placeholder-actor.jpg'">
+                                <div class="search-item-info">
+                                    <div class="search-item-title">${actor.name}</div>
+                                    <div class="search-item-meta">${birthYear ? `Nacido en ${birthYear}` : 'Actor'} • Popularidad: ${Math.round(actor.popularity || 0)}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
+                    html += '</div>';
+                }
+                
+                if (!html) {
+                    html = '<div class="search-no-results">😕 No se encontraron resultados</div>';
+                }
+                
+                resultsContainer.innerHTML = html;
+                resultsContainer.style.display = 'block';
+            }
+        });
+
+        // Comments functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle comment form submission
+            const commentForm = document.getElementById('commentForm');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const seriesId = window.location.pathname.split('/').pop();
+                    const content = document.getElementById('commentContent').value.trim();
+                    const isSpoiler = document.getElementById('isSpoiler').checked;
+                    
+                    if (!content) return;
+                    
+                    fetch(`/series/${seriesId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({
+                            content: content,
+                            is_spoiler: isSpoiler
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showRatingToast(data.message);
+                            // Reload page to show new comment
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showRatingToast('Error al enviar comentario', 'error');
+                    });
+                });
+            }
+            
+            // Handle spoiler reveal
+            document.querySelectorAll('.reveal-spoiler-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const commentContent = this.closest('.comment-content');
+                    commentContent.classList.remove('spoiler-hidden');
+                    this.parentElement.remove();
+                });
+            });
+        });
     </script>
     {{-- @vite('resources/js/app.js') --}}
     

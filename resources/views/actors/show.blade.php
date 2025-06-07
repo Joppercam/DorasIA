@@ -1,0 +1,503 @@
+@extends('layouts.app')
+
+@section('title', $actor->name . ' - Actor - Dorasia')
+
+@section('content')
+<!-- Actor Hero Section -->
+<section class="hero-section" style="background: linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(40,40,40,0.9) 100%), url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/original' . $actor->profile_path : '' }}'); background-size: cover; background-position: center; min-height: 100vh; padding-top: 120px; padding-bottom: 120px;">
+    <div class="hero-overlay"></div>
+    <div class="hero-content" style="height: 100%; display: flex; align-items: center; justify-content: center; padding: 2rem 0;">
+        <div class="hero-info-box" style="max-width: 1000px; width: 100%;">
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: center; min-height: 400px;">
+                <!-- Actor Photo -->
+                <div style="text-align: center;">
+                    @if($actor->profile_path)
+                    <img src="https://image.tmdb.org/t/p/w300{{ $actor->profile_path }}" 
+                         alt="{{ $actor->name }}"
+                         style="width: 280px; height: 380px; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); border: 4px solid rgba(255,255,255,0.1);">
+                    @else
+                    <div style="width: 280px; height: 380px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);">
+                        👤
+                    </div>
+                    @endif
+                </div>
+                
+                <!-- Actor Info -->
+                <div style="padding-left: 1rem;">
+                    <h1 class="hero-title" style="margin-bottom: 1rem; font-size: 3.5rem; font-weight: 700;">{{ $actor->name }}</h1>
+                    
+                    <!-- Actor Meta -->
+                    <div class="hero-meta" style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                        @if($actor->birthday)
+                        <span class="hero-category" style="background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.3); padding: 0.6rem 1rem; font-size: 0.9rem;">
+                            🎂 {{ \Carbon\Carbon::parse($actor->birthday)->format('d/m/Y') }}
+                            @if(\Carbon\Carbon::parse($actor->birthday)->diffInYears(\Carbon\Carbon::now()) > 0)
+                            ({{ \Carbon\Carbon::parse($actor->birthday)->age }} años)
+                            @endif
+                        </span>
+                        @endif
+                        
+                        @if($actor->display_place_of_birth)
+                        <span class="hero-category" style="background: rgba(40, 167, 69, 0.15); border-color: rgba(40, 167, 69, 0.3); padding: 0.6rem 1rem; font-size: 0.9rem;">
+                            📍 {{ $actor->display_place_of_birth }}
+                        </span>
+                        @endif
+                        
+                        @if($actor->popularity)
+                        <span class="hero-category" style="background: rgba(0, 212, 255, 0.15); border-color: rgba(0, 212, 255, 0.3); padding: 0.6rem 1rem; font-size: 0.9rem;">
+                            ⭐ Popularidad: {{ number_format($actor->popularity, 1) }}
+                        </span>
+                        @endif
+                    </div>
+                    
+                    @if($actor->display_biography)
+                    <p class="hero-description" style="line-height: 1.7; font-size: 1.1rem; margin-bottom: 2rem; max-width: 600px;">
+                        {{ Str::limit($actor->display_biography, 400) }}
+                    </p>
+                    @endif
+                    
+                    @if($actor->also_known_as)
+                    <div style="margin-top: 2rem;">
+                        <h4 style="color: rgba(255,255,255,0.8); font-size: 1rem; margin-bottom: 0.8rem; font-weight: 600;">También conocido como:</h4>
+                        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            @foreach(array_slice($actor->also_known_as, 0, 3) as $alias)
+                            <span style="background: rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 16px; font-size: 0.85rem; color: rgba(255,255,255,0.9); font-weight: 500;">
+                                {{ $alias }}
+                            </span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Actor Information -->
+<div style="margin-top: -100px; position: relative; z-index: 20;" id="info">
+    
+    <!-- Actor Details -->
+    <section class="content-section">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Personal Information -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">👤 Información Personal</h3>
+                <div class="detail-grid" style="grid-template-columns: 1fr;">
+                    @if($actor->gender)
+                    <div class="detail-item">
+                        <span class="detail-label">🚻 Género</span>
+                        <span class="detail-value">{{ $actor->gender == 1 ? 'Femenino' : ($actor->gender == 2 ? 'Masculino' : 'No especificado') }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->birthday)
+                    <div class="detail-item">
+                        <span class="detail-label">🎂 Fecha de Nacimiento</span>
+                        <span class="detail-value">{{ \Carbon\Carbon::parse($actor->birthday)->format('d/m/Y') }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->deathday)
+                    <div class="detail-item">
+                        <span class="detail-label">🕊️ Fecha de Fallecimiento</span>
+                        <span class="detail-value">{{ \Carbon\Carbon::parse($actor->deathday)->format('d/m/Y') }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->display_place_of_birth)
+                    <div class="detail-item">
+                        <span class="detail-label">📍 Lugar de Nacimiento</span>
+                        <span class="detail-value">{{ $actor->display_place_of_birth }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->known_for_department)
+                    <div class="detail-item">
+                        <span class="detail-label">🎭 Conocido por</span>
+                        <span class="detail-value">{{ $actor->known_for_department === 'Acting' ? 'Actuación' : $actor->known_for_department }}</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Career Stats -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">📊 Estadísticas de Carrera</h3>
+                <div class="detail-grid" style="grid-template-columns: 1fr;">
+                    @if($actor->popularity)
+                    <div class="detail-item">
+                        <span class="detail-label">⭐ Popularidad TMDB</span>
+                        <span class="detail-value">{{ number_format($actor->popularity, 2) }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($popularSeries->count() > 0)
+                    <div class="detail-item">
+                        <span class="detail-label">📺 Dramas Principales</span>
+                        <span class="detail-value">{{ $popularSeries->count() }} series</span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->birthday)
+                    <div class="detail-item">
+                        <span class="detail-label">🎬 Años de Carrera</span>
+                        <span class="detail-value">
+                            @php
+                                $startYear = \Carbon\Carbon::parse($actor->birthday)->addYears(18)->year;
+                                $currentYear = \Carbon\Carbon::now()->year;
+                                $careerYears = max(0, $currentYear - $startYear);
+                            @endphp
+                            {{ $careerYears }}+ años
+                        </span>
+                    </div>
+                    @endif
+                    
+                    @if($actor->also_known_as && count($actor->also_known_as) > 0)
+                    <div class="detail-item">
+                        <span class="detail-label">📝 Nombres Alternativos</span>
+                        <span class="detail-value">{{ count($actor->also_known_as) }} nombres</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Series/Dramas -->
+    @if($popularSeries->count() > 0)
+    <section class="content-section">
+        <h2 class="section-title">🎭 Dramas Populares</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            @foreach($popularSeries as $series)
+            <div style="background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.05); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <a href="{{ route('series.show', $series->id) }}" style="text-decoration: none; color: inherit;">
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        @if($series->poster_path)
+                        <img src="https://image.tmdb.org/t/p/w200{{ $series->poster_path }}" 
+                             alt="{{ $series->title }}"
+                             style="width: 80px; height: 120px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
+                        @else
+                        <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; flex-shrink: 0;">
+                            📺
+                        </div>
+                        @endif
+                        
+                        <div style="flex: 1;">
+                            <h4 style="color: white; font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.3;">
+                                {{ $series->display_title }}
+                            </h4>
+                            
+                            @if($series->pivot && $series->pivot->character)
+                            <p style="color: rgba(0, 212, 255, 0.9); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">
+                                Personaje: {{ $series->pivot->character }}
+                            </p>
+                            @endif
+                            
+                            @if($series->first_air_date)
+                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-bottom: 0.5rem;">
+                                📅 {{ \Carbon\Carbon::parse($series->first_air_date)->format('Y') }}
+                            </p>
+                            @endif
+                            
+                            @if($series->vote_average > 0)
+                            <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                <span style="background: rgba(255, 215, 0, 0.2); color: #ffd700; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                                    ⭐ {{ number_format($series->vote_average, 1) }}
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    <!-- Biography Extended -->
+    @if($actor->display_biography && strlen($actor->display_biography) > 300)
+    <section class="content-section">
+        <div class="detail-section">
+            <h3 class="detail-section-title">📖 Biografía Completa</h3>
+            <div style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1rem; text-align: justify;">
+                {{ $actor->display_biography }}
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Comments Section -->
+    <section class="content-section">
+        <h2 class="section-title">💬 Comentarios sobre {{ $actor->name }} ({{ $comments->total() }})</h2>
+        
+        @auth
+        <!-- Comment Form -->
+        <div class="comment-form-container">
+            <form id="actorCommentForm" class="comment-form">
+                @csrf
+                <textarea 
+                    id="actorCommentContent" 
+                    placeholder="¿Qué opinas sobre {{ $actor->name }}? Comparte tu comentario..."
+                    class="comment-textarea"
+                    maxlength="1000"
+                    required></textarea>
+                
+                <div class="comment-form-actions">
+                    <label class="spoiler-checkbox">
+                        <input type="checkbox" id="actorIsSpoiler">
+                        <span>⚠️ Contiene spoilers</span>
+                    </label>
+                    <button type="submit" class="comment-submit-btn">
+                        📝 Publicar Comentario
+                    </button>
+                </div>
+            </form>
+        </div>
+        @else
+        <div class="auth-prompt">
+            <p>💡 <a href="{{ route('login') }}">Inicia sesión</a> para participar en la conversación</p>
+        </div>
+        @endauth
+
+        <!-- Comments List - Visible to everyone -->
+        <div class="comments-container">
+            @forelse($comments as $comment)
+            <div class="comment {{ $comment->is_spoiler ? 'spoiler-comment' : '' }}">
+                <div class="comment-header">
+                    <div class="comment-user">
+                        @if($comment->user->avatar)
+                        <img src="{{ asset('storage/' . $comment->user->avatar) }}" alt="{{ $comment->user->name }}" class="comment-avatar">
+                        @else
+                        <div class="comment-avatar-placeholder">{{ substr($comment->user->name, 0, 1) }}</div>
+                        @endif
+                        <div class="comment-user-info">
+                            <span class="comment-username">{{ $comment->user->name }}</span>
+                            <span class="comment-date">{{ $comment->created_at->diffForHumans() }}</span>
+                        </div>
+                    </div>
+                    @if($comment->is_spoiler)
+                    <span class="spoiler-badge">⚠️ Spoiler</span>
+                    @endif
+                </div>
+                
+                <div class="comment-content {{ $comment->is_spoiler ? 'spoiler-hidden' : '' }}">
+                    {{ $comment->content }}
+                    @if($comment->is_spoiler)
+                    <div class="spoiler-overlay">
+                        <button class="reveal-spoiler-btn">👁️ Mostrar spoiler</button>
+                    </div>
+                    @endif
+                </div>
+                
+                @if($comment->replies->count() > 0)
+                <div class="comment-replies">
+                    @foreach($comment->replies as $reply)
+                    <div class="comment reply">
+                        <div class="comment-header">
+                            <div class="comment-user">
+                                @if($reply->user->avatar)
+                                <img src="{{ asset('storage/' . $reply->user->avatar) }}" alt="{{ $reply->user->name }}" class="comment-avatar">
+                                @else
+                                <div class="comment-avatar-placeholder">{{ substr($reply->user->name, 0, 1) }}</div>
+                                @endif
+                                <div class="comment-user-info">
+                                    <span class="comment-username">{{ $reply->user->name }}</span>
+                                    <span class="comment-date">{{ $reply->created_at->diffForHumans() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-content">{{ $reply->content }}</div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+            @empty
+            <div class="no-comments">
+                <p>🤔 ¡Sé el primero en comentar sobre {{ $actor->name }}!</p>
+            </div>
+            @endforelse
+        </div>
+
+        <!-- Pagination -->
+        @if($comments->hasPages())
+        <div class="comments-pagination">
+            {{ $comments->links() }}
+        </div>
+        @endif
+    </section>
+
+</div>
+
+<style>
+@media (max-width: 768px) {
+    .hero-info-box > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+        text-align: center !important;
+    }
+    
+    .hero-info-box img,
+    .hero-info-box > div:first-child > div:first-child > div {
+        width: 150px !important;
+        height: 200px !important;
+        margin: 0 auto !important;
+    }
+    
+    .content-section > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .hero-meta {
+        justify-content: center !important;
+        text-align: center !important;
+    }
+    
+    .hero-title {
+        font-size: 2rem !important;
+        text-align: center !important;
+    }
+    
+    .hero-description {
+        font-size: 0.95rem !important;
+        text-align: center !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Actor Comment Form Handler
+    const actorCommentForm = document.getElementById('actorCommentForm');
+    if (actorCommentForm) {
+        actorCommentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('actorCommentContent').value.trim();
+            const isSpoiler = document.getElementById('actorIsSpoiler').checked;
+            const submitBtn = this.querySelector('.comment-submit-btn');
+            
+            if (!content) {
+                alert('Por favor escribe un comentario');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = '📤 Enviando...';
+            
+            // Send AJAX request
+            fetch('{{ route("actors.comments.store", $actor->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    content: content,
+                    is_spoiler: isSpoiler
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear form
+                    document.getElementById('actorCommentContent').value = '';
+                    document.getElementById('actorIsSpoiler').checked = false;
+                    
+                    // Add new comment to the list
+                    addCommentToList(data.comment);
+                    
+                    // Show success message
+                    showNotification('¡Comentario publicado exitosamente!', 'success');
+                } else {
+                    showNotification('Error al publicar el comentario', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error de conexión', 'error');
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📝 Publicar Comentario';
+            });
+        });
+    }
+    
+    // Spoiler reveal functionality
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('reveal-spoiler-btn')) {
+            const spoilerContent = e.target.closest('.comment-content');
+            spoilerContent.classList.remove('spoiler-hidden');
+            e.target.remove();
+        }
+    });
+    
+    function addCommentToList(comment) {
+        const commentsContainer = document.querySelector('.comments-container');
+        const noComments = commentsContainer.querySelector('.no-comments');
+        
+        if (noComments) {
+            noComments.remove();
+        }
+        
+        const commentHtml = `
+            <div class="comment ${comment.is_spoiler ? 'spoiler-comment' : ''}">
+                <div class="comment-header">
+                    <div class="comment-user">
+                        ${comment.user.avatar ? 
+                            `<img src="${comment.user.avatar}" alt="${comment.user.name}" class="comment-avatar">` :
+                            `<div class="comment-avatar-placeholder">${comment.user.name.charAt(0)}</div>`
+                        }
+                        <div class="comment-user-info">
+                            <span class="comment-username">${comment.user.name}</span>
+                            <span class="comment-date">${comment.created_at}</span>
+                        </div>
+                    </div>
+                    ${comment.is_spoiler ? '<span class="spoiler-badge">⚠️ Spoiler</span>' : ''}
+                </div>
+                
+                <div class="comment-content ${comment.is_spoiler ? 'spoiler-hidden' : ''}">
+                    ${comment.content}
+                    ${comment.is_spoiler ? '<div class="spoiler-overlay"><button class="reveal-spoiler-btn">👁️ Mostrar spoiler</button></div>' : ''}
+                </div>
+            </div>
+        `;
+        
+        commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+    }
+    
+    function showNotification(message, type) {
+        // Simple notification - you can enhance this
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            background: ${type === 'success' ? 'linear-gradient(135deg, #28a745, #20c997)' : 'linear-gradient(135deg, #dc3545, #fd7e14)'};
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+});
+</script>
+@endsection

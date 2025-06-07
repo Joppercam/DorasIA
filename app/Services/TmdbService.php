@@ -30,7 +30,7 @@ class TmdbService
             'api_key' => $this->apiKey,
             'query' => $query,
             'page' => $page,
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'with_origin_country' => 'KR'
         ];
 
@@ -47,7 +47,7 @@ class TmdbService
         $defaultParams = [
             'api_key' => $this->apiKey,
             'with_origin_country' => 'KR',
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'sort_by' => 'popularity.desc',
             'page' => 1
         ];
@@ -66,7 +66,7 @@ class TmdbService
         
         $params = [
             'api_key' => $this->apiKey,
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'append_to_response' => 'credits,images,videos,keywords,similar,recommendations,external_ids'
         ];
 
@@ -82,7 +82,7 @@ class TmdbService
         
         $params = [
             'api_key' => $this->apiKey,
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'append_to_response' => 'credits,images,videos'
         ];
 
@@ -98,7 +98,7 @@ class TmdbService
         
         $params = [
             'api_key' => $this->apiKey,
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'append_to_response' => 'credits,images,videos'
         ];
 
@@ -114,7 +114,7 @@ class TmdbService
         
         $params = [
             'api_key' => $this->apiKey,
-            'language' => 'en-US',
+            'language' => 'es-ES',
             'append_to_response' => 'tv_credits,movie_credits,images,external_ids'
         ];
 
@@ -183,7 +183,7 @@ class TmdbService
                 ->get($this->baseUrl . $endpoint, $params);
 
             if ($response->successful()) {
-                return $response->json();
+                return $response->json() ?? [];
             }
 
             Log::error('TMDB API Error', [
@@ -244,5 +244,95 @@ class TmdbService
             'first_air_date.lte' => $today,
             'first_air_date.gte' => $threeMonthsAgo
         ]);
+    }
+
+    /**
+     * Get series credits (cast and crew)
+     */
+    public function getSeriesCredits(int $seriesId): array
+    {
+        $endpoint = "/tv/{$seriesId}/credits";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'en-US'
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+
+    /**
+     * Get person combined credits (movies and TV)
+     */
+    public function getPersonCombinedCredits(int $personId): array
+    {
+        $endpoint = "/person/{$personId}/combined_credits";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'en-US'
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Get person images
+     */
+    public function getPersonImages(int $personId): array
+    {
+        $endpoint = "/person/{$personId}/images";
+        
+        $params = [
+            'api_key' => $this->apiKey
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Get series reviews
+     */
+    public function getSeriesReviews(int $seriesId, int $page = 1): array
+    {
+        $endpoint = "/tv/{$seriesId}/reviews";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'es-ES',
+            'page' => $page
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Get series external IDs (IMDB, etc)
+     */
+    public function getSeriesExternalIds(int $seriesId): array
+    {
+        $endpoint = "/tv/{$seriesId}/external_ids";
+        
+        $params = [
+            'api_key' => $this->apiKey
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Generic GET method for any TMDB endpoint
+     */
+    public function get(string $endpoint, array $params = []): array
+    {
+        $defaultParams = [
+            'api_key' => $this->apiKey,
+            'language' => 'en-US'
+        ];
+
+        $params = array_merge($defaultParams, $params);
+
+        return $this->makeRequest($endpoint, $params);
     }
 }

@@ -8,17 +8,43 @@
 <section class="hero-section" style="background-image: url('{{ $featuredSeries->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $featuredSeries->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama' }}')">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-        <h1 class="hero-title">{{ $featuredSeries->display_title }}</h1>
-        <p class="hero-description">
-            {{ Str::limit($featuredSeries->display_overview ?: 'Descubre este increíble K-Drama y sumérgete en una historia única llena de emociones.', 300) }}
-        </p>
-        <div class="hero-buttons">
-            <a href="{{ route('series.show', $featuredSeries->id) }}" class="btn btn-primary">
-                Ver Ahora
-            </a>
-            <a href="{{ route('series.show', $featuredSeries->id) }}" class="btn btn-secondary">
-                Más Información
-            </a>
+        <div class="hero-info-box">
+            <!-- Categories -->
+            @if($featuredSeries->genres->count() > 0)
+            <div class="hero-categories">
+                @foreach($featuredSeries->genres->take(3) as $genre)
+                    <span class="hero-category">{{ $genre->display_name ?: $genre->name }}</span>
+                @endforeach
+            </div>
+            @endif
+            
+            <h1 class="hero-title">{{ $featuredSeries->display_title }}</h1>
+            
+            <!-- Rating and Year -->
+            <div class="hero-meta">
+                @if($featuredSeries->vote_average > 0)
+                <div class="hero-rating">
+                    <span class="rating-stars">⭐</span>
+                    <span class="rating-number">{{ number_format($featuredSeries->vote_average, 1) }}</span>
+                </div>
+                @endif
+                @if($featuredSeries->first_air_date)
+                <span class="hero-year">{{ $featuredSeries->first_air_date->format('Y') }}</span>
+                @endif
+                @if($featuredSeries->number_of_episodes)
+                <span class="hero-episodes">{{ $featuredSeries->number_of_episodes }} episodios</span>
+                @endif
+            </div>
+            
+            <p class="hero-description">
+                {{ Str::limit($featuredSeries->display_overview ?: 'Descubre este increíble K-Drama y sumérgete en una historia única llena de emociones.', 280) }}
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="{{ route('series.show', $featuredSeries->id) }}" class="btn btn-hero">
+                    Más Información
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -27,36 +53,6 @@
 <!-- Content Sections -->
 <div style="margin-top: -100px; position: relative; z-index: 20;">
 
-    <!-- News Carousel -->
-    @if($latestNews->count() > 0)
-    <section class="content-section">
-        <div class="news-carousel">
-            <h2 class="news-section-title">Últimas Noticias K-Drama</h2>
-            <div class="carousel-container">
-                <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
-                <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
-                <div class="carousel" data-current="0">
-                    @foreach($latestNews as $news)
-                    <a href="{{ route('news.show', $news->slug) }}" class="news-card" 
-                       style="background-image: url('{{ $news->featured_image_url }}'); text-decoration: none; color: inherit;">
-                        <div class="news-card-overlay"></div>
-                        <div class="news-card-content">
-                            <span class="news-card-category">{{ ucfirst($news->category) }}</span>
-                            <h3 class="news-card-title">{{ $news->title }}</h3>
-                            <p class="news-card-excerpt">{{ $news->excerpt }}</p>
-                            <div class="news-card-meta">
-                                <span>{{ $news->published_at->diffForHumans() }}</span>
-                                <span>•</span>
-                                <span>{{ $news->read_time }}</span>
-                            </div>
-                        </div>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </section>
-    @endif
 
     <!-- Series Populares -->
     @if($popularSeries->count() > 0)
@@ -81,6 +77,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -101,22 +99,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -159,6 +143,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -179,22 +165,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -237,6 +209,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -257,22 +231,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -315,6 +275,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -335,22 +297,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -393,6 +341,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -413,22 +363,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -471,6 +407,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -491,22 +429,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -549,6 +473,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -569,22 +495,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -627,6 +539,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -647,22 +561,8 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
@@ -705,6 +605,8 @@
                     @endif
                     
                     @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
                     
                     <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -725,22 +627,81 @@
                             @endif
                         </div>
                         
-                        @if($series->people->where('pivot.job', 'Acting')->count() > 0)
-                        <div class="card-cast">
-                            <div class="card-cast-title">Reparto Principal</div>
-                            <div class="actor-images">
-                                @foreach($series->people->where('pivot.job', 'Acting')->take(4) as $actor)
-                                <div class="actor-image" 
-                                     style="background-image: url('{{ $actor->profile_path ? 'https://image.tmdb.org/t/p/w185' . $actor->profile_path : 'https://via.placeholder.com/20x20/444/fff?text=' . substr($actor->name, 0, 1) }}')"
-                                     title="{{ $actor->name }}"></div>
-                                @endforeach
-                            </div>
-                            {{ $series->people->where('pivot.job', 'Acting')->take(3)->pluck('name')->join(', ') }}
-                        </div>
-                        @endif
                         
                         <div class="card-streaming">
-                            <div class="card-streaming-title">Disponible en</div>
+                            <div class="streaming-platforms">
+                                @php
+                                    $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];
+                                    $selectedPlatforms = array_rand(array_flip($platforms), rand(1, 2));
+                                    if (!is_array($selectedPlatforms)) $selectedPlatforms = [$selectedPlatforms];
+                                @endphp
+                                @foreach($selectedPlatforms as $platform)
+                                    <span class="streaming-platform {{ strtolower(str_replace('+', '', $platform)) }}">{{ $platform }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Series Vistas -->
+    @if(auth()->check() && $watchedSeries && $watchedSeries->count() > 0)
+    <section class="content-section">
+        <h2 class="section-title">🎬 Series que has Visto</h2>
+        <div class="carousel-container">
+            <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
+            <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
+            <div class="carousel" data-current="0">
+                @foreach($watchedSeries as $series)
+                <div class="card" 
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                    <div class="card-overlay"></div>
+                    
+                    <!-- Category badges at the top -->
+                    @if($series->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($series->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
+                    <!-- Watched badge -->
+                    <div style="position: absolute; top: 0.8rem; left: 0.8rem; z-index: 10;">
+                        <span style="background: rgba(40, 167, 69, 0.9); color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            ✅ Vista
+                        </span>
+                    </div>
+                    
+                    @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                    @include('components.series-stats', ['series' => $series])
+                    
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
+                    <div class="card-info">
+                        <div class="card-title">{{ $series->display_title }}</div>
+                        <div class="card-meta">
+                            @if($series->vote_average > 0)
+                            <span class="card-rating">⭐ {{ number_format($series->vote_average, 1) }}</span>
+                            @endif
+                            @if($series->first_air_date)
+                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
+                            @endif
+                            @if($series->number_of_episodes)
+                            <span class="card-episodes">{{ $series->number_of_episodes }} ep.</span>
+                            @endif
+                        </div>
+                        
+                        
+                        <div class="card-streaming">
                             <div class="streaming-platforms">
                                 @php
                                     $platforms = ['Netflix', 'Disney+', 'Prime', 'Viki'];

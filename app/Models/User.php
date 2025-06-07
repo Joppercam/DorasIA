@@ -57,4 +57,25 @@ class User extends Authenticatable
     {
         return $this->hasMany(TitleRating::class);
     }
+
+    // Alias for ratings
+    public function ratings()
+    {
+        return $this->hasMany(TitleRating::class);
+    }
+
+    public function watchHistory()
+    {
+        return $this->hasMany(WatchHistory::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function watchlist()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
 }

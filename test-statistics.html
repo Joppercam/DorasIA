@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Statistics</title>
+    <style>
+        body { 
+            background: #111; 
+            color: white; 
+            padding: 20px; 
+            font-family: Arial, sans-serif; 
+        }
+        .card-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .card {
+            width: 220px;
+            height: 320px;
+            background: #333;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .series-stats {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            z-index: 12;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 8px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            opacity: 1;
+            transition: all 0.3s ease;
+            width: 28px;
+        }
+        .stats-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 100%;
+            justify-content: center;
+        }
+        .stat-icon {
+            font-size: 10px;
+            line-height: 1;
+            opacity: 0.95;
+            margin-bottom: 1px;
+        }
+        .stat-count {
+            font-size: 8px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+            text-align: center;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .card:hover .series-stats {
+            background: rgba(0, 0, 0, 0.9);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-50%) scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>Vista Previa de Estadísticas en Cards - Barra Vertical</h1>
+    
+    <div class="card-container">
+        <!-- Card 1 -->
+        <div class="card">
+            <div class="series-stats">
+                <div class="stats-row">
+                    <div class="stat-item likes">
+                        <span class="stat-icon">👍</span>
+                        <span class="stat-count">2</span>
+                    </div>
+                    <div class="stat-item dislikes">
+                        <span class="stat-icon">👎</span>
+                        <span class="stat-count">5</span>
+                    </div>
+                    <div class="stat-item loves">
+                        <span class="stat-icon">❤️</span>
+                        <span class="stat-count">4</span>
+                    </div>
+                    <div class="stat-item watchlist">
+                        <span class="stat-icon">📺</span>
+                        <span class="stat-count">9</span>
+                    </div>
+                    <div class="stat-item watched">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-count">0</span>
+                    </div>
+                    <div class="stat-item comments">
+                        <span class="stat-icon">💬</span>
+                        <span class="stat-count">3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+            <div class="series-stats">
+                <div class="stats-row">
+                    <div class="stat-item likes">
+                        <span class="stat-icon">👍</span>
+                        <span class="stat-count">1.2k</span>
+                    </div>
+                    <div class="stat-item dislikes">
+                        <span class="stat-icon">👎</span>
+                        <span class="stat-count">125</span>
+                    </div>
+                    <div class="stat-item loves">
+                        <span class="stat-icon">❤️</span>
+                        <span class="stat-count">2.5k</span>
+                    </div>
+                    <div class="stat-item watchlist">
+                        <span class="stat-icon">📺</span>
+                        <span class="stat-count">3.1k</span>
+                    </div>
+                    <div class="stat-item watched">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-count">1.8k</span>
+                    </div>
+                    <div class="stat-item comments">
+                        <span class="stat-icon">💬</span>
+                        <span class="stat-count">456</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>Mueve el mouse sobre las cards para ver el efecto hover.</p>
+</body>
+</html>

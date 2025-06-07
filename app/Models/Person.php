@@ -15,9 +15,11 @@ class Person extends Model
         'name',
         'known_for_department',
         'biography',
+        'biography_es',
         'birthday',
         'deathday',
         'place_of_birth',
+        'place_of_birth_es',
         'profile_path',
         'imdb_id',
         'tmdb_id',
@@ -43,6 +45,12 @@ class Person extends Model
                     ->withTimestamps();
     }
 
+    // Alias for series to match controller expectations
+    public function titles(): BelongsToMany
+    {
+        return $this->series();
+    }
+
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
@@ -51,5 +59,26 @@ class Person extends Model
     public function profileImages(): MorphMany
     {
         return $this->images()->where('type', 'profile');
+    }
+    
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+    
+    /**
+     * Get display biography (Spanish if available, otherwise English)
+     */
+    public function getDisplayBiographyAttribute(): ?string
+    {
+        return $this->biography_es ?: $this->biography;
+    }
+    
+    /**
+     * Get display place of birth (Spanish if available, otherwise English)
+     */
+    public function getDisplayPlaceOfBirthAttribute(): ?string
+    {
+        return $this->place_of_birth_es ?: $this->place_of_birth;
     }
 }
