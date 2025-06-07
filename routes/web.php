@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/series/{id}', [HomeController::class, 'series'])->name('series.show');
+<<<<<<< Updated upstream
 
 // Search API route
 Route::get('/api/search', [HomeController::class, 'search'])->name('api.search');
@@ -69,3 +70,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/series/{series}/comments', [HomeController::class, 'storeComment'])->name('series.comments.store');
     Route::post('/actores/{actor}/comments', [ActorsController::class, 'storeComment'])->name('actors.comments.store');
 });
+=======
+  Route::get('/debug', function() {
+      return [
+          'series_count' => \App\Models\Series::count(),
+          'php_version' => PHP_VERSION,
+          'laravel_version' => app()->version(),
+          'view_exists' => view()->exists('home'),
+          'layout_exists' => view()->exists('layouts.app')
+      ];
+  });
+>>>>>>> Stashed changes
