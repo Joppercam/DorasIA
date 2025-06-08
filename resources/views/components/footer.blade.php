@@ -75,12 +75,76 @@ footer a[href*="dendria"]:hover {
 
 @media (max-width: 768px) {
     footer {
-        padding: 2rem 2% 1.5rem !important;
+        padding: 2rem 1rem 1.5rem !important;
+        margin-top: 2rem !important;
     }
     
     footer > div:first-child {
         grid-template-columns: 1fr !important;
-        gap: 1.5rem !important;
+        gap: 2rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    footer h4 {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    footer p {
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Badges de Chile y K-drama */
+    footer > div:first-child > div:first-child > div {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+    
+    footer > div:first-child > div:first-child > div > span {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+        flex: 1 !important;
+        text-align: center !important;
+        min-width: 120px !important;
+    }
+    
+    /* Listas de géneros y demás */
+    footer ul {
+        font-size: 0.85rem !important;
+        line-height: 1.8 !important;
+    }
+    
+    /* Sección de copyright */
+    footer > div:last-child {
+        padding-top: 1.5rem !important;
+    }
+    
+    footer > div:last-child p {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.3rem !important;
+        padding: 0 0.5rem !important;
+    }
+    
+    /* Crédito de Dendria en móvil */
+    footer > div:last-child p:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.3rem !important;
+        margin-top: 0.8rem !important;
+    }
+    
+    footer > div:last-child p:last-child > span:nth-child(2) {
+        display: none !important; /* Ocultar el separador | */
+    }
+    
+    /* Ocultar algunas secciones en móvil muy pequeño */
+    @media (max-width: 480px) {
+        footer > div:first-child > div:nth-child(3),
+        footer > div:first-child > div:nth-child(4) {
+            display: none !important;
+        }
     }
 }
 </style>
