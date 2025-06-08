@@ -44,6 +44,20 @@
                 @include('components.watchlist-button', ['series' => $series])
             </div>
             @endauth
+            
+            <!-- Mobile Actions Bar -->
+            <div class="mobile-actions-bar">
+                @auth
+                    @include('components.rating-buttons', ['series' => $series])
+                    @include('components.watchlist-button', ['series' => $series])
+                @else
+                    <div class="mobile-auth-prompt">
+                        <a href="{{ route('login') }}" class="mobile-login-btn">
+                            🔑 Inicia Sesión para Calificar
+                        </a>
+                    </div>
+                @endauth
+            </div>
         </div>
     </div>
 </section>
@@ -478,7 +492,61 @@
     display: block;
 }
 
+/* Mobile Actions Bar */
+.mobile-actions-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-auth-prompt {
+    text-align: center;
+}
+
+.mobile-login-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobile-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
 @media (max-width: 768px) {
+    /* Show mobile actions bar */
+    .mobile-actions-bar {
+        display: block;
+    }
+    
+    /* Hide desktop actions */
+    .hero-actions {
+        display: none !important;
+    }
+    
+    /* Add bottom padding to avoid overlap */
+    body {
+        padding-bottom: 80px;
+    }
+    
     .content-section > div:first-child {
         grid-template-columns: 1fr !important;
         gap: 2rem !important;
@@ -501,6 +569,116 @@
     .platform-item {
         font-size: 0.75rem;
         padding: 0.3rem 0.6rem;
+    }
+    
+    /* Mobile optimizations for series detail */
+    .series-detail-container {
+        display: block !important;
+        gap: 1.5rem !important;
+    }
+    
+    .series-poster {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .detail-poster-img {
+        max-width: 200px !important;
+        height: auto !important;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    .hero-section {
+        min-height: 60vh !important;
+    }
+    
+    .hero-info-box {
+        max-width: 100% !important;
+        padding: 1.5rem !important;
+        margin: 0 1rem !important;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .hero-original-title {
+        font-size: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .hero-meta {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        justify-content: center !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .hero-description {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        text-align: center !important;
+    }
+    
+    /* Cast grid mobile optimization */
+    .cast-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    .cast-card {
+        padding: 1rem !important;
+    }
+    
+    .cast-name {
+        font-size: 0.9rem !important;
+    }
+    
+    .cast-character {
+        font-size: 0.8rem !important;
+    }
+    
+    .cast-bio {
+        display: none !important;
+    }
+    
+    /* Professional reviews mobile */
+    .content-section > div[style*="grid-template-columns: 1fr 1fr"] {
+        display: block !important;
+    }
+    
+    .content-section > div[style*="grid-template-columns: 1fr 1fr"] > div:first-child {
+        margin-bottom: 2rem;
+    }
+    
+    /* Comments mobile optimization */
+    .comment-form-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .comment-textarea {
+        min-height: 100px !important;
+        font-size: 1rem !important;
+    }
+    
+    .comment-form-actions {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        align-items: stretch !important;
+    }
+    
+    .comment-submit-btn {
+        width: 100% !important;
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }
+    
+    .spoiler-checkbox {
+        order: -1;
+        text-align: center;
     }
 }
 </style>
