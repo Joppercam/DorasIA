@@ -1,15 +1,15 @@
-<footer style="background: #0a0a0a; padding: 3rem 4% 2rem; margin-top: 4rem; border-top: 1px solid rgba(255,255,255,0.1);">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+<footer class="site-footer">
+    <div class="footer-content">
         <div>
             <h4 style="color: #e50914; margin-bottom: 1rem; font-size: 1.2rem;">DORASIA Chile</h4>
             <p style="color: #ccc; line-height: 1.6; margin-bottom: 1rem;">
                 La plataforma #1 de K-dramas para fanáticas chilenas. Descubre, explora y disfruta los mejores dramas coreanos.
             </p>
-            <div style="display: flex; gap: 1rem;">
-                <span style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: #ccc;">
+            <div class="footer-badges">
+                <span class="footer-badge">
                     🇨🇱 Hecho en Chile
                 </span>
-                <span style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: #ccc;">
+                <span class="footer-badge">
                     🇰🇷 K-drama Lover
                 </span>
             </div>
@@ -48,101 +48,171 @@
         </div>
     </div>
 
-    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; text-align: center;">
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">
+    <div class="footer-bottom">
+        <p class="footer-copyright">
             © 2024 Dorasia Chile - La mejor plataforma de K-dramas para fanáticas chilenas
         </p>
-        <p style="color: #555; font-size: 0.8rem; margin-bottom: 0.5rem;">
-            Hecho con 💜 para la comunidad K-drama en Chile | Todos los derechos de las series pertenecen a sus respectivos creadores
+        <p class="footer-tagline">
+            Hecho con 💜 para la comunidad K-drama en Chile <span class="footer-separator">|</span> Todos los derechos de las series pertenecen a sus respectivos creadores
         </p>
-        <p style="color: #555; font-size: 0.8rem; margin-top: 1rem;">
-            Desarrollado por <a href="https://www.dendria.cl" target="_blank" rel="noopener" style="color: #00d4ff; text-decoration: none; font-weight: 600; transition: all 0.3s;">Dendria</a> 
-            <span style="color: #444;">|</span> 
-            <span style="background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">Soluciones Digitales</span>
+        <p class="footer-credits">
+            Desarrollado por <a href="https://www.dendria.cl" target="_blank" rel="noopener" class="dendria-link">Dendria</a> 
+            <span class="footer-separator">|</span> 
+            <span class="dendria-tagline">Soluciones Digitales</span>
         </p>
     </div>
 </footer>
 
 <style>
-footer a:hover {
-    color: #e50914 !important;
+/* Desktop Styles */
+.site-footer {
+    background: #0a0a0a;
+    padding: 3rem 4% 2rem;
+    margin-top: 4rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-footer a[href*="dendria"]:hover {
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-badges {
+    display: flex;
+    gap: 1rem;
+}
+
+.footer-badge {
+    background: rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 2rem;
+    text-align: center;
+}
+
+.footer-copyright {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-tagline {
+    color: #555;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-credits {
+    color: #555;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+.dendria-link {
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.dendria-link:hover {
     color: #7b68ee !important;
     text-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
 }
 
+.dendria-tagline {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+footer a:hover {
+    color: #e50914 !important;
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
-    footer {
-        padding: 2rem 1rem 1.5rem !important;
+    .site-footer {
+        padding: 1.5rem 1rem !important;
         margin-top: 2rem !important;
     }
     
-    footer > div:first-child {
+    .footer-content {
         grid-template-columns: 1fr !important;
-        gap: 2rem !important;
-        margin-bottom: 1.5rem !important;
+        gap: 1.5rem !important;
+        margin-bottom: 1rem !important;
     }
     
-    footer h4 {
-        font-size: 1.1rem !important;
-        margin-bottom: 0.8rem !important;
+    .footer-content h4 {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
     }
     
-    footer p {
-        font-size: 0.85rem !important;
-        line-height: 1.5 !important;
+    .footer-content p {
+        font-size: 0.8rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.5rem !important;
     }
     
-    /* Badges de Chile y K-drama */
-    footer > div:first-child > div:first-child > div {
-        flex-wrap: wrap !important;
+    .footer-badges {
+        flex-direction: column !important;
         gap: 0.5rem !important;
     }
     
-    footer > div:first-child > div:first-child > div > span {
-        font-size: 0.8rem !important;
-        padding: 0.4rem 0.8rem !important;
-        flex: 1 !important;
-        text-align: center !important;
-        min-width: 120px !important;
-    }
-    
-    /* Listas de géneros y demás */
-    footer ul {
-        font-size: 0.85rem !important;
-        line-height: 1.8 !important;
-    }
-    
-    /* Sección de copyright */
-    footer > div:last-child {
-        padding-top: 1.5rem !important;
-    }
-    
-    footer > div:last-child p {
+    .footer-badge {
         font-size: 0.75rem !important;
-        margin-bottom: 0.3rem !important;
-        padding: 0 0.5rem !important;
+        padding: 0.3rem 0.6rem !important;
+        text-align: center !important;
+        width: 100% !important;
     }
     
-    /* Crédito de Dendria en móvil */
-    footer > div:last-child p:last-child {
+    .footer-content ul {
+        font-size: 0.8rem !important;
+        line-height: 1.6 !important;
+    }
+    
+    .footer-bottom {
+        padding-top: 1rem !important;
+    }
+    
+    .footer-copyright {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+    
+    .footer-tagline {
+        font-size: 0.65rem !important;
+        margin-bottom: 0.3rem !important;
+        padding: 0 1rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .footer-credits {
+        font-size: 0.65rem !important;
+        margin-top: 0.5rem !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        gap: 0.3rem !important;
-        margin-top: 0.8rem !important;
+        gap: 0.2rem !important;
     }
     
-    footer > div:last-child p:last-child > span:nth-child(2) {
-        display: none !important; /* Ocultar el separador | */
+    .footer-separator {
+        display: none !important;
     }
     
-    /* Ocultar algunas secciones en móvil muy pequeño */
+    /* Hide less important sections on very small screens */
     @media (max-width: 480px) {
-        footer > div:first-child > div:nth-child(3),
-        footer > div:first-child > div:nth-child(4) {
+        .footer-content > div:nth-child(n+3) {
             display: none !important;
         }
     }
