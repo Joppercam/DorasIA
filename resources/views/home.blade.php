@@ -3,9 +3,9 @@
 @section('title', 'Dorasia - Los Mejores K-Dramas')
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero Section with Rotation -->
 @if($featuredSeries)
-<section class="hero-section" style="background-image: url('{{ $featuredSeries->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $featuredSeries->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama' }}')">
+<section class="hero-section" id="heroSection" style="background-image: url('{{ $featuredSeries->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $featuredSeries->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama' }}')">
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <div class="hero-info-box">
@@ -945,6 +945,94 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar auto-slide (descomenta si quieres carrusel automático)
     // initAutoSlide();
+    
+    // Hero Rotation System
+    @if(isset($heroSeriesList) && $heroSeriesList->count() > 1)
+    const heroSeries = @json($heroSeriesList->map(function($series) {
+        return [
+            'id' => $series->id,
+            'title' => $series->display_title,
+            'overview' => Str::limit($series->display_overview ?: 'Descubre este increíble K-Drama y sumérgete en una historia única llena de emociones.', 280),
+            'backdrop' => $series->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $series->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama',
+            'poster' => $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/150x225/333/666?text=K-Drama',
+            'rating' => $series->vote_average,
+            'year' => $series->first_air_date ? $series->first_air_date->format('Y') : null,
+            'episodes' => $series->number_of_episodes,
+            'genres' => $series->genres->take(3)->pluck('display_name')->toArray(),
+            'route' => route('series.show', $series->id)
+        ];
+    }));
+    
+    let currentHeroIndex = 0;
+    
+    function rotateHero() {
+        currentHeroIndex = (currentHeroIndex + 1) % heroSeries.length;
+        const series = heroSeries[currentHeroIndex];
+        
+        // Fade out
+        const heroSection = document.getElementById('heroSection');
+        heroSection.style.transition = 'opacity 0.8s ease-in-out';
+        heroSection.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            // Update hero content
+            heroSection.style.backgroundImage = `url('${series.backdrop}')`;
+            
+            // Update poster
+            const mobilePoster = heroSection.querySelector('.mobile-hero-poster');
+            if (mobilePoster) {
+                mobilePoster.src = series.poster;
+                mobilePoster.alt = series.title;
+            }
+            
+            // Update title
+            const heroTitle = heroSection.querySelector('.hero-title');
+            if (heroTitle) heroTitle.textContent = series.title;
+            
+            // Update description
+            const heroDesc = heroSection.querySelector('.hero-description');
+            if (heroDesc) heroDesc.textContent = series.overview;
+            
+            // Update button link
+            const heroBtn = heroSection.querySelector('.btn-hero');
+            if (heroBtn) heroBtn.href = series.route;
+            
+            // Update rating
+            const ratingNumber = heroSection.querySelector('.rating-number');
+            if (ratingNumber && series.rating > 0) {
+                ratingNumber.textContent = series.rating.toFixed(1);
+            }
+            
+            // Update year
+            const heroYear = heroSection.querySelector('.hero-year');
+            if (heroYear && series.year) {
+                heroYear.textContent = series.year;
+            }
+            
+            // Update episodes
+            const heroEpisodes = heroSection.querySelector('.hero-episodes');
+            if (heroEpisodes && series.episodes) {
+                heroEpisodes.textContent = series.episodes + ' episodios';
+            }
+            
+            // Update genres
+            const genresContainer = heroSection.querySelector('.hero-categories');
+            if (genresContainer && series.genres.length > 0) {
+                genresContainer.innerHTML = series.genres.map(genre => 
+                    `<span class="hero-category">${genre || 'Drama'}</span>`
+                ).join('');
+            }
+            
+            // Fade in
+            setTimeout(() => {
+                heroSection.style.opacity = '1';
+            }, 100);
+        }, 800);
+    }
+    
+    // Rotate hero every 10 seconds
+    setInterval(rotateHero, 10000);
+    @endif
 });
 </script>
 @endsection

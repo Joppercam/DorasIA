@@ -53,18 +53,30 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Serie destacada para el hero (la mejor calificada)
-        $featuredSeries = Series::where('vote_average', '>', 8)
+        // Serie destacada para el hero - Rotación aleatoria entre las mejores
+        $featuredCandidates = Series::where('vote_average', '>', 7.5)
             ->whereNotNull('backdrop_path')
+            ->whereNotNull('spanish_overview')
             ->orderBy('vote_average', 'desc')
-            ->first();
+            ->limit(20)
+            ->get();
 
-        // Si no hay series con backdrop, tomar cualquiera con buena calificación
-        if (!$featuredSeries) {
-            $featuredSeries = Series::where('vote_average', '>', 7)
+        // Si no hay suficientes candidatos, ampliar criterios
+        if ($featuredCandidates->count() < 10) {
+            $featuredCandidates = Series::where('vote_average', '>', 7)
+                ->whereNotNull('backdrop_path')
                 ->orderBy('vote_average', 'desc')
-                ->first();
+                ->limit(20)
+                ->get();
         }
+
+        // Seleccionar una serie aleatoria del grupo de candidatas
+        $featuredSeries = $featuredCandidates->count() > 0 
+            ? $featuredCandidates->random() 
+            : Series::orderBy('vote_average', 'desc')->first();
+        
+        // Pasar también las series candidatas para rotación en el frontend
+        $heroSeriesList = $featuredCandidates->take(10);
 
         // Series más populares (25 para carrusel infinito)
         $popularSeries = $this->getSeriesWithUserRatings()
@@ -149,6 +161,7 @@ class HomeController extends Controller
 
         return view('home', compact(
             'featuredSeries',
+            'heroSeriesList',
             'popularSeries', 
             'topRatedSeries',
             'recentSeries',
