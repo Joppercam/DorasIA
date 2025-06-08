@@ -69,7 +69,8 @@
             <div class="carousel" data-current="0">
                 @foreach($popularSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -85,7 +86,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -118,6 +119,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -136,7 +143,8 @@
             <div class="carousel" data-current="0">
                 @foreach($topRatedSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -152,7 +160,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -185,6 +193,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -203,7 +217,8 @@
             <div class="carousel" data-current="0">
                 @foreach($romanceSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -219,7 +234,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -252,6 +267,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -270,7 +291,8 @@
             <div class="carousel" data-current="0">
                 @foreach($dramasSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -286,7 +308,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -319,6 +341,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -337,7 +365,8 @@
             <div class="carousel" data-current="0">
                 @foreach($comedySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -353,7 +382,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -386,6 +415,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -404,7 +439,8 @@
             <div class="carousel" data-current="0">
                 @foreach($actionSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -420,7 +456,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -453,6 +489,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -471,7 +513,8 @@
             <div class="carousel" data-current="0">
                 @foreach($mysterySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -487,7 +530,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -520,6 +563,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -538,7 +587,8 @@
             <div class="carousel" data-current="0">
                 @foreach($historicalSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -554,7 +604,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -587,6 +637,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach
@@ -605,7 +661,8 @@
             <div class="carousel" data-current="0">
                 @foreach($recentSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -621,7 +678,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -655,6 +712,12 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -672,7 +735,8 @@
             <div class="carousel" data-current="0">
                 @foreach($watchedSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
+                     onclick="toggleCardInfo(this)">
                     <div class="card-overlay"></div>
                     
                     <!-- Category badges at the top -->
@@ -695,7 +759,7 @@
                     @include('components.watchlist-button', ['series' => $series])
                     @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles">
+                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
@@ -728,6 +792,12 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Overlay de información al hacer click -->
+                    <div class="card-info-overlay">
+                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white;">→</div>
                     </div>
                 </div>
                 @endforeach

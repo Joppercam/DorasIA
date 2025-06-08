@@ -1036,16 +1036,192 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0,0,0,0.95);
             padding: 0.8rem;
             color: white;
             opacity: 0;
             transform: translateY(50%);
             transition: all 0.3s ease;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-            min-height: 120px;
+        }
+        
+        /* Franja de información al hacer click */
+        .card-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95) !important;
+            color: white;
+            padding: 8px;
+            transform: translateY(0);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100 !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 40px;
+            font-size: 12px;
+            border-top: 2px solid #e50914;
+        }
+        
+        .card-info-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .overlay-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .overlay-simple-info {
+            margin-bottom: 0.5rem;
+        }
+        
+        .overlay-simple-text {
+            font-size: 0.85rem;
+            color: #ccc;
+            font-style: italic;
+        }
+        
+        .card-info-overlay .info-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #00d4ff;
+            margin: 0;
+        }
+        
+        .overlay-rating-info {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .rating-count {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            min-width: 35px;
+            justify-content: center;
+        }
+        
+        .rating-count.dislike {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        
+        .rating-count.like {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .rating-count.love {
+            color: #ff69b4;
+            background: rgba(255, 105, 180, 0.2);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+        }
+        
+        .overlay-right {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .circular-rating {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .circular-rating.neutral {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffd700;
+        }
+        
+        .circular-rating.dislike {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .circular-rating.like {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .circular-rating.love {
+            background: rgba(255, 105, 180, 0.2);
+            color: #ff69b4;
+        }
+        
+        .circular-rating:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .circular-detail-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .circular-detail-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .card-info-overlay .close-info {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+        
+        .card-info-overlay .close-info:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .actor-images {
@@ -1864,6 +2040,52 @@
                 background: linear-gradient(transparent, rgba(0,0,0,0.8));
                 padding: 1.5rem 0.5rem 0.5rem;
                 min-height: auto;
+            }
+            
+            /* Ajustes móviles para card-info-overlay */
+            .card-info-overlay {
+                height: 35px !important;
+                padding: 0.3rem 0.5rem !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                font-size: 11px !important;
+            }
+            
+            .overlay-left {
+                flex: 1 !important;
+            }
+            
+            .overlay-right {
+                flex-shrink: 0 !important;
+            }
+            
+            .overlay-meta {
+                gap: 0.8rem !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .overlay-description {
+                font-size: 0.8rem !important;
+                line-height: 1.3 !important;
+            }
+            
+            .overlay-rating-info {
+                gap: 0.5rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            .rating-count {
+                padding: 0.2rem 0.3rem !important;
+                font-size: 0.7rem !important;
+                gap: 0.1rem !important;
+                min-width: 30px !important;
+            }
+            
+            .circular-detail-btn {
+                width: 30px !important;
+                height: 30px !important;
+                font-size: 0.9rem !important;
             }
             
             .card .card-title {
@@ -2717,6 +2939,79 @@
                 navbarNav.classList.toggle('mobile-open');
             }
         }
+        
+        // Funcionalidad para mostrar/ocultar información de cards
+        function toggleCardInfo(card) {
+            console.log('toggleCardInfo llamado', card); // Debug
+            
+            // Cerrar cualquier otra card abierta
+            document.querySelectorAll('.card-info-overlay.show').forEach(overlay => {
+                if (overlay.closest('.card') !== card) {
+                    overlay.classList.remove('show');
+                }
+            });
+            
+            // Toggle la card actual
+            const overlay = card.querySelector('.card-info-overlay');
+            console.log('Overlay encontrado:', overlay); // Debug
+            if (overlay) {
+                overlay.classList.toggle('show');
+                console.log('Overlay classes:', overlay.classList); // Debug
+                console.log('Overlay styles:', window.getComputedStyle(overlay)); // Debug
+            } else {
+                console.log('No se encontró overlay en esta card');
+            }
+        }
+        
+        // Mostrar opciones de calificación
+        function showRatingOptions(button) {
+            const seriesId = button.closest('.card').dataset.seriesId || 
+                           button.closest('.card').querySelector('a[href*="series/"]').href.split('/').pop();
+            
+            // Crear mini menú de opciones
+            const options = document.createElement('div');
+            options.style.cssText = `
+                position: absolute;
+                bottom: 50px;
+                right: 0;
+                background: rgba(0,0,0,0.9);
+                border-radius: 8px;
+                padding: 0.5rem;
+                display: flex;
+                gap: 0.5rem;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.1);
+            `;
+            
+            options.innerHTML = `
+                <button onclick="rateSeries(${seriesId}, 'dislike', this); this.parentElement.remove();" style="background: rgba(220,53,69,0.2); color: #dc3545; border: none; padding: 0.5rem; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">👎</button>
+                <button onclick="rateSeries(${seriesId}, 'like', this); this.parentElement.remove();" style="background: rgba(40,167,69,0.2); color: #28a745; border: none; padding: 0.5rem; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">👍</button>
+                <button onclick="rateSeries(${seriesId}, 'love', this); this.parentElement.remove();" style="background: rgba(255,105,180,0.2); color: #ff69b4; border: none; padding: 0.5rem; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">❤️</button>
+            `;
+            
+            button.parentElement.style.position = 'relative';
+            button.parentElement.appendChild(options);
+            
+            // Cerrar al hacer click fuera
+            setTimeout(() => {
+                document.addEventListener('click', function closeOptions(e) {
+                    if (!options.contains(e.target) && e.target !== button) {
+                        options.remove();
+                        document.removeEventListener('click', closeOptions);
+                    }
+                });
+            }, 100);
+        }
+        
+        // Cerrar overlays al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.card')) {
+                document.querySelectorAll('.card-info-overlay.show').forEach(overlay => {
+                    overlay.classList.remove('show');
+                });
+            }
+        });
         
         // Funcionalidad de búsqueda móvil
         function toggleMobileSearch() {
