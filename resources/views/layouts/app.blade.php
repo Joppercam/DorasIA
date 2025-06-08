@@ -2007,6 +2007,12 @@
                 box-shadow: none;
             }
             
+            /* Ocultar elementos duplicados en móvil */
+            .series-stats,
+            .card-rating-buttons {
+                display: none !important;
+            }
+            
             /* Secciones de contenido */
             .content-section {
                 padding: 0;

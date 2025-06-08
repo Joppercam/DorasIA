@@ -123,7 +123,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -197,7 +201,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -271,7 +279,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -345,7 +357,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -419,7 +435,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -493,7 +513,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -567,7 +591,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -641,7 +669,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -715,7 +747,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
@@ -796,7 +832,11 @@
                     
                     <!-- Overlay de información al hacer click -->
                     <div class="card-info-overlay">
-                        <div style="color: white; font-weight: bold;">👎 5 👍 10 ❤️ 3</div>
+                        <div style="color: white; font-weight: bold;">
+                            👎 {{ $series->dislike_count ?? 0 }} 
+                            👍 {{ $series->like_count ?? 0 }} 
+                            ❤️ {{ $series->love_count ?? 0 }}
+                        </div>
                         <div style="color: white;">→</div>
                     </div>
                 </div>
