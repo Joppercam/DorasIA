@@ -1036,12 +1036,15 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.8rem;
             color: white;
             opacity: 0;
             transform: translateY(50%);
             transition: all 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
             min-height: 120px;
         }
 
