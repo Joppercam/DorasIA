@@ -1382,7 +1382,8 @@
             color: white;
         }
 
-        /* Footer Styles */
+        /* Footer Styles - OLD (commented out - using component instead) */
+        /*
         .footer {
             background-color: #0a0a0a;
             padding: 3rem 0 1rem;
@@ -1445,6 +1446,7 @@
             color: #666;
             font-size: 0.9rem;
         }
+        */
         
         /* Action Button on Cards */
         .card-action-btn {
@@ -2921,38 +2923,7 @@
     {{-- @vite('resources/js/app.js') --}}
     
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3 class="footer-logo">DORAS<span class="ai-highlight">[IA]</span></h3>
-                <p>Tu portal de K-Dramas con IA</p>
-            </div>
-            <div class="footer-section">
-                <h4>Enlaces</h4>
-                <ul>
-                    <li><a href="/">Inicio</a></li>
-                    <li><a href="/categories">Categorías</a></li>
-                    <li><a href="/top-rated">Mejor Calificados</a></li>
-                    <li><a href="/recent">Recientes</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Información</h4>
-                <ul>
-                    <li><a href="/about">Acerca de</a></li>
-                    <li><a href="/contact">Contacto</a></li>
-                    <li><a href="/privacy">Privacidad</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Síguenos</h4>
-                <p>Pronto en redes sociales</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 DORASIA. Todos los derechos reservados. | Hecho con ❤️ para fans chilenos de K-Dramas</p>
-        </div>
-    </footer>
+    @include('components.footer')
     
     <script>
         // Funcionalidad del menú móvil
