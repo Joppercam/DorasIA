@@ -332,16 +332,25 @@
         }
 
         .hero-year, .hero-episodes, .hero-seasons {
-            color: rgba(255, 255, 255, 0.8);
+            color: #fff;
             font-weight: 500;
             font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
 
         .hero-original-title {
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: #fff;
             margin-bottom: 1rem;
             font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
         }
 
         .btn-hero {
@@ -815,13 +824,21 @@
             font-weight: 700;
             margin-bottom: 1rem;
             line-height: 1.1;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+            color: #fff;
         }
 
         .hero-description {
             font-size: 1rem;
             line-height: 1.4;
             margin-bottom: 2rem;
-            color: #ccc;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
         }
 
         .hero-buttons {
