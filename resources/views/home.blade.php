@@ -9,6 +9,11 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <div class="hero-info-box">
+            <!-- Poster para móvil -->
+            <img src="{{ $featuredSeries->poster_path ? 'https://image.tmdb.org/t/p/w500' . $featuredSeries->poster_path : 'https://via.placeholder.com/150x225/333/666?text=K-Drama' }}" 
+                 alt="{{ $featuredSeries->display_title }}" 
+                 class="mobile-hero-poster d-block d-md-none">
+            
             <!-- Categories -->
             @if($featuredSeries->genres->count() > 0)
             <div class="hero-categories">
@@ -85,6 +90,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -151,6 +157,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -217,6 +224,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -283,6 +291,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -349,6 +358,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -415,6 +425,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -481,6 +492,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -547,6 +559,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -613,6 +626,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">
@@ -686,6 +700,7 @@
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </a>
+                    
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
                         <div class="card-meta">

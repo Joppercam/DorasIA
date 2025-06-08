@@ -1632,297 +1632,183 @@
         }
 
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 1.8rem;
-            }
-            
-            .hero-description {
-                font-size: 0.85rem;
-                line-height: 1.4;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .btn {
-                width: 100%;
-                text-align: center;
-                font-size: 0.9rem;
-                padding: 0.8rem 1.5rem;
-            }
-            
+            /* Navegación móvil con distribución mejorada */
             .navbar {
-                padding: 0.8rem 3%;
+                padding: 1rem;
+                background: rgba(20,20,20,0.98) !important;
+                backdrop-filter: blur(15px);
+                z-index: 1500 !important;
+                position: relative;
+            }
+            
+            .navbar-container {
+                justify-content: space-between !important;
+                align-items: center !important;
             }
             
             .navbar-brand {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+                order: 2;
             }
             
-            .navbar-nav {
+            .navbar-brand:before {
                 display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(20,20,20,0.98);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                padding: 1rem;
-                gap: 0.5rem;
-                border-top: 1px solid rgba(255,255,255,0.1);
             }
             
-            .navbar-nav.mobile-open {
+            .mobile-controls {
                 display: flex;
-            }
-            
-            /* Mobile carousel improvements */
-            .carousel {
-                gap: 0.5rem;
-                padding: 0 1rem;
-            }
-            
-            .card {
-                width: 140px;
-                height: 210px;
-            }
-            
-            .card-info {
-                padding: 0.8rem;
-                min-height: 100px;
-            }
-            
-            .card-title {
-                font-size: 0.85rem;
-                margin-bottom: 0.3rem;
-            }
-            
-            .card-meta {
-                font-size: 0.65rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .card-cast {
-                font-size: 0.65rem;
-            }
-            
-            .actor-images {
-                margin-bottom: 0.3rem;
-            }
-            
-            .card-streaming-title {
-                font-size: 0.7rem;
-            }
-            
-            .streaming-platform {
-                font-size: 0.55rem;
-                padding: 0.15rem 0.4rem;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-                padding: 0 1rem;
-            }
-            
-            .content-section {
-                margin-bottom: 2rem;
-            }
-            
-            /* Mobile footer */
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-                padding: 0 1rem;
-            }
-            
-            .footer-section h4 {
-                font-size: 0.9rem;
-            }
-            
-            .footer-section {
-                font-size: 0.8rem;
-            }
-            
-            .footer-bottom {
-                font-size: 0.75rem;
-                padding: 1.5rem 1rem;
-            }
-            
-            /* Mobile action button */
-            .card-action-btn {
-                width: 28px;
-                height: 28px;
-                bottom: 2rem;
-                right: 0.6rem;
-            }
-            
-            .card-action-btn svg {
-                width: 14px;
-                height: 14px;
-            }
-            
-            /* Mobile news carousel */
-            .news-carousel {
-                margin: 1rem 0;
-                padding: 1rem;
-            }
-            
-            .news-carousel .carousel-container {
-                margin: 0 20px;
-                padding: 30px 0;
-            }
-            
-            .news-card {
-                width: 250px;
-                min-width: 250px;
-                max-width: 250px;
-                height: 160px;
-            }
-            
-            .news-card-title {
-                font-size: 0.8rem;
-            }
-            
-            .news-card-excerpt {
-                font-size: 0.65rem;
-            }
-            
-            .news-section-title {
-                font-size: 1.2rem;
+                gap: 1rem;
+                order: 1;
             }
             
             .mobile-menu-toggle, .mobile-search-toggle {
-                display: block;
-                background: none;
+                background: rgba(255,255,255,0.1);
                 border: none;
                 color: white;
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+                padding: 0.6rem;
+                border-radius: 8px;
                 cursor: pointer;
-                padding: 0.5rem;
+                transition: all 0.2s ease;
             }
             
-            .search-container {
+            .mobile-menu-toggle:active,
+            .mobile-search-toggle:active {
+                background: rgba(255,255,255,0.2);
+                transform: scale(0.95);
+            }
+            
+            .desktop-search,
+            .navbar-nav {
                 display: none;
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background: rgba(20, 20, 20, 0.95);
-                backdrop-filter: blur(10px);
-                z-index: 1500;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
             
-            .search-container.mobile-active {
-                display: block;
-            }
-            
-            .content-section {
-                padding: 0 2%;
+            /* Hero móvil con poster */
+            .hero-section {
+                min-height: auto;
+                height: auto;
+                padding-bottom: 2rem;
             }
             
             .hero-content {
-                padding: 0 2%;
+                padding: 1rem;
+                max-width: 100%;
             }
             
             .hero-info-box {
-                padding: 2rem;
-                border-radius: 20px;
+                background: none;
+                backdrop-filter: none;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
             
-            .hero-categories {
-                gap: 0.5rem;
+            .mobile-hero-poster {
+                width: 150px;
+                height: 225px;
+                border-radius: 8px;
                 margin-bottom: 1rem;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             }
             
-            .hero-category {
-                padding: 0.3rem 0.8rem;
-                font-size: 0.7rem;
-                border-radius: 15px;
-            }
-            
-            .hero-meta {
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-            }
-            
-            .hero-rating {
-                padding: 0.4rem 0.8rem;
-                border-radius: 15px;
-            }
-            
-            .btn-hero {
-                padding: 0.8rem 2rem;
-                border-radius: 20px;
-                font-size: 0.9rem;
-            }
-            
-            .hero-actions {
-                margin-top: 1.5rem;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1.5rem;
-                padding: 1rem 0;
-            }
-            
-            .hero-actions::before {
-                content: '🎬';
-                margin-right: 0.3rem;
-            }
-            
-            .hero-actions .rating-btn {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .hero-actions .watchlist-btn {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .series-detail-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
-            .series-poster {
-                position: static;
-                max-width: 280px;
-                margin: 0 auto;
-            }
-            
-            .detail-section {
-                padding: 1.5rem;
-                border-radius: 12px;
-            }
-            
-            .detail-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .detail-genre-tag {
-                padding: 0.4rem 1rem;
-                font-size: 0.8rem;
-            }
-            
+            /* Carrusel móvil simple */
             .carousel-container {
                 margin: 0 20px;
-                padding: 30px 0;
+                padding: 20px 0;
             }
             
+            .carousel {
+                display: flex;
+                gap: 1rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                padding: 0 1rem;
+            }
+            
+            .carousel::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .carousel-nav {
+                display: none;
+            }
+            
+            /* Tarjetas móviles más largas como versión anterior */
+            .card {
+                width: 105px !important;
+                height: 180px !important;
+                min-width: 105px !important;
+                flex-shrink: 0;
+                scroll-snap-align: start;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            /* Ocultar hover en móvil */
             .card:hover {
-                transform: scale(1.4) translateY(-35px);
+                transform: none;
+                box-shadow: none;
+            }
+            
+            /* Secciones de contenido */
+            .content-section {
+                padding: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                padding: 0 1rem;
+            }
+            
+            /* Ocultar información de streaming y categorías en tarjetas móviles */
+            .card .card-streaming,
+            .card .streaming-platforms,
+            .card .streaming-platform,
+            .card .card-categories,
+            .card .card-category {
+                display: none !important;
+            }
+            
+            /* Mostrar información básica en tarjetas móviles */
+            .card .card-info {
+                opacity: 1 !important;
+                transform: none !important;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(transparent, rgba(0,0,0,0.8));
+                padding: 1.5rem 0.5rem 0.5rem;
+                min-height: auto;
+            }
+            
+            .card .card-title {
+                font-size: 0.75rem !important;
+                font-weight: 600 !important;
+                margin: 0 !important;
+                line-height: 1.2 !important;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: hidden !important;
+                color: white !important;
             }
         }
         
         /* Mobile Controls */
         .mobile-controls {
             display: none;
+            gap: 0.5rem;
         }
         
         .mobile-menu-toggle, .mobile-search-toggle {
@@ -1940,6 +1826,11 @@
             background: rgba(255, 255, 255, 0.1);
         }
         
+        /* Navbar container */
+        .navbar-container {
+            position: relative;
+        }
+        
         /* Desktop Search */
         .desktop-search {
             display: block;
@@ -1955,48 +1846,27 @@
             background: rgba(20, 20, 20, 0.98);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1500;
+            z-index: 1400;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         
-        @media (max-width: 768px) {
-            .mobile-controls {
-                display: flex;
+        
+        /* Utilidades responsive */
+        @media (max-width: 767px) {
+            .d-none.d-md-block {
+                display: none !important;
             }
-            
-            .desktop-search {
-                display: none;
+            .d-block.d-md-none {
+                display: block !important;
             }
-            
-            .navbar-nav {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(20,20,20,0.98);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                padding: 1rem;
-                gap: 0.5rem;
-                border-top: 1px solid rgba(255,255,255,0.1);
-                z-index: 1400;
+        }
+        
+        @media (min-width: 769px) {
+            .d-block.d-md-none {
+                display: none !important;
             }
-            
-            .navbar-nav.mobile-open {
-                display: flex;
-            }
-            
-            .dropdown-menu {
-                position: static;
-                display: none;
-                background: rgba(40, 40, 40, 0.95);
-                margin: 0.5rem 0;
-                border-radius: 8px;
-                box-shadow: none;
-            }
-            
-            .dropdown:hover .dropdown-menu {
-                display: block;
+            .mobile-hero-poster {
+                display: none !important;
             }
         }
         
@@ -2139,7 +2009,7 @@
 </head>
 <body>
     <nav class="navbar" id="navbar">
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto;">
+        <div class="navbar-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto;">
             <!-- Logo -->
             <a href="{{ route('home') }}" class="navbar-brand">DORAS<span class="ai-highlight">IA</span></a>
             
@@ -2153,7 +2023,7 @@
             </div>
             
             <!-- Mobile Toggle Buttons -->
-            <div class="mobile-controls" style="display: flex; gap: 0.5rem;">
+            <div class="mobile-controls">
                 <button class="mobile-search-toggle" onclick="toggleMobileSearch()">🔍</button>
                 <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
             </div>
@@ -2752,5 +2622,8 @@
             <p>&copy; 2025 DORASIA. Todos los derechos reservados. | Hecho con ❤️ para fans chilenos de K-Dramas</p>
         </div>
     </footer>
+    
+    <script>
+    </script>
 </body>
 </html>
