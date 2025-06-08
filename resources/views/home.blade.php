@@ -948,7 +948,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Hero Rotation System
     @if(isset($heroSeriesList) && $heroSeriesList->count() > 1)
-    const heroSeries = @json($heroSeriesList->map(function($series) {
+    @php
+    $heroSeriesData = $heroSeriesList->map(function($series) {
         return [
             'id' => $series->id,
             'title' => $series->display_title,
@@ -958,10 +959,12 @@ document.addEventListener('DOMContentLoaded', function() {
             'rating' => $series->vote_average,
             'year' => $series->first_air_date ? $series->first_air_date->format('Y') : null,
             'episodes' => $series->number_of_episodes,
-            'genres' => $series->genres->take(3)->pluck('display_name')->toArray(),
+            'genres' => $series->genres->take(3)->map(function($g) { return $g->display_name ?: $g->name; })->toArray(),
             'route' => route('series.show', $series->id)
         ];
-    }));
+    })->toArray();
+    @endphp
+    const heroSeries = @json($heroSeriesData);
     
     let currentHeroIndex = 0;
     
