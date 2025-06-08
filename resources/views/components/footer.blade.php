@@ -52,8 +52,13 @@
         <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">
             © 2024 Dorasia Chile - La mejor plataforma de K-dramas para fanáticas chilenas
         </p>
-        <p style="color: #555; font-size: 0.8rem;">
+        <p style="color: #555; font-size: 0.8rem; margin-bottom: 0.5rem;">
             Hecho con 💜 para la comunidad K-drama en Chile | Todos los derechos de las series pertenecen a sus respectivos creadores
+        </p>
+        <p style="color: #555; font-size: 0.8rem; margin-top: 1rem;">
+            Desarrollado por <a href="https://www.dendria.cl" target="_blank" rel="noopener" style="color: #00d4ff; text-decoration: none; font-weight: 600; transition: all 0.3s;">Dendria</a> 
+            <span style="color: #444;">|</span> 
+            <span style="background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">Soluciones Digitales</span>
         </p>
     </div>
 </footer>
@@ -61,6 +66,11 @@
 <style>
 footer a:hover {
     color: #e50914 !important;
+}
+
+footer a[href*="dendria"]:hover {
+    color: #7b68ee !important;
+    text-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
 }
 
 @media (max-width: 768px) {
