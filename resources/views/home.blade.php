@@ -3,6 +3,20 @@
 @section('title', 'Dorasia - Los Mejores K-Dramas')
 
 @section('content')
+<style>
+/* Force hide rating elements in home page only */
+body .card .card-rating-buttons,
+body .card .watchlist-button-container,
+body .card .series-stats,
+body .card .rating-btn,
+body .card .watchlist-btn {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+</style>
+<div style="margin-top: -1rem;">
 <!-- Hero Section with Rotation -->
 @if($featuredSeries)
 <section class="hero-section" id="heroSection" style="background-image: url('{{ $featuredSeries->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $featuredSeries->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama' }}')">
@@ -47,7 +61,7 @@
             
             <div class="hero-buttons">
                 <a href="{{ route('series.show', $featuredSeries->id) }}" class="btn btn-hero">
-                    Más Información
+                    Ver
                 </a>
             </div>
         </div>
@@ -56,10 +70,69 @@
 @endif
 
 <!-- Content Sections -->
-<div style="margin-top: -100px; position: relative; z-index: 20;">
+<div style="margin-top: 50px; position: relative; z-index: 20;">
 
+    <!-- Próximamente Section -->
+    @include('components.upcoming-widget', ['upcoming' => $upcomingSeries])
 
-    <!-- Series Populares -->
+    <!-- Mejores Películas -->
+    @if($topRatedMovies->count() > 0)
+    <section class="content-section">
+        <h2 class="section-title">Mejores Películas</h2>
+        <div class="carousel-container">
+            <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
+            <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
+            <div class="carousel" data-current="0">
+                @foreach($topRatedMovies as $movie)
+                <div class="card movie-card" 
+                     style="background-image: url('{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}')">
+                    <div class="card-overlay"></div>
+                    
+                    <!-- Movie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #ff6b9d, #ff8e8e); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);">
+                            PELÍCULA
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('movies.show', $movie) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
+                    @if($movie->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($movie->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
+                    <div class="card-info">
+                        <div class="card-title">{{ $movie->display_title ?: $movie->title }}</div>
+                        <div class="card-meta">
+                            @if($movie->vote_average > 0)
+                            <span class="card-rating">⭐ {{ number_format($movie->vote_average, 1) }}</span>
+                            @endif
+                            @if($movie->year)
+                            <span class="card-year">{{ $movie->year }}</span>
+                            @endif
+                            @if($movie->formatted_runtime)
+                            <span class="card-runtime">{{ $movie->formatted_runtime }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Series Populares - NETFLIX RECTANGULAR CARDS -->
     @if($popularSeries->count() > 0)
     <section class="content-section">
         <h2 class="section-title">Tendencias</h2>
@@ -69,11 +142,24 @@
             <div class="carousel" data-current="0">
                 @foreach($popularSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -82,15 +168,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -147,11 +225,24 @@
             <div class="carousel" data-current="0">
                 @foreach($topRatedSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -160,15 +251,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -225,11 +308,24 @@
             <div class="carousel" data-current="0">
                 @foreach($romanceSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -238,15 +334,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -303,11 +391,24 @@
             <div class="carousel" data-current="0">
                 @foreach($dramasSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -316,15 +417,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -381,11 +474,24 @@
             <div class="carousel" data-current="0">
                 @foreach($comedySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -394,15 +500,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -459,11 +557,24 @@
             <div class="carousel" data-current="0">
                 @foreach($actionSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -472,15 +583,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -537,11 +640,24 @@
             <div class="carousel" data-current="0">
                 @foreach($mysterySeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -550,15 +666,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -615,11 +723,24 @@
             <div class="carousel" data-current="0">
                 @foreach($historicalSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -628,15 +749,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -693,11 +806,24 @@
             <div class="carousel" data-current="0">
                 @foreach($recentSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -706,15 +832,7 @@
                     </div>
                     @endif
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -771,11 +889,24 @@
             <div class="carousel" data-current="0">
                 @foreach($watchedSeries as $series)
                 <div class="card" 
-                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')"
-                     onclick="toggleCardInfo(this)">
+                     style="background-image: url('{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}')">
                     <div class="card-overlay"></div>
                     
-                    <!-- Category badges at the top -->
+                    <!-- Serie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);">
+                            SERIE
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('series.show', $series->id) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
                     @if($series->genres->count() > 0)
                     <div class="card-categories">
                         @foreach($series->genres->take(2) as $genre)
@@ -791,15 +922,7 @@
                         </span>
                     </div>
                     
-                    @include('components.rating-buttons', ['series' => $series])
-                    @include('components.watchlist-button', ['series' => $series])
-                    @include('components.series-stats', ['series' => $series])
                     
-                    <a href="{{ route('series.show', $series->id) }}" class="card-action-btn" title="Ver detalles" onclick="event.stopPropagation()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </a>
                     
                     <div class="card-info">
                         <div class="card-title">{{ $series->display_title }}</div>
@@ -846,6 +969,120 @@
     </section>
     @endif
 
+    <!-- ===== PELÍCULAS POPULARES - VERSIÓN ACTUALIZADA 14/06/2025 ===== -->
+    @if($popularMovies->count() > 0)
+    <section class="content-section">
+        <h2 class="section-title">Películas</h2>
+        <div class="carousel-container">
+            <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
+            <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
+            <div class="carousel" data-current="0">
+                @foreach($popularMovies as $movie)
+                <div class="card movie-card" 
+                     style="background-image: url('{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}')">
+                    <div class="card-overlay"></div>
+                    
+                    <!-- Movie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #ff6b9d, #ff8e8e); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);">
+                            PELÍCULA
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('movies.show', $movie) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
+                    @if($movie->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($movie->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
+                    <div class="card-info">
+                        <div class="card-title">{{ $movie->display_title ?: $movie->title }}</div>
+                        <div class="card-meta">
+                            @if($movie->vote_average > 0)
+                            <span class="card-rating">⭐ {{ number_format($movie->vote_average, 1) }}</span>
+                            @endif
+                            @if($movie->year)
+                            <span class="card-year">{{ $movie->year }}</span>
+                            @endif
+                            @if($movie->formatted_runtime)
+                            <span class="card-runtime">{{ $movie->formatted_runtime }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Películas Recientes -->
+    @if($recentMovies->count() > 0)
+    <section class="content-section">
+        <h2 class="section-title">🆕 Últimas Películas</h2>
+        <div class="carousel-container">
+            <button class="carousel-nav prev" onclick="slideCarousel(this, -1)">‹</button>
+            <button class="carousel-nav next" onclick="slideCarousel(this, 1)">›</button>
+            <div class="carousel" data-current="0">
+                @foreach($recentMovies as $movie)
+                <div class="card movie-card" 
+                     style="background-image: url('{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}')">
+                    <div class="card-overlay"></div>
+                    
+                    <!-- Movie badge - top left -->
+                    <div style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10;">
+                        <span style="background: linear-gradient(135deg, #ff6b9d, #ff8e8e); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.6rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);">
+                            PELÍCULA
+                        </span>
+                    </div>
+                    
+                    <!-- Ver button - bottom right -->
+                    <div style="position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 10;">
+                        <a href="{{ route('movies.show', $movie) }}" class="card-view-btn" title="Ver detalles" onclick="event.stopPropagation()">
+                            Ver
+                        </a>
+                    </div>
+                    
+                    <!-- Category badges -->
+                    @if($movie->genres->count() > 0)
+                    <div class="card-categories">
+                        @foreach($movie->genres->take(2) as $genre)
+                            <span class="card-category {{ strtolower(str_replace([' ', '&'], ['', ''], $genre->display_name ?: $genre->name)) }}">{{ $genre->display_name ?: $genre->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                    
+                    <div class="card-info">
+                        <div class="card-title">{{ $movie->display_title ?: $movie->title }}</div>
+                        <div class="card-meta">
+                            @if($movie->vote_average > 0)
+                            <span class="card-rating">⭐ {{ number_format($movie->vote_average, 1) }}</span>
+                            @endif
+                            @if($movie->year)
+                            <span class="card-year">{{ $movie->year }}</span>
+                            @endif
+                            @if($movie->formatted_runtime)
+                            <span class="card-runtime">{{ $movie->formatted_runtime }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
 </div>
 
 <script>
@@ -858,13 +1095,13 @@ function slideCarousel(button, direction) {
     
     // Determine card width based on card type and screen size
     let cardWidth;
-    let gap = 16; // gap between cards
+    let gap = 8; // gap between cards
     const isMobile = window.innerWidth <= 768;
     
     if (carousel.querySelector('.news-card')) {
         cardWidth = isMobile ? 250 : 300; // news card width
     } else {
-        cardWidth = isMobile ? 140 : 220; // regular card width
+        cardWidth = isMobile ? 140 : 200; // regular card width (updated for vertical cards)
     }
     
     const totalCardWidth = cardWidth + gap;
@@ -911,6 +1148,54 @@ function initAutoSlide() {
 
 // Initialize carousel
 document.addEventListener('DOMContentLoaded', function() {
+    // Netflix-style hover delay with mobile support
+    let hoverTimer;
+    let touchTimer;
+    
+    document.querySelectorAll('.card').forEach(card => {
+        // Desktop hover
+        card.addEventListener('mouseenter', function() {
+            const thisCard = this;
+            hoverTimer = setTimeout(() => {
+                thisCard.classList.add('hovering');
+            }, 500);
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            clearTimeout(hoverTimer);
+            this.classList.remove('hovering');
+        });
+        
+        // Mobile touch support
+        card.addEventListener('touchstart', function(e) {
+            const thisCard = this;
+            
+            // Remove hovering from all other cards
+            document.querySelectorAll('.card.hovering').forEach(otherCard => {
+                if (otherCard !== thisCard) {
+                    otherCard.classList.remove('hovering');
+                }
+            });
+            
+            touchTimer = setTimeout(() => {
+                thisCard.classList.add('hovering');
+            }, 300); // Faster for mobile
+        });
+        
+        card.addEventListener('touchend', function(e) {
+            clearTimeout(touchTimer);
+        });
+        
+        // Click outside to remove hover on mobile
+        document.addEventListener('touchstart', function(e) {
+            if (!e.target.closest('.card')) {
+                document.querySelectorAll('.card.hovering').forEach(card => {
+                    card.classList.remove('hovering');
+                });
+            }
+        });
+    });
+    
     document.querySelectorAll('.carousel-container').forEach(container => {
         const prevBtn = container.querySelector('.prev');
         const nextBtn = container.querySelector('.next');
@@ -1002,8 +1287,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update rating
             const ratingNumber = heroSection.querySelector('.rating-number');
-            if (ratingNumber && series.rating > 0) {
-                ratingNumber.textContent = series.rating.toFixed(1);
+            if (ratingNumber && series.rating && series.rating > 0) {
+                const rating = parseFloat(series.rating);
+                if (!isNaN(rating)) {
+                    ratingNumber.textContent = rating.toFixed(1);
+                }
             }
             
             // Update year
@@ -1033,9 +1321,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 800);
     }
     
-    // Rotate hero every 10 seconds
-    setInterval(rotateHero, 10000);
+    // Rotate hero every 15 seconds
+    setInterval(rotateHero, 15000);
     @endif
 });
 </script>
+</div>
 @endsection

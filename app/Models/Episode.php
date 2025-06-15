@@ -55,4 +55,29 @@ class Episode extends Model
     {
         return $this->images()->where('type', 'still');
     }
+
+    public function progress()
+    {
+        return $this->hasMany(EpisodeProgress::class);
+    }
+
+    public function getUserProgress($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        return $this->progress()->where('user_id', $userId)->first();
+    }
+
+    public function getFormattedRuntime()
+    {
+        if (!$this->runtime) return 'N/A';
+        
+        $hours = floor($this->runtime / 60);
+        $minutes = $this->runtime % 60;
+        
+        if ($hours > 0) {
+            return "{$hours}h {$minutes}m";
+        }
+        
+        return "{$minutes}m";
+    }
 }

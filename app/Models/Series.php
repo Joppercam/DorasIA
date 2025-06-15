@@ -184,4 +184,67 @@ class Series extends Model
     {
         return $this->tagline_es ?: $this->tagline;
     }
+
+    public function episodeProgress()
+    {
+        return $this->hasMany(EpisodeProgress::class);
+    }
+
+    public function getUserSeriesProgress($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return null;
+
+        $totalEpisodes = $this->episodes()->count();
+        $completedEpisodes = $this->episodeProgress()
+            ->where('user_id', $userId)
+            ->where('status', 'completed')
+            ->count();
+
+        $watchingEpisodes = $this->episodeProgress()
+            ->where('user_id', $userId)
+            ->where('status', 'watching')
+            ->count();
+
+        return [
+            'total_episodes' => $totalEpisodes,
+            'completed_episodes' => $completedEpisodes,
+            'watching_episodes' => $watchingEpisodes,
+            'progress_percentage' => $totalEpisodes > 0 ? round(($completedEpisodes / $totalEpisodes) * 100, 2) : 0,
+            'next_episode' => $this->getNextEpisodeForUser($userId)
+        ];
+    }
+
+    public function getNextEpisodeForUser($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return null;
+
+        // Buscar el primer episodio no completado
+        $nextEpisode = $this->episodes()
+            ->leftJoin('episode_progress', function($join) use ($userId) {
+                $join->on('episodes.id', '=', 'episode_progress.episode_id')
+                     ->where('episode_progress.user_id', '=', $userId);
+            })
+            ->where(function($query) {
+                $query->whereNull('episode_progress.status')
+                      ->orWhere('episode_progress.status', '!=', 'completed');
+            })
+            ->orderBy('season_number')
+            ->orderBy('episode_number')
+            ->select('episodes.*')
+            ->first();
+
+        return $nextEpisode;
+    }
+
+    public function isInWatchlist($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return false;
+
+        return $this->watchlistItems()
+            ->where('user_id', $userId)
+            ->exists();
+    }
 }

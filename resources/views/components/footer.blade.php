@@ -56,7 +56,7 @@
             Hecho con 💜 para la comunidad K-drama en Chile <span class="footer-separator">|</span> Todos los derechos de las series pertenecen a sus respectivos creadores
         </p>
         <p class="footer-credits">
-            Desarrollado por <a href="https://www.dendria.cl" target="_blank" rel="noopener" class="dendria-link">Dendria</a> 
+            <strong>Desarrollado por <a href="https://www.dendria.cl" target="_blank" rel="noopener" class="dendria-link">www.dendria.cl</a></strong>
             <span class="footer-separator">|</span> 
             <span class="dendria-tagline">Soluciones Digitales</span>
         </p>
@@ -111,9 +111,10 @@
 }
 
 .footer-credits {
-    color: #555;
-    font-size: 0.8rem;
-    margin-top: 1rem;
+    color: #aaa;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    font-weight: 500;
 }
 
 .dendria-link {
@@ -198,16 +199,37 @@ footer a:hover {
     }
     
     .footer-credits {
-        font-size: 0.65rem !important;
-        margin-top: 0.5rem !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 0.2rem !important;
+        font-size: 1rem !important;
+        margin-top: 1.5rem !important;
+        display: block !important;
+        text-align: center !important;
+        line-height: 2 !important;
+        padding: 0.8rem 1rem !important;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 104, 238, 0.1) 100%) !important;
+        border: 2px solid rgba(0, 212, 255, 0.3) !important;
+        border-radius: 12px !important;
+        color: #fff !important;
+        font-weight: 600 !important;
     }
     
     .footer-separator {
         display: none !important;
+    }
+    
+    /* Dendria link mobile styles */
+    .dendria-link {
+        font-weight: 800 !important;
+        font-size: 1.1rem !important;
+        color: #00ff88 !important;
+        text-decoration: none !important;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
+    }
+    
+    .dendria-tagline {
+        display: block !important;
+        margin-top: 0.5rem !important;
+        font-size: 0.9rem !important;
+        color: #00d4ff !important;
     }
     
     /* Hide less important sections on very small screens */

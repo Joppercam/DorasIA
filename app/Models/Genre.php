@@ -21,6 +21,11 @@ class Genre extends Model
         return $this->belongsToMany(Series::class, 'series_genre');
     }
 
+    public function movies(): BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'movie_genre');
+    }
+
     public function getDisplayNameAttribute(): string
     {
         return $this->name_es ?: $this->name;

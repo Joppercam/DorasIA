@@ -332,41 +332,260 @@
 </div>
 
 <style>
+/* Mobile optimizations */
 @media (max-width: 768px) {
+    /* Hero Section Mobile */
+    .hero-section {
+        min-height: auto !important;
+        padding-top: 80px !important;
+        padding-bottom: 60px !important;
+    }
+    
+    .hero-content {
+        padding: 1rem !important;
+    }
+    
+    .hero-info-box {
+        padding: 1.5rem !important;
+    }
+    
+    /* Actor layout mobile */
     .hero-info-box > div:first-child {
         grid-template-columns: 1fr !important;
         gap: 1.5rem !important;
         text-align: center !important;
+        min-height: auto !important;
     }
     
+    /* Actor photo mobile */
     .hero-info-box img,
     .hero-info-box > div:first-child > div:first-child > div {
         width: 150px !important;
         height: 200px !important;
         margin: 0 auto !important;
+        border-radius: 12px !important;
     }
     
-    .content-section > div:first-child {
-        grid-template-columns: 1fr !important;
-        gap: 1.5rem !important;
+    /* Actor info mobile */
+    .hero-info-box > div:first-child > div:last-child {
+        padding-left: 0 !important;
     }
     
-    .detail-grid {
-        grid-template-columns: 1fr !important;
+    .hero-title {
+        font-size: 1.8rem !important;
+        text-align: center !important;
+        margin-bottom: 0.5rem !important;
     }
     
     .hero-meta {
         justify-content: center !important;
-        text-align: center !important;
+        gap: 0.5rem !important;
+        margin-bottom: 1rem !important;
     }
     
-    .hero-title {
-        font-size: 2rem !important;
-        text-align: center !important;
+    .hero-meta .hero-category {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.6rem !important;
     }
     
     .hero-description {
-        font-size: 0.95rem !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        line-height: 1.5 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Also known as section mobile */
+    .hero-info-box h4 {
+        font-size: 0.9rem !important;
+        text-align: center !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .hero-info-box > div:first-child > div:last-child > div:last-child > div {
+        justify-content: center !important;
+        gap: 0.4rem !important;
+    }
+    
+    .hero-info-box > div:first-child > div:last-child > div:last-child span {
+        font-size: 0.75rem !important;
+        padding: 0.3rem 0.6rem !important;
+    }
+    
+    /* Content sections mobile */
+    #info {
+        margin-top: -50px !important;
+    }
+    
+    .content-section {
+        padding: 0 0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Details grid mobile */
+    .content-section > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    .detail-section {
+        padding: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .detail-section-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .detail-item {
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .detail-label {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+    
+    .detail-value {
+        font-size: 0.85rem !important;
+    }
+    
+    /* Series grid mobile */
+    .series-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    
+    .series-card {
+        margin-bottom: 0 !important;
+    }
+    
+    .series-card .card {
+        min-width: unset !important;
+        width: 100% !important;
+        aspect-ratio: 2/3 !important;
+    }
+    
+    .series-card .card-title {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .series-card .card-meta {
+        font-size: 0.65rem !important;
+    }
+    
+    /* Comments section mobile */
+    .comments-section {
+        padding: 1rem !important;
+    }
+    
+    .comments-section h2 {
+        font-size: 1.2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .comment-form-card {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .comment-form-card h3 {
+        font-size: 1rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .comment-textarea {
+        font-size: 0.85rem !important;
+        padding: 0.6rem !important;
+    }
+    
+    .comment-options {
+        flex-direction: column !important;
+        gap: 0.8rem !important;
+        align-items: stretch !important;
+    }
+    
+    .spoiler-checkbox {
+        font-size: 0.8rem !important;
+    }
+    
+    .comment-submit-btn {
+        font-size: 0.85rem !important;
+        padding: 0.6rem 1rem !important;
+        width: 100% !important;
+    }
+    
+    /* Comments list mobile */
+    .comment {
+        padding: 1rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .comment-header {
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .comment-avatar,
+    .comment-avatar-placeholder {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .comment-username {
+        font-size: 0.85rem !important;
+    }
+    
+    .comment-date {
+        font-size: 0.7rem !important;
+    }
+    
+    .comment-content {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .spoiler-badge {
+        font-size: 0.7rem !important;
+        padding: 0.2rem 0.5rem !important;
+    }
+    
+    /* Reply comments mobile */
+    .comment.reply {
+        margin-left: 1rem !important;
+        padding: 0.8rem !important;
+    }
+    
+    /* Auth prompt mobile */
+    .auth-prompt {
+        padding: 1.5rem 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .auth-prompt h3 {
+        font-size: 1rem !important;
+    }
+    
+    .auth-prompt p {
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+    /* Single column for series on very small screens */
+    .series-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .hero-meta {
+        flex-direction: column !important;
+    }
+    
+    .hero-meta .hero-category {
+        width: 100% !important;
         text-align: center !important;
     }
 }

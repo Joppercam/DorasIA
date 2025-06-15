@@ -166,6 +166,77 @@ class TmdbService
     }
 
     /**
+     * Get upcoming TV shows with date filters
+     */
+    public function getUpcomingTvShows(int $page = 1, string $startDate = null, string $endDate = null): array
+    {
+        $endpoint = "/discover/tv";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'es-ES',
+            'sort_by' => 'first_air_date.desc',
+            'page' => $page,
+            'with_original_language' => 'ko', // Solo series coreanas
+            'with_origin_country' => 'KR'
+        ];
+        
+        if ($startDate) {
+            $params['first_air_date.gte'] = $startDate;
+        }
+        
+        if ($endDate) {
+            $params['first_air_date.lte'] = $endDate;
+        }
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Search for Korean TV shows
+     */
+    public function searchKoreanTvShows(string $query, int $page = 1): array
+    {
+        $endpoint = "/search/tv";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'es-ES',
+            'query' => $query,
+            'page' => $page,
+            'with_original_language' => 'ko'
+        ];
+
+        return $this->makeRequest($endpoint, $params);
+    }
+
+    /**
+     * Get trending Korean TV shows
+     */
+    public function getTrendingKoreanTvShows(string $timeWindow = 'week'): array
+    {
+        $endpoint = "/trending/tv/{$timeWindow}";
+        
+        $params = [
+            'api_key' => $this->apiKey,
+            'language' => 'es-ES'
+        ];
+        
+        $response = $this->makeRequest($endpoint, $params);
+        
+        // Filter only Korean shows
+        if (isset($response['results'])) {
+            $response['results'] = array_filter($response['results'], function($show) {
+                $originCountry = $show['origin_country'] ?? [];
+                $originalLanguage = $show['original_language'] ?? '';
+                return in_array('KR', $originCountry) || $originalLanguage === 'ko';
+            });
+        }
+        
+        return $response;
+    }
+
+    /**
      * Build full image URL
      */
     public function getImageUrl(string $path, string $size = 'original'): string

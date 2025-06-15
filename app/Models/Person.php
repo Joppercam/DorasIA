@@ -45,6 +45,13 @@ class Person extends Model
                     ->withTimestamps();
     }
 
+    public function movies(): BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'movie_person')
+                    ->withPivot(['character', 'department', 'job', 'order'])
+                    ->withTimestamps();
+    }
+
     // Alias for series to match controller expectations
     public function titles(): BelongsToMany
     {
@@ -80,5 +87,21 @@ class Person extends Model
     public function getDisplayPlaceOfBirthAttribute(): ?string
     {
         return $this->place_of_birth_es ?: $this->place_of_birth;
+    }
+
+    public function followers()
+    {
+        return $this->hasMany(ActorFollow::class);
+    }
+
+    public function followerUsers()
+    {
+        return $this->belongsToMany(User::class, 'actor_follows', 'person_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    public function getFollowersCountAttribute()
+    {
+        return $this->followers()->count();
     }
 }

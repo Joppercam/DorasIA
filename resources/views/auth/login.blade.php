@@ -23,7 +23,7 @@
             @endif
 
             <!-- Form -->
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
                 
                 <!-- Email Field -->
@@ -145,4 +145,63 @@
         outline: none;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    
+    // Refresh CSRF token when page loads
+    refreshToken();
+    
+    // Refresh token every 5 minutes
+    setInterval(refreshToken, 5 * 60 * 1000);
+    
+    // Refresh token when user focuses on any input
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', refreshToken);
+    });
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Always get fresh token before submitting
+        fetch('/refresh-csrf')
+            .then(response => response.json())
+            .then(data => {
+                // Update meta tag
+                document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrf_token);
+                
+                // Update form token
+                const csrfInput = form.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = data.csrf_token;
+                }
+                
+                // Now submit the form
+                form.submit();
+            })
+            .catch(error => {
+                console.error('Error refreshing CSRF token:', error);
+                // Try to submit anyway
+                form.submit();
+            });
+    });
+    
+    function refreshToken() {
+        fetch('/refresh-csrf')
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrf_token);
+                const csrfInput = form.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = data.csrf_token;
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing CSRF token:', error);
+            });
+    }
+});
+</script>
 @endsection

@@ -13,6 +13,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'chilean.localization' => \App\Http\Middleware\ChileanLocalization::class,
+            'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
+            'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
+        ]);
+        
+        // Auto-authenticate for development
+        // UNCOMMENT FOR PRODUCTION TO ENABLE AUTO-LOGIN
+        // $middleware->web(append: [
+        //     \App\Http\Middleware\StaticAuth::class,
+        // ]);
+        
+        // CSRF verification disabled for development
+        // ENABLE FOR PRODUCTION SECURITY
+        $middleware->validateCsrfTokens(except: [
+            '*'  // Disable for ALL routes - CHANGE IN PRODUCTION
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'avatar',
+        'email_verified_at',
     ];
 
     /**
@@ -77,5 +78,39 @@ class User extends Authenticatable
     public function watchlist()
     {
         return $this->hasMany(Watchlist::class);
+    }
+
+    public function episodeProgress()
+    {
+        return $this->hasMany(EpisodeProgress::class);
+    }
+
+    public function getEpisodeProgress($episodeId)
+    {
+        return $this->episodeProgress()->where('episode_id', $episodeId)->first();
+    }
+
+    public function getSeriesProgress($seriesId)
+    {
+        return $this->episodeProgress()
+            ->where('series_id', $seriesId)
+            ->with('episode')
+            ->get();
+    }
+
+    public function actorFollows()
+    {
+        return $this->hasMany(ActorFollow::class);
+    }
+
+    public function followedActors()
+    {
+        return $this->belongsToMany(Person::class, 'actor_follows', 'user_id', 'person_id')
+            ->withTimestamps();
+    }
+
+    public function isFollowingActor($personId)
+    {
+        return $this->actorFollows()->where('person_id', $personId)->exists();
     }
 }

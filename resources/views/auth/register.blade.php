@@ -15,8 +15,15 @@
                 <p style="color: #ccc; font-size: 1rem;">Únete a la comunidad de K-Drama fans</p>
             </div>
 
+            <!-- General Error Message -->
+            @if($errors->has('error'))
+                <div style="background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <p style="color: #e74c3c; margin: 0; font-size: 0.9rem;">{{ $errors->first('error') }}</p>
+                </div>
+            @endif
+
             <!-- Form -->
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" id="registerForm">
                 @csrf
                 
                 <!-- Name Field -->
@@ -101,9 +108,17 @@
                     @enderror
                 </div>
 
+                <!-- Debug info -->
+                <div id="debug-info" style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 4px; font-size: 0.7rem; margin-bottom: 1rem; color: #ccc;">
+                    <div>🔄 Token: <span id="current-token">Cargando...</span></div>
+                    <div>⏰ Último refresh: <span id="last-refresh">-</span></div>
+                    <div>📱 Mobile: <span id="mobile-status">-</span></div>
+                </div>
+
                 <!-- Submit Button -->
                 <button 
                     type="submit"
+                    id="submitBtn"
                     style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; margin-bottom: 1rem;"
                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(0, 212, 255, 0.3)'"
                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
@@ -187,4 +202,49 @@
         }
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone/i.test(navigator.userAgent);
+    
+    // Show mobile status in debug info
+    const mobileStatusSpan = document.getElementById('mobile-status');
+    if (mobileStatusSpan) {
+        mobileStatusSpan.textContent = isMobile ? 'Sí' : 'No';
+    }
+    
+    // Update debug info with current token
+    const currentTokenSpan = document.getElementById('current-token');
+    const lastRefreshSpan = document.getElementById('last-refresh');
+    if (currentTokenSpan) {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            currentTokenSpan.textContent = metaTag.content.substring(0, 8) + '...';
+        }
+    }
+    if (lastRefreshSpan) {
+        lastRefreshSpan.textContent = new Date().toLocaleTimeString();
+    }
+    
+    // For mobile devices, use the mobile route
+    if (isMobile) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Change to mobile route
+            form.action = '/register-mobile';
+            
+            // Remove CSRF token for mobile route
+            const csrfToken = form.querySelector('input[name="_token"]');
+            if (csrfToken) {
+                csrfToken.remove();
+            }
+            
+            // Submit the form
+            form.submit();
+        });
+    }
+});
+</script>
 @endsection

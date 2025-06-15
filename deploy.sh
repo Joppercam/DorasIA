@@ -1,116 +1,57 @@
 #!/bin/bash
 
-# 🚀 DORASIA - Script de Deploy para Hosting
-# Versión: 1.0
+# Script de deployment para Dorasia
+# Ejecutar en el servidor después de hacer git pull
 
-echo "🤖 DORASIA - Deploy Script Iniciado"
-echo "=================================="
+echo "🚀 Iniciando deployment de Dorasia..."
 
-# Variables de configuración
-PROJECT_DIR="/home/n91a0e5/dorasia.cl"
-BACKUP_DIR="/home/n91a0e5/backups/dorasia_$(date +%Y%m%d_%H%M%S)"
+# 1. Instalar/actualizar dependencias de Composer
+echo "📦 Instalando dependencias de Composer..."
+composer install --optimize-autoloader --no-dev
 
-# Función para mostrar mensajes
-show_message() {
-    echo "✅ $1"
-}
-
-error_message() {
-    echo "❌ ERROR: $1"
+# 2. Crear archivo .env si no existe
+if [ ! -f .env ]; then
+    echo "⚙️ Creando archivo .env..."
+    cp .env.example .env
+    php artisan key:generate
+    echo "⚠️  Por favor, edita el archivo .env con tus configuraciones de base de datos y TMDB API"
     exit 1
-}
-
-# 1. Verificar dependencias
-show_message "Verificando dependencias..."
-command -v php >/dev/null 2>&1 || error_message "PHP no está instalado"
-command -v composer >/dev/null 2>&1 || error_message "Composer no está instalado"
-
-# 2. Crear backup si existe instalación previa
-if [ -d "$PROJECT_DIR" ]; then
-    show_message "Creando backup en $BACKUP_DIR"
-    mkdir -p "$BACKUP_DIR"
-    cp -r "$PROJECT_DIR" "$BACKUP_DIR" 2>/dev/null || true
 fi
 
-# 3. Crear directorio del proyecto
-show_message "Preparando directorio del proyecto..."
-mkdir -p "$PROJECT_DIR"
-
-# 4. Instalar dependencias
-show_message "Instalando dependencias de Composer..."
-composer install --no-dev --optimize-autoloader --no-interaction
-
-# 5. Configurar permisos
-show_message "Configurando permisos..."
-chmod -R 755 storage
-chmod -R 755 bootstrap/cache
-# En hosting compartido, el usuario ya tiene los permisos correctos
-
-# 6. Configurar base de datos
-show_message "Configurando base de datos..."
-if [ ! -f ".env" ]; then
-    cp .env.production .env
-    show_message "⚠️  IMPORTANTE: Configura tu archivo .env con los datos de tu hosting"
-fi
-
-# 7. Generar clave de aplicación
-show_message "Generando clave de aplicación..."
-php artisan key:generate --force
-
-# 8. Crear base de datos SQLite y ejecutar migraciones
-show_message "Creando base de datos SQLite..."
-touch database/database.sqlite
-chmod 664 database/database.sqlite
-
-show_message "Ejecutando migraciones..."
+# 3. Ejecutar migraciones
+echo "🗄️ Ejecutando migraciones..."
 php artisan migrate --force
 
-# 9. Optimizar aplicación
-show_message "Optimizando aplicación para producción..."
+# 4. Limpiar cachés antiguos
+echo "🧹 Limpiando cachés..."
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# 5. Optimizar para producción
+echo "⚡ Optimizando para producción..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# 10. Crear cron job para importación continua (opcional)
-show_message "Para importación continua, agrega este cron job:"
-echo "0 2 * * * cd /home/n91a0e5/dorasia.cl && php artisan import:korean-dramas --pages=10"
+# 6. Crear enlace simbólico para storage
+echo "🔗 Creando enlace simbólico para storage..."
+php artisan storage:link
 
-# 11. Crear .htaccess para Apache
-show_message "Creando archivo .htaccess..."
-cat > public/.htaccess << 'EOF'
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+# 7. Establecer permisos correctos
+echo "🔒 Configurando permisos..."
+chmod -R 775 storage
+chmod -R 775 bootstrap/cache
 
-    RewriteEngine On
+# 8. Optimizar autoloader
+echo "🔧 Optimizando autoloader..."
+composer dump-autoload --optimize
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-EOF
-
+echo "✅ Deployment completado!"
 echo ""
-echo "🎉 ¡Deploy completado exitosamente!"
-echo "================================="
-echo ""
-echo "📋 PASOS FINALES:"
-echo "1. Configura tu archivo .env con los datos de tu hosting"
-echo "2. Asegúrate de que el DocumentRoot apunte a la carpeta 'public'"
-echo "3. Importa el contenido inicial: php artisan import:korean-dramas --pages=50"
-echo "4. (Opcional) Configura el cron job para importación automática"
-echo ""
-echo "🌐 Tu sitio estará disponible en: https://tu-dominio.com"
-echo ""
-echo "🤖 DORAS[IA] - Powered by AI ✨"
+echo "📋 Siguientes pasos:"
+echo "1. Asegúrate de que el archivo .env esté configurado correctamente"
+echo "2. Verifica que la base de datos esté conectada"
+echo "3. Si es la primera vez, ejecuta: php artisan import:korean-series"
+echo "4. Configura el cron job para actualizaciones automáticas (opcional)"

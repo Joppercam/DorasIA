@@ -7,6 +7,7 @@
     <title>@yield('title', 'Dorasia - K-Dramas')</title>
     {{-- @vite('resources/css/app.css') --}}
     <style>
+        /* CSS UPDATE - COLORS FIXED v2 - <?php echo time(); ?> */
         body {
             margin: 0;
             padding: 0;
@@ -245,13 +246,14 @@
         }
 
         .hero-section {
-            height: 80vh;
+            height: 70vh;
             position: relative;
             display: flex;
             align-items: center;
             background-size: cover;
             background-position: center;
             margin-top: 0;
+            margin-bottom: 0.5rem;
         }
 
         .hero-overlay {
@@ -276,7 +278,7 @@
                 rgba(0, 0, 0, 0.35) 50%, 
                 rgba(0, 0, 0, 0.5) 100%);
             backdrop-filter: blur(15px);
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -285,7 +287,7 @@
         .hero-categories {
             display: flex;
             gap: 0.8rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
         }
 
@@ -306,7 +308,7 @@
             display: flex;
             align-items: center;
             gap: 2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
         }
 
@@ -344,7 +346,7 @@
         .hero-original-title {
             font-size: 1.1rem;
             color: #fff;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             font-style: italic;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
             background: rgba(0, 0, 0, 0.4);
@@ -377,24 +379,99 @@
             display: flex;
             align-items: center;
             gap: 2rem;
-            margin-top: 2rem;
-            padding: 1.5rem 0;
+            margin-top: 1.5rem;
+            padding: 1rem 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent !important;
         }
 
         .hero-actions .card-rating-buttons {
-            position: static;
-            transform: none;
-            opacity: 1;
-            gap: 1rem;
+            position: static !important;
+            transform: none !important;
+            opacity: 1 !important;
+            display: flex !important;
+            gap: 2rem !important;
+            justify-content: space-around !important;
+            width: 100% !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            flex-direction: row !important;
+        }
+        
+        .card-rating-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: space-around;
+            width: 100%;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        
+        .hero-actions .rating-button-with-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .hero-actions .rating-btn {
             opacity: 1 !important;
             transform: scale(1) !important;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-width: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-actions .rating-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            text-align: center;
+        }
+        
+        .hero-actions .count-number {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .hero-actions .count-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .hero-actions .rating-btn.dislike:hover,
+        .hero-actions .rating-btn.dislike.active {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+            color: #f44336;
+        }
+        
+        .hero-actions .rating-btn.like:hover,
+        .hero-actions .rating-btn.like.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+        
+        .hero-actions .rating-btn.love:hover,
+        .hero-actions .rating-btn.love.active {
+            background: rgba(233, 30, 99, 0.3);
+            border-color: #e91e63;
+            color: #e91e63;
         }
 
         .hero-actions .watchlist-button-container {
@@ -408,14 +485,32 @@
             height: 40px;
             border-width: 2px;
         }
-
-        .hero-actions::before {
-            content: '🎬 Acciones:';
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-right: 0.5rem;
+        
+        /* Mobile styles for hero-actions */
+        @media (max-width: 768px) {
+            .hero-actions {
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .hero-actions .card-rating-buttons {
+                gap: 1rem;
+                justify-content: space-around;
+            }
+            
+            .hero-actions .rating-btn {
+                width: 45px !important;
+                height: 45px !important;
+            }
+            
+            .hero-actions .count-label {
+                font-size: 0.7rem;
+            }
         }
+
 
         /* Series Detail Styles */
         .series-detail-container {
@@ -520,7 +615,7 @@
             gap: 1.5rem;
         }
 
-        .cast-card {
+        .cast-card:not(.actor-card-simple) {
             background: rgba(20, 20, 20, 0.4);
             backdrop-filter: blur(10px);
             border-radius: 16px;
@@ -822,7 +917,7 @@
         .hero-title {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             line-height: 1.1;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
             color: #fff;
@@ -831,11 +926,11 @@
         .hero-description {
             font-size: 1rem;
             line-height: 1.4;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             color: #fff;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
@@ -880,13 +975,16 @@
 
         .content-section {
             padding: 0 4%;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
         }
 
         .section-title {
             font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             color: white;
         }
 
@@ -894,16 +992,24 @@
             position: relative;
             overflow: visible;
             margin: 0 50px;
-            padding: 30px 0;
+            padding: 40px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .carousel-container {
+                margin: 0 20px;
+                padding: 30px 0;
+            }
         }
 
         .carousel {
             display: flex;
-            gap: 1rem;
+            gap: 0.4rem;
             overflow: visible;
             scroll-behavior: smooth;
             transition: transform 0.5s ease;
             will-change: transform;
+            padding: 20px 0;
         }
 
         .carousel-nav {
@@ -926,6 +1032,14 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
+        
+        @media (max-width: 768px) {
+            .carousel-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
 
         .carousel-nav:hover {
             background: rgba(229, 9, 20, 0.9);
@@ -943,34 +1057,46 @@
         }
 
         .card {
-            min-width: 220px;
-            height: 320px;
-            border-radius: 8px;
+            min-width: 200px !important;
+            height: 300px !important;
+            border-radius: 4px;
             overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: default;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             background-size: cover;
             background-position: center;
             position: relative;
             border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
+            transform-origin: center;
         }
-
-        .card:hover {
-            transform: scale(1.7) translateY(-40px);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-            z-index: 1500;
-            position: relative;
-            border-color: rgba(255,255,255,0.4);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        
+        @media (max-width: 768px) {
+            .card {
+                min-width: 140px !important;
+                height: 210px !important;
+            }
+            
+            .card.hovering {
+                transform: scale(1.1) translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+            }
         }
+        
+        .card.hovering {
+            transform: scale(1.15) translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            z-index: 100;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
 
-        .card:hover .card-overlay {
+        .card.hovering .card-overlay {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .card:hover .card-info {
+        .card.hovering .card-info {
             opacity: 1;
             transform: translateY(0);
         }
@@ -982,27 +1108,20 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.8) 0%, 
-                transparent 25%, 
-                transparent 50%, 
-                rgba(0,0,0,0.7) 70%, 
+                transparent 0%, 
+                transparent 60%, 
+                rgba(0,0,0,0.4) 70%, 
+                rgba(0,0,0,0.8) 85%, 
                 rgba(0,0,0,0.95) 100%);
-            opacity: 0;
+            opacity: 1;
             transition: opacity 0.3s ease;
         }
 
         .card-categories {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            right: 0.5rem;
-            z-index: 10;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
+            display: none;
         }
 
-        .card:hover .card-categories {
+        .card.hovering .card-categories {
             opacity: 1;
             transform: translateY(0);
         }
@@ -1053,12 +1172,35 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.95);
-            padding: 0.8rem;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.95) 100%);
+            padding: 1rem 0.8rem 0.8rem;
             color: white;
-            opacity: 0;
-            transform: translateY(50%);
+            opacity: 1;
+            transform: translateY(0);
             transition: all 0.3s ease;
+        }
+        
+        /* Netflix-style expanded info on hover */
+        .card-hover-content {
+            position: absolute;
+            top: 100%;
+            left: -20px;
+            right: -20px;
+            background: rgb(20, 20, 20);
+            padding: 1rem;
+            border-radius: 0 0 8px 8px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 101;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            display: none;
+        }
+        
+        .card.hovering .card-hover-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
         
         /* Franja de información al hacer click */
@@ -1261,9 +1403,9 @@
 
         .card-title {
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-size: 0.75rem;
-            line-height: 1.2;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+            line-height: 1.1;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -1274,9 +1416,9 @@
         .card-meta {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 0.4rem;
-            font-size: 0.65rem;
+            gap: 0.4rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.7rem;
         }
 
         .card-rating {
@@ -1355,9 +1497,7 @@
         }
 
         .card-streaming {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid rgba(255,255,255,0.2);
+            display: none;
         }
 
         .card-streaming-title {
@@ -1470,7 +1610,7 @@
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
         }
         
-        .card:hover .card-action-btn {
+        .card.hovering .card-action-btn {
             opacity: 1;
             transform: scale(1);
         }
@@ -1487,10 +1627,223 @@
             height: 16px;
             fill: white;
         }
+
+        .card-view-btn {
+            background: linear-gradient(135deg, #e50914, #b20710);
+            color: white;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .card-view-btn {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+        }
+
+        .card.hovering .card-view-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-view-btn:hover {
+            background: linear-gradient(135deg, #ff0a16, #e50914);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .card-list-btn {
+            position: absolute;
+            top: 0.8rem;
+            left: 0.8rem;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.4rem;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .card.hovering .card-list-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .card-list-btn:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+        
+        .card-list-btn.active {
+            background: rgba(220, 53, 69, 0.9);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .card-list-btn.active:hover {
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        }
         
         /* Remove card click */
         .card {
             cursor: default;
+        }
+        
+        /* Movie Rating Buttons */
+        .movie-actions {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .movie-rating-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .rating-button-with-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .card-rating-buttons .rating-button-with-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .movie-rating-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .rating-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            text-align: center;
+        }
+        
+        .count-number {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .count-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .movie-rating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .movie-rating-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .movie-rating-btn.dislike {
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+        
+        .movie-rating-btn.dislike:hover,
+        .movie-rating-btn.dislike.active {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        
+        .movie-rating-btn.like {
+            border-color: rgba(40, 167, 69, 0.3);
+        }
+        
+        .movie-rating-btn.like:hover,
+        .movie-rating-btn.like.active {
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #28a745;
+        }
+        
+        .movie-rating-btn.love {
+            border-color: rgba(255, 105, 180, 0.3);
+        }
+        
+        .movie-rating-btn.love:hover,
+        .movie-rating-btn.love.active {
+            background: rgba(255, 105, 180, 0.2);
+            border-color: #ff69b4;
+            color: #ff69b4;
+        }
+        
+        .movie-watchlist-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(123, 104, 238, 0.2);
+            border: 2px solid rgba(123, 104, 238, 0.3);
+            color: #7b68ee;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .movie-watchlist-btn:hover {
+            background: rgba(123, 104, 238, 0.3);
+            border-color: #7b68ee;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(123, 104, 238, 0.3);
+        }
+        
+        .movie-watchlist-btn.active {
+            background: rgba(123, 104, 238, 0.4);
+            border-color: #7b68ee;
         }
         
         /* Streaming Platforms Update */
@@ -1513,6 +1866,235 @@
         
         .streaming-platform.viki {
             background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+        
+        /* Rating Toast Notifications */
+        .rating-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            z-index: 10000;
+            transform: translateX(300px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .rating-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-toast {
+                right: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+                transform: translateY(-50px);
+            }
+            
+            .rating-toast.show {
+                transform: translateY(0);
+            }
+            
+            /* Mobile rating buttons */
+            .rating-btn {
+                min-height: 44px !important;
+                min-width: 44px !important;
+                padding: 8px 12px !important;
+                font-size: 1rem !important;
+                touch-action: manipulation;
+            }
+            
+            .movie-rating-btn {
+                min-height: 44px !important;
+                padding: 8px 16px !important;
+                font-size: 0.9rem !important;
+                touch-action: manipulation;
+            }
+            
+            .movie-rating-btn svg {
+                width: 20px !important;
+                height: 20px !important;
+            }
+            
+            /* Mobile actions bar */
+            .mobile-actions-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 1rem;
+                z-index: 1000;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: nowrap;
+            }
+            
+            .mobile-actions-bar .rating-btn {
+                flex: 1;
+                max-width: 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.2rem;
+                font-size: 0.7rem;
+                padding: 8px 4px;
+            }
+            
+            .mobile-actions-bar .rating-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            /* Mobile movie buttons */
+            .mobile-actions-bar .movie-rating-btn {
+                flex: 1;
+                max-width: 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.2rem;
+                font-size: 0.7rem;
+                padding: 8px 4px;
+                border-radius: 8px;
+            }
+            
+            .mobile-actions-bar .movie-rating-btn span {
+                display: block;
+                text-align: center;
+                line-height: 1;
+            }
+            
+            .mobile-actions-bar .movie-rating-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .mobile-watchlist-btn {
+                background: rgba(123, 104, 238, 0.2);
+                border: 2px solid rgba(123, 104, 238, 0.3);
+                color: #7b68ee;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                touch-action: manipulation;
+                flex-shrink: 0;
+            }
+            
+            .mobile-watchlist-btn.active {
+                background: rgba(123, 104, 238, 0.4);
+                border-color: #7b68ee;
+            }
+            
+            .mobile-auth-prompt {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .mobile-login-btn {
+                background: rgba(229, 9, 20, 0.8);
+                color: white;
+                text-decoration: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                touch-action: manipulation;
+            }
+            
+            /* Mobile rating buttons - icon only */
+            .mobile-rating-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                color: rgba(255, 255, 255, 0.7);
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                touch-action: manipulation;
+                flex-shrink: 0;
+            }
+            
+            .mobile-rating-btn.dislike.active {
+                background: rgba(244, 67, 54, 0.3);
+                border-color: #f44336;
+                color: #f44336;
+            }
+            
+            .mobile-rating-btn.like.active {
+                background: rgba(76, 175, 80, 0.3);
+                border-color: #4caf50;
+                color: #4caf50;
+            }
+            
+            .mobile-rating-btn.love.active {
+                background: rgba(233, 30, 99, 0.3);
+                border-color: #e91e63;
+                color: #e91e63;
+            }
+            
+            .mobile-rating-btn:active {
+                transform: scale(0.95);
+            }
+        }
+        
+        /* Current rating info for mobile */
+        .current-rating-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            display: inline-block;
+            max-width: fit-content;
+            margin: 1rem auto;
+        }
+        
+        .rating-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+        
+        .rating-display {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         /* News Carousel Styles */
@@ -1664,37 +2246,37 @@
             background-color: rgba(229, 9, 20, 0.1) !important;
         }
 
-        /* Rating Buttons Styles */
-        .card-rating-buttons {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform: translate(-50%, 50%);
-            display: flex;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 15;
-        }
-
-        .card:hover .card-rating-buttons {
-            opacity: 1;
+        /* Hide ALL rating and interactive elements in home cards */
+        .card .card-rating-buttons,
+        .card .watchlist-button-container, 
+        .card .series-stats,
+        .card .rating-btn,
+        .card .watchlist-btn,
+        .carousel .card-rating-buttons,
+        .carousel .watchlist-button-container,
+        .carousel .series-stats,
+        .carousel .rating-btn,
+        .carousel .watchlist-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
         }
 
         .rating-btn {
-            width: 32px;
-            height: 32px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.4);
-            background: rgba(0,0,0,0.9);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0.8);
+            opacity: 1;
+            transform: scale(1);
         }
 
         .card:hover .rating-btn {
@@ -1717,6 +2299,34 @@
         .rating-btn.active:hover {
             transform: scale(1.1);
             box-shadow: 0 0 20px rgba(255,255,255,0.6);
+        }
+        
+        .rating-btn.dislike:hover,
+        .rating-btn.dislike.active {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+            color: #f44336;
+        }
+        
+        .rating-btn.like:hover,
+        .rating-btn.like.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+        
+        .rating-btn.love:hover,
+        .rating-btn.love.active {
+            background: rgba(233, 30, 99, 0.3);
+            border-color: #e91e63;
+            color: #e91e63;
+        }
+        
+        .rating-btn.watched:hover,
+        .rating-btn.watched.active {
+            background: rgba(123, 104, 238, 0.3);
+            border-color: #7b68ee;
+            color: #7b68ee;
         }
 
         /* Toast notification */
@@ -1750,16 +2360,7 @@
         }
 
         .watchlist-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(20,20,20,0.8);
-            backdrop-filter: blur(10px);
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
+            display: none !important;
             justify-content: center;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -1988,12 +2589,12 @@
             /* Carrusel móvil simple */
             .carousel-container {
                 margin: 0 20px;
-                padding: 20px 0;
+                padding: 10px 0;
             }
             
             .carousel {
                 display: flex;
-                gap: 1rem;
+                gap: 0.5rem;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 scroll-snap-type: x mandatory;
@@ -2020,28 +2621,48 @@
                 border: 1px solid rgba(255,255,255,0.1);
             }
             
-            /* Ocultar hover en móvil */
+            /* Hover más sutil en móvil */
             .card:hover {
-                transform: none;
-                box-shadow: none;
+                transform: scale(1.02);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             }
             
+            
             /* Ocultar elementos duplicados en móvil */
-            .series-stats,
-            .card-rating-buttons {
+            .series-stats {
                 display: none !important;
+            }
+            
+            /* Mobile styles for action buttons */
+            .card-view-btn {
+                top: 0.4rem;
+                right: 0.4rem;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.65rem;
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+            
+            .card-list-btn {
+                top: 0.4rem;
+                left: 0.4rem;
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+                opacity: 1 !important;
+                transform: translateY(0) !important;
             }
             
             /* Secciones de contenido */
             .content-section {
                 padding: 0;
-                margin-bottom: 1rem;
+                margin-bottom: 0.3rem;
             }
             
             .section-title {
                 font-size: 1.1rem;
                 font-weight: 700;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.4rem;
                 padding: 0 1rem;
             }
             
@@ -2338,6 +2959,491 @@
             color: rgba(0, 212, 255, 0.8);
             font-size: 0.9rem;
         }
+        
+        /* Hide stats component that creates unwanted square in series */
+        .series-stats-detail {
+            display: none !important;
+        }
+        
+        /* Make series rating buttons RED and visible */
+        .hero-actions .card-rating-buttons {
+            display: flex !important;
+            gap: 2rem !important;
+            justify-content: space-around !important;
+            width: 100% !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: transparent !important;
+            z-index: 1000 !important;
+        }
+        
+        .hero-actions .rating-button-with-count {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .hero-actions .rating-btn,
+        .hero-actions button.rating-btn,
+        button.rating-btn.dislike,
+        button.rating-btn.like,
+        button.rating-btn.love,
+        button.rating-btn.watched {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: #dc3545 !important;
+            border: none !important;
+            color: white !important;
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50% !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        /* Override any existing blue styles */
+        .hero-actions .rating-btn[style*="background"] {
+            background: #dc3545 !important;
+        }
+        
+        /* Force rating buttons visibility everywhere */
+        @media (max-width: 768px) {
+            .hero-actions,
+            .hero-actions .card-rating-buttons,
+            .hero-actions .rating-button-with-count,
+            .hero-actions button {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+        
+        /* Make series hero layout match movies on mobile */
+        @media (max-width: 768px) {
+            .hero-section {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 100vh !important;
+                padding-top: 60px !important;
+            }
+            
+            .hero-content {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 2rem 1rem !important;
+                width: 100% !important;
+                max-width: 400px !important;
+                margin: 0 auto !important;
+            }
+            
+            .hero-info-box {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
+            }
+            
+            .series-mobile-poster {
+                width: 180px;
+                height: 270px;
+                border-radius: 12px;
+                margin: 0 auto 0.5rem auto;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+                object-fit: cover;
+                display: block;
+            }
+            
+            .series-mobile-poster-placeholder {
+                width: 180px;
+                height: 270px;
+                border-radius: 12px;
+                margin: 0 auto 0.5rem auto;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+                background: rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 4rem;
+            }
+            
+            .mobile-genres {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+                margin: 0.5rem 0 1.5rem 0 !important;
+                flex-wrap: wrap !important;
+            }
+            
+            .mobile-genre-tag {
+                background: rgba(0, 120, 215, 0.8) !important;
+                color: white !important;
+                padding: 0.3rem 0.8rem !important;
+                border-radius: 15px !important;
+                font-size: 0.75rem !important;
+                font-weight: 500 !important;
+                border: none !important;
+            }
+            
+            .mobile-streaming {
+                margin: 1rem 0 !important;
+            }
+            
+            .streaming-platforms-mobile {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+                flex-wrap: wrap !important;
+            }
+            
+            .platform-item-mobile {
+                background: #dc3545 !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 0.3rem 0.6rem !important;
+            }
+            
+            .platform-name-mobile {
+                color: white !important;
+                font-size: 0.7rem !important;
+                font-weight: 500 !important;
+            }
+            
+            /* Hide duplicate genres in content section on mobile */
+            .detail-genres {
+                display: none !important;
+            }
+            
+            /* Hide streaming platforms in content section on mobile */
+            .streaming-platforms {
+                display: none !important;
+            }
+            
+            /* Hide only the empty/duplicate sections - keep episode progress (4th) */
+            .series-info .detail-section:nth-child(1),
+            .series-info .detail-section:nth-child(2), 
+            .series-info .detail-section:nth-child(3) {
+                display: none !important;
+            }
+            
+            .series-detail-container .detail-genres {
+                display: none !important;
+            }
+            
+            .series-detail-container .streaming-platforms {
+                display: none !important;
+            }
+            
+            .series-stats-detail {
+                display: none !important;
+            }
+            
+            /* Remove ALL empty spaces between hero and content */
+            #info {
+                margin-top: 0px !important;
+                padding-top: 0px !important;
+            }
+            
+            .content-section {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .series-detail-container {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                padding: 1rem !important;
+            }
+            
+            /* Hide empty sections that create space */
+            .detail-section:empty {
+                display: none !important;
+            }
+            
+            .series-details-modern:empty {
+                display: none !important;
+            }
+            
+            /* Fix actor cards to show full image */
+            .actor-image-simple {
+                width: 100% !important;
+                height: 120px !important;
+                overflow: hidden !important;
+                border-radius: 8px !important;
+            }
+            
+            .actor-image-simple img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: center top !important;
+            }
+            
+            .actor-card-simple {
+                background: rgba(255, 255, 255, 0.05) !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+            }
+            
+            /* FORCE RED BUTTONS - Exact class targeting */
+            button.rating-btn.dislike,
+            button.rating-btn.like,
+            button.rating-btn.love,
+            button.rating-btn.watched,
+            .card-rating-buttons button.rating-btn,
+            .hero-actions button.rating-btn {
+                background-color: #dc3545 !important;
+                background: #dc3545 !important;
+                border: none !important;
+                color: white !important;
+                width: 50px !important;
+                height: 50px !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Override any inline styles */
+            button[class*="rating-btn"] {
+                background: #dc3545 !important;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem !important;
+                margin-bottom: 0.5rem !important;
+                text-align: center !important;
+            }
+            
+            .hero-original-title {
+                font-size: 0.9rem !important;
+                margin-bottom: 1rem !important;
+                text-align: center !important;
+            }
+            
+            .hero-meta {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 1rem !important;
+                flex-wrap: wrap !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .hero-description {
+                font-size: 0.9rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 1.5rem !important;
+                text-align: center !important;
+                padding: 0 1rem !important;
+            }
+            
+            .hero-actions {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: center !important;
+                margin-top: 1rem !important;
+            }
+            
+            .hero-actions {
+                display: flex !important;
+                justify-content: center !important;
+                margin-top: 1.5rem !important;
+                width: 100% !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: 100 !important;
+            }
+            
+            .hero-actions .card-rating-buttons {
+                display: flex !important;
+                gap: 2rem !important;
+                justify-content: space-around !important;
+                width: 100% !important;
+                max-width: 300px !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: 1000 !important;
+            }
+            
+            .hero-actions .rating-button-with-count {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.5rem !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            /* Force RED rating buttons everywhere */
+            .hero-actions button,
+            .hero-actions .rating-btn,
+            .hero-actions .card-rating-buttons button,
+            button.rating-btn,
+            .rating-btn.dislike,
+            .rating-btn.like, 
+            .rating-btn.love,
+            .rating-btn.watched {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                background: rgba(220, 53, 69, 0.9) !important;
+                border: none !important;
+                color: white !important;
+                width: 50px !important;
+                height: 50px !important;
+                border-radius: 50% !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .hero-actions .rating-btn:hover,
+            .hero-actions button:hover {
+                background: rgba(220, 53, 69, 1) !important;
+                transform: scale(1.05) !important;
+            }
+            
+            .hero-actions .rating-btn.active,
+            .hero-actions button.active {
+                background: rgba(255, 69, 90, 1) !important;
+                box-shadow: 0 0 10px rgba(220, 53, 69, 0.5) !important;
+            }
+            
+            .hero-actions .rating-count {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            .hero-actions .count-number {
+                font-size: 0.9rem !important;
+                font-weight: bold !important;
+                color: white !important;
+            }
+            
+            .hero-actions .count-label {
+                font-size: 0.7rem !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+            }
+            
+            /* Hide duplicate poster in content section on mobile */
+            .series-poster {
+                display: none !important;
+            }
+            
+            /* MOBILE RATING BUTTONS - DIFFERENT COLORS */
+            .hero-actions button.rating-btn,
+            .card-rating-buttons button.rating-btn {
+                border: none !important;
+                color: white !important;
+                width: 50px !important;
+                height: 50px !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            button.rating-btn.dislike,
+            .hero-actions button.rating-btn.dislike {
+                background: #dc3545 !important;
+                background-color: #dc3545 !important;
+            }
+            
+            button.rating-btn.like,
+            .hero-actions button.rating-btn.like {
+                background: #28a745 !important;
+                background-color: #28a745 !important;
+            }
+            
+            button.rating-btn.love,
+            .hero-actions button.rating-btn.love {
+                background: #e91e63 !important;
+                background-color: #e91e63 !important;
+            }
+            
+            button.rating-btn.watched,
+            .hero-actions button.rating-btn.watched {
+                background: #6f42c1 !important;
+                background-color: #6f42c1 !important;
+            }
+            
+            button.movie-rating-btn.watchlist,
+            .movie-actions button.movie-rating-btn.watchlist {
+                background: #6f42c1 !important;
+                background-color: #6f42c1 !important;
+            }
+            
+            /* MOBILE ACTOR CARDS - FULL HEIGHT IMAGE */
+            .cast-grid-compact .actor-image-simple {
+                width: 100% !important;
+                height: 400px !important;
+                overflow: hidden !important;
+                border-radius: 8px 8px 0 0 !important;
+                background: #333 !important;
+            }
+            
+            .cast-grid-compact .actor-image-simple img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: center top !important;
+                display: block !important;
+            }
+            
+            .cast-grid-compact {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 1rem !important;
+                padding: 1rem !important;
+            }
+            
+            .cast-grid-compact .actor-card-simple {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                width: 320px !important;
+                max-width: 95% !important;
+                text-align: center !important;
+            }
+            
+            .actor-card-simple {
+                background: rgba(255, 255, 255, 0.08) !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .actor-info-simple {
+                padding: 0.8rem !important;
+                text-align: center !important;
+            }
+            
+            .actor-name-simple {
+                font-size: 0.9rem !important;
+                font-weight: 600 !important;
+                color: white !important;
+                margin-bottom: 0.3rem !important;
+            }
+            
+            .actor-role-simple {
+                font-size: 0.75rem !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2377,7 +3483,10 @@
                         <li><a href="#recientes">Recientes</a></li>
                     </ul>
                 </li>
+                <li><a href="{{ route('movies.index') }}">Películas</a></li>
                 <li><a href="{{ route('actors.index') }}">Actores</a></li>
+                <li><a href="{{ route('upcoming.index') }}">Próximamente</a></li>
+                <li><a href="{{ route('browse') }}">Explorar</a></li>
                 
                 @auth
                 <li class="dropdown">
@@ -2390,12 +3499,20 @@
                         <li><a href="{{ route('profile.watched') }}">Series Vistas</a></li>
                         <li><hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.2);"></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                            <a href="{{ url('/working-logout') }}" 
+                               onclick="console.log('Logout clicked'); localStorage.clear(); sessionStorage.clear();"
+                               style="display: block; padding: 0.5rem 1rem; color: white; text-decoration: none; transition: background-color 0.3s;">
+                                Cerrar Sesión
+                            </a>
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
                                 @csrf
-                                <button type="submit" style="background: none; border: none; color: white; padding: 0.5rem 1rem; width: 100%; text-align: left; cursor: pointer; transition: background-color 0.3s;">
-                                    Cerrar Sesión
-                                </button>
                             </form>
+                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                               style="display: block; padding: 0.5rem 1rem; color: white; text-decoration: none; transition: background-color 0.3s;">
+                                Cerrar Sesión (POST)
+                            </a>
                         </li>
                     </ul>
                 </li>
@@ -2417,6 +3534,9 @@
     </nav>
 
     @yield('content')
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script>
         // Navbar scroll effect
@@ -2509,36 +3629,102 @@
 
         // Rating functionality
         function rateSeries(seriesId, ratingType, button) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            if (!csrfToken) {
+                showRatingToast('Token de seguridad no encontrado', 'error');
+                return;
+            }
+            
             fetch(`/series/${seriesId}/rate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     rating_type: ratingType
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('No autorizado - Por favor inicia sesión');
+                    } else if (response.status === 419) {
+                        throw new Error('Sesión expirada - Por favor recarga la página');
+                    } else if (response.status === 422) {
+                        throw new Error('Datos de calificación inválidos');
+                    } else {
+                        throw new Error(`Error del servidor: ${response.status}`);
+                    }
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    // Update button states
-                    const card = button.closest('.card');
-                    const ratingButtons = card.querySelectorAll('.rating-btn');
+                    // Update button states - works for both cards and detail pages
+                    const container = button.closest('.card') || button.closest('.card-rating-buttons') || button.closest('.hero-actions') || button.closest('.mobile-actions-bar');
                     
-                    // Remove active class from all buttons
-                    ratingButtons.forEach(btn => btn.classList.remove('active'));
+                    if (container) {
+                        const ratingButtons = container.querySelectorAll('.rating-btn, .mobile-rating-btn');
+                        
+                        // Remove active class from all buttons
+                        ratingButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // Add active class to current button if not removing rating
+                        if (data.rating_type) {
+                            button.classList.add('active');
+                        }
+                    }
                     
-                    // Add active class to current button
-                    button.classList.add('active');
+                    // Update all rating buttons on the page (desktop and mobile)
+                    document.querySelectorAll('.rating-btn, .mobile-rating-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        const btnType = btn.classList.contains('dislike') ? 'dislike' : 
+                                       btn.classList.contains('like') ? 'like' : 'love';
+                        if (data.rating_type === btnType) {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    // Update rating info display if exists
+                    const ratingInfo = document.querySelector('.current-rating-info');
+                    if (ratingInfo) {
+                        if (data.rating_type) {
+                            const ratingDisplay = ratingInfo.querySelector('.rating-display');
+                            if (ratingDisplay) {
+                                const ratingText = data.rating_type === 'dislike' ? '👎 No me gusta' :
+                                                 data.rating_type === 'like' ? '👍 Me gusta' : '❤️ Me encanta';
+                                ratingDisplay.textContent = ratingText;
+                            }
+                            ratingInfo.style.display = 'block';
+                        } else {
+                            ratingInfo.style.display = 'none';
+                        }
+                    }
+                    
+                    // Update rating counts if provided (handle both movies and series format)
+                    const counts = data.rating_counts || data.counts;
+                    if (counts) {
+                        const dislikeCount = document.querySelector('.dislike-count .count-number');
+                        const likeCount = document.querySelector('.like-count .count-number');
+                        const loveCount = document.querySelector('.love-count .count-number');
+                        
+                        if (dislikeCount) dislikeCount.textContent = counts.dislike;
+                        if (likeCount) likeCount.textContent = counts.like;
+                        if (loveCount) loveCount.textContent = counts.love;
+                    }
                     
                     // Show toast notification
                     showRatingToast(data.message);
+                } else {
+                    showRatingToast(data.message || 'Error al guardar calificación', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showRatingToast('Error al guardar calificación', 'error');
+                console.error('Error rating series:', error);
+                showRatingToast(error.message || 'Error al guardar calificación', 'error');
             });
         }
 
@@ -2574,6 +3760,144 @@
                     }
                 }, 300);
             }, 3000);
+        }
+
+        // Movie rating functionality
+        function rateMovie(movieId, ratingType, button) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            if (!csrfToken) {
+                showRatingToast('Token de seguridad no encontrado', 'error');
+                return;
+            }
+            
+            fetch(`/movies/${movieId}/rate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    rating_type: ratingType
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('No autorizado - Por favor inicia sesión');
+                    } else if (response.status === 419) {
+                        throw new Error('Sesión expirada - Por favor recarga la página');
+                    } else if (response.status === 422) {
+                        throw new Error('Datos de calificación inválidos');
+                    } else {
+                        throw new Error(`Error del servidor: ${response.status}`);
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update button states for both desktop and mobile
+                    const container = button.closest('.movie-rating-buttons') || button.closest('.movie-actions') || button.closest('.mobile-actions-bar');
+                    
+                    if (container) {
+                        const ratingButtons = container.querySelectorAll('.movie-rating-btn, .mobile-rating-btn');
+                        
+                        // Remove active class from all buttons
+                        ratingButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // Add active class to current button if not removing rating
+                        if (data.rating_type) {
+                            button.classList.add('active');
+                        }
+                    }
+                    
+                    // Update all rating buttons on the page (desktop and mobile)
+                    document.querySelectorAll('.movie-rating-btn, .mobile-rating-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        const btnType = btn.classList.contains('dislike') ? 'dislike' : 
+                                       btn.classList.contains('like') ? 'like' : 'love';
+                        if (data.rating_type === btnType) {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    // Update rating info display if exists
+                    const ratingInfo = document.querySelector('.current-rating-info');
+                    if (ratingInfo) {
+                        if (data.rating_type) {
+                            const ratingDisplay = ratingInfo.querySelector('.rating-display');
+                            if (ratingDisplay) {
+                                const ratingText = data.rating_type === 'dislike' ? '👎 No me gusta' :
+                                                 data.rating_type === 'like' ? '👍 Me gusta' : '❤️ Me encanta';
+                                ratingDisplay.textContent = ratingText;
+                            }
+                            ratingInfo.style.display = 'block';
+                        } else {
+                            ratingInfo.style.display = 'none';
+                        }
+                    }
+                    
+                    // Update rating counts if provided (handle both movies and series format)
+                    const counts = data.rating_counts || data.counts;
+                    if (counts) {
+                        const dislikeCount = document.querySelector('.dislike-count .count-number');
+                        const likeCount = document.querySelector('.like-count .count-number');
+                        const loveCount = document.querySelector('.love-count .count-number');
+                        
+                        if (dislikeCount) dislikeCount.textContent = counts.dislike;
+                        if (likeCount) likeCount.textContent = counts.like;
+                        if (loveCount) loveCount.textContent = counts.love;
+                    }
+                    
+                    // Show toast notification
+                    showRatingToast(data.message);
+                } else {
+                    showRatingToast(data.message || 'Error al guardar calificación', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error rating movie:', error);
+                showRatingToast(error.message || 'Error al guardar calificación', 'error');
+            });
+        }
+        
+        // Movie watchlist functionality
+        function toggleMovieWatchlist(movieId, button) {
+            fetch(`/movies/${movieId}/watchlist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.classList.toggle('active');
+                    
+                    // Update button text and icon
+                    const span = button.querySelector('span');
+                    const svg = button.querySelector('svg path');
+                    
+                    if (data.in_watchlist) {
+                        span.textContent = 'En mi lista';
+                        button.title = 'Quitar de mi lista';
+                        svg.setAttribute('d', 'M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z');
+                    } else {
+                        span.textContent = 'Mi lista';
+                        button.title = 'Agregar a mi lista';
+                        svg.setAttribute('d', 'M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z');
+                    }
+                    
+                    showRatingToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showRatingToast('Error al actualizar la lista', 'error');
+            });
         }
 
         // Watchlist functionality
@@ -2936,25 +4260,8 @@
         
         // Funcionalidad para mostrar/ocultar información de cards
         function toggleCardInfo(card) {
-            console.log('toggleCardInfo llamado', card); // Debug
-            
-            // Cerrar cualquier otra card abierta
-            document.querySelectorAll('.card-info-overlay.show').forEach(overlay => {
-                if (overlay.closest('.card') !== card) {
-                    overlay.classList.remove('show');
-                }
-            });
-            
-            // Toggle la card actual
-            const overlay = card.querySelector('.card-info-overlay');
-            console.log('Overlay encontrado:', overlay); // Debug
-            if (overlay) {
-                overlay.classList.toggle('show');
-                console.log('Overlay classes:', overlay.classList); // Debug
-                console.log('Overlay styles:', window.getComputedStyle(overlay)); // Debug
-            } else {
-                console.log('No se encontró overlay en esta card');
-            }
+            // Disabled for home page - no rating interactions
+            return false;
         }
         
         // Mostrar opciones de calificación
@@ -3040,6 +4347,32 @@
                 }
             }
         });
+    </script>
+    
+    <script>
+    // Auto-refresh CSRF token to prevent 419 errors
+    function refreshCSRFToken() {
+        fetch('/refresh-csrf')
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrf_token);
+                // Update all CSRF inputs in forms
+                document.querySelectorAll('input[name="_token"]').forEach(input => {
+                    input.value = data.csrf_token;
+                });
+            })
+            .catch(error => console.error('Error refreshing CSRF token:', error));
+    }
+
+    // Refresh token every 30 minutes
+    setInterval(refreshCSRFToken, 30 * 60 * 1000);
+
+    // Refresh token on page visibility change
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            refreshCSRFToken();
+        }
+    });
     </script>
 </body>
 </html>

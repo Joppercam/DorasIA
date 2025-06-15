@@ -24,3 +24,17 @@ Homestead.yaml
 npm-debug.log
 Thumbs.db
 yarn-error.log
+
+# Development and documentation files
+/documentacion
+*_TEST.php
+*_test.blade.php
+*-test.*
+*-debug.*
+*-simple.*
+*-working.*
+CAMBIOS_*.md
+DOCUMENTACION_*.md
+SEPARACION_*.md
+CORRECCION_*.md
+PELICULAS_*.md

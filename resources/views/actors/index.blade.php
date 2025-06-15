@@ -4,12 +4,12 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 6rem 0 4rem;">
+<section class="hero-section actors-hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="hero-overlay" style="background: linear-gradient(45deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%);"></div>
     <div class="hero-content">
         <div class="hero-info-box">
-            <h1 class="hero-title" style="font-size: 3rem; margin-bottom: 1rem;">🎭 Actores Coreanos</h1>
-            <p class="hero-description" style="font-size: 1.1rem; margin-bottom: 2rem;">
+            <h1 class="hero-title">🎭 Actores Coreanos</h1>
+            <p class="hero-description">
                 Descubre a los talentosos actores y actrices que dan vida a tus K-Dramas favoritos
             </p>
             
@@ -37,17 +37,17 @@
 
             <!-- Featured Actors Preview -->
             @if($featuredActors->count() > 0)
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; max-width: 600px;">
+            <div class="featured-actors-grid">
                 @foreach($featuredActors->take(6) as $actor)
-                <div style="text-align: center;">
+                <div class="featured-actor-item">
                     @if($actor->profile_path)
                     <img src="https://image.tmdb.org/t/p/w200{{ $actor->profile_path }}" 
                          alt="{{ $actor->name }}"
-                         style="width: 80px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.3); margin-bottom: 0.5rem;">
+                         class="featured-actor-img">
                     @else
-                    <div style="width: 80px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; color: white; font-size: 2rem;">👤</div>
+                    <div class="featured-actor-placeholder">👤</div>
                     @endif
-                    <span style="font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 600;">{{ Str::limit($actor->name, 15) }}</span>
+                    <span class="featured-actor-name">{{ Str::limit($actor->name, 15) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -83,51 +83,51 @@
 
     <!-- Actors Grid -->
     @if($actors->count() > 0)
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
+    <div class="actors-grid">
         @foreach($actors as $actor)
-        <div class="cast-card" style="transition: transform 0.3s ease;">
-            <a href="{{ route('actors.show', $actor->id) }}" style="text-decoration: none; color: inherit;">
-                <div class="cast-image" style="text-align: center; margin-bottom: 1rem;">
+        <div class="cast-card">
+            <a href="{{ route('actors.show', $actor->id) }}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                <div class="cast-image">
                     @if($actor->profile_path)
                     <img src="https://image.tmdb.org/t/p/w300{{ $actor->profile_path }}" 
                          alt="{{ $actor->name }}"
-                         class="cast-photo" style="width: 150px; height: 200px; object-fit: cover; border-radius: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);">
+                         class="cast-photo">
                     @else
-                    <div class="cast-placeholder" style="width: 150px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem; margin: 0 auto;">
+                    <div class="cast-placeholder">
                         👤
                     </div>
                     @endif
                 </div>
                 
                 <div class="cast-info">
-                    <h3 class="cast-name" style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center;">
+                    <h3 class="cast-name">
                         {{ $actor->name }}
                     </h3>
                     
-                    @if($actor->biography)
-                    <p class="cast-bio" style="color: rgba(255, 255, 255, 0.8); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1rem; text-align: center;">
-                        {{ Str::limit($actor->biography, 120) }}
+                    <p class="cast-bio">
+                        @if($actor->biography)
+                            {{ Str::limit($actor->biography, 60) }}
+                        @else
+                            Actor coreano
+                        @endif
                     </p>
-                    @endif
                     
-                    <div class="cast-details" style="display: flex; flex-direction: column; gap: 0.3rem; align-items: center;">
+                    <div class="cast-details">
                         @if($actor->birthday)
-                        <span class="cast-birth" style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">
+                        <span class="cast-birth">
                             🎂 {{ \Carbon\Carbon::parse($actor->birthday)->format('d/m/Y') }}
                         </span>
                         @endif
                         
-                        @if($actor->place_of_birth)
-                        <span class="cast-location" style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; text-align: center;">
-                            📍 {{ $actor->place_of_birth }}
-                        </span>
-                        @endif
-                        
                         @if($actor->popularity)
-                        <span style="background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); color: white; padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; margin-top: 0.5rem;">
+                        <span class="cast-popularity">
                             ⭐ {{ number_format($actor->popularity, 1) }}
                         </span>
                         @endif
+                    </div>
+                    
+                    <div class="cast-view-btn">
+                        Ver
                     </div>
                 </div>
             </a>
@@ -167,17 +167,216 @@
 </section>
 
 <style>
+/* Desktop styling */
+.actors-hero {
+    padding: 4rem 0 3rem;
+}
+
+.actors-hero .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.actors-hero .hero-description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Actors grid */
+.actors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Cast card styling */
+.cast-card {
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.cast-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cast-image {
+    text-align: center;
+    margin-bottom: 0.8rem;
+}
+
+.cast-photo {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cast-placeholder {
+    width: 120px;
+    height: 160px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 3rem;
+}
+
+.cast-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cast-name {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.cast-bio {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 0.8rem;
+    text-align: center;
+    flex: 1;
+}
+
+.cast-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: center;
+    margin-top: auto;
+}
+
+.cast-birth,
+.cast-location {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+}
+
+.cast-popularity {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.3rem;
+}
+
+/* View button */
+.cast-view-btn {
+    margin-top: 0.8rem;
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.cast-view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+/* Featured actors grid */
+.featured-actors-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.featured-actor-item {
+    text-align: center;
+}
+
+.featured-actor-img,
+.featured-actor-placeholder {
+    width: 70px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.2);
+    margin-bottom: 0.4rem;
+}
+
+.featured-actor-placeholder {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.4rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.featured-actor-name {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    display: block;
+    line-height: 1.2;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
-    .hero-title {
-        font-size: 2rem !important;
+    /* Hero Section Mobile */
+    .actors-hero {
+        padding: 1.5rem 0 1rem !important;
+        min-height: auto !important;
     }
     
-    .hero-description {
-        font-size: 0.95rem !important;
+    .hero-content {
+        padding: 0 0.5rem !important;
+    }
+    
+    .hero-info-box {
+        padding: 1rem !important;
+    }
+    
+    .actors-hero .hero-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    .actors-hero .hero-description {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.8rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* Search form mobile */
+    .hero-info-box > div:first-of-type {
+        padding: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
     }
     
     .hero-info-box form {
         flex-direction: column !important;
+        gap: 0.6rem !important;
     }
     
     .hero-info-box form input,
@@ -185,22 +384,182 @@
     .hero-info-box form button {
         width: 100% !important;
         min-width: unset !important;
+        font-size: 0.85rem !important;
+        padding: 0.6rem 0.8rem !important;
     }
     
+    /* Featured actors preview mobile */
+    .featured-actors-grid {
+        display: none !important;
+    }
+    
+    /* Content section mobile */
+    .content-section {
+        margin-top: -20px !important;
+        padding: 0 0.3rem !important;
+    }
+    
+    /* Filter info mobile */
+    .content-section > div:first-child {
+        padding: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .content-section > div:first-child h2 {
+        font-size: 0.9rem !important;
+    }
+    
+    .content-section > div:first-child p {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Actors grid mobile - wider layout */
     .actors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
-        gap: 1rem !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.3rem !important;
+        padding: 0 !important;
     }
     
-    .cast-photo {
-        width: 100px !important;
-        height: 130px !important;
+    /* Actor card mobile */
+    .cast-card {
+        padding: 0.6rem !important;
+        margin-bottom: 0 !important;
+        border-radius: 8px !important;
+        min-height: 250px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+    
+    .cast-image {
+        margin-bottom: 0.3rem !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .cast-photo,
+    .cast-placeholder {
+        width: 100% !important;
+        max-width: none !important;
+        height: 110px !important;
+        margin: 0 auto !important;
+        display: block !important;
+        border-radius: 6px !important;
+        object-fit: cover !important;
     }
     
     .cast-placeholder {
-        width: 100px !important;
-        height: 130px !important;
-        font-size: 2.5rem !important;
+        font-size: 1.8rem !important;
+    }
+    
+    .cast-info {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+    
+    .cast-name {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.2rem !important;
+        line-height: 1.1 !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+    
+    .cast-bio {
+        font-size: 0.65rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.3rem !important;
+        display: block !important;
+        flex: 1 !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+    
+    .cast-details {
+        gap: 0.15rem !important;
+        margin-bottom: 0.3rem !important;
+        width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .cast-birth {
+        font-size: 0.6rem !important;
+        line-height: 1.1 !important;
+        text-align: center !important;
+    }
+    
+    .cast-popularity {
+        font-size: 0.55rem !important;
+        padding: 0.15rem 0.3rem !important;
+        margin-top: 0.15rem !important;
+        text-align: center !important;
+        display: inline-block !important;
+    }
+    
+    .cast-view-btn {
+        margin-top: 0.3rem !important;
+        padding: 0.3rem 0.6rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 15px !important;
+        margin-top: auto !important;
+        width: 80% !important;
+        text-align: center !important;
+    }
+    
+    /* Pagination mobile */
+    .content-section > div:last-child {
+        margin-top: 2rem !important;
+    }
+    
+    .content-section > div:last-child > div {
+        padding: 0.5rem !important;
+    }
+    
+    /* Clean filters button mobile */
+    a[href*="actors"]:not(.cast-card a) {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+    }
+    
+    /* No results mobile */
+    .content-section > div > div:has(h3) {
+        padding: 2rem 1rem !important;
+    }
+    
+    .content-section > div > div:has(h3) > div:first-child {
+        font-size: 3rem !important;
+    }
+    
+    .content-section > div > div:has(h3) h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .content-section > div > div:has(h3) p {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+    /* Single column for very small screens */
+    .content-section > div:nth-child(2) {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .cast-photo,
+    .cast-placeholder {
+        max-width: 150px !important;
+        height: 200px !important;
+    }
+    
+    /* Show only 4 featured actors */
+    .hero-info-box > div:last-child > div:nth-child(n+5) {
+        display: none !important;
     }
 }
 </style>

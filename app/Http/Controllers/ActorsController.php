@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Models\ActorFollow;
 use Illuminate\Http\Request;
 
 class ActorsController extends Controller
@@ -71,7 +72,16 @@ class ActorsController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('actors.show', compact('actor', 'popularSeries', 'comments'));
+        // Check if current user is following this actor
+        $isFollowing = false;
+        if (auth()->check()) {
+            $isFollowing = auth()->user()->isFollowingActor($actor->id);
+        }
+
+        // Get followers count
+        $followersCount = $actor->followers()->count();
+
+        return view('actors.show', compact('actor', 'popularSeries', 'comments', 'isFollowing', 'followersCount'));
     }
     
     public function storeComment(Request $request, $id)
@@ -105,6 +115,72 @@ class ActorsController extends Controller
                 'created_at' => $comment->created_at->diffForHumans(),
                 'replies' => []
             ]
+        ]);
+    }
+
+    public function follow(Request $request, $id)
+    {
+        $actor = Person::findOrFail($id);
+        $user = auth()->user();
+
+        // Check if already following
+        $existingFollow = ActorFollow::where('user_id', $user->id)
+            ->where('person_id', $actor->id)
+            ->first();
+
+        if ($existingFollow) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya sigues a este actor',
+                'is_following' => true
+            ]);
+        }
+
+        // Create follow relationship
+        ActorFollow::create([
+            'user_id' => $user->id,
+            'person_id' => $actor->id
+        ]);
+
+        // Get updated followers count
+        $followersCount = $actor->followers()->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ahora sigues a ' . $actor->name,
+            'is_following' => true,
+            'followers_count' => $followersCount
+        ]);
+    }
+
+    public function unfollow(Request $request, $id)
+    {
+        $actor = Person::findOrFail($id);
+        $user = auth()->user();
+
+        // Find and delete the follow relationship
+        $follow = ActorFollow::where('user_id', $user->id)
+            ->where('person_id', $actor->id)
+            ->first();
+
+        if (!$follow) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No sigues a este actor',
+                'is_following' => false
+            ]);
+        }
+
+        $follow->delete();
+
+        // Get updated followers count
+        $followersCount = $actor->followers()->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Has dejado de seguir a ' . $actor->name,
+            'is_following' => false,
+            'followers_count' => $followersCount
         ]);
     }
 }
