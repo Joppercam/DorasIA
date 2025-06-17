@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas Disponibles - DORASIA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #141414 0%, #2a2a2a 100%);
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 2rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #00d4ff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #00d4ff;
+            color: white;
+        }
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .movie-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .movie-title {
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+        }
+        .movie-id {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+        .movie-link {
+            color: #7b68ee;
+            text-decoration: none;
+            display: block;
+            margin-top: 0.5rem;
+        }
+        .movie-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Volver a DORASIA</a>
+        
+        <h1>🎬 Películas Disponibles en DORASIA</h1>
+        
+        <p style="text-align: center; margin-bottom: 2rem; color: rgba(255,255,255,0.8);">
+            Total de películas: <strong>130</strong>
+        </p>
+        
+        <div class="movies-grid">
+            <!-- ID 1-20 -->
+            <div class="movie-item">
+                <div class="movie-title">범죄도시 4</div>
+                <div class="movie-id">ID: 1</div>
+                <a href="/peliculas/1" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">기생충 (Parásitos)</div>
+                <div class="movie-id">ID: 2</div>
+                <a href="/peliculas/2" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">용감한 시민</div>
+                <div class="movie-id">ID: 3</div>
+                <a href="/peliculas/3" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">부산행 (Train to Busan)</div>
+                <div class="movie-id">ID: 7</div>
+                <a href="/peliculas/7" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">설국열차 (Snowpiercer)</div>
+                <div class="movie-id">ID: 9</div>
+                <a href="/peliculas/9" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">아가씨 (The Handmaiden)</div>
+                <div class="movie-id">ID: 10</div>
+                <a href="/peliculas/10" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">곡성 (The Wailing)</div>
+                <div class="movie-id">ID: 13</div>
+                <a href="/peliculas/13" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">올드보이 (Oldboy)</div>
+                <div class="movie-id">ID: 15</div>
+                <a href="/peliculas/15" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">파묘</div>
+                <div class="movie-id">ID: 31</div>
+                <a href="/peliculas/31" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">살인의 추억 (Memories of Murder)</div>
+                <div class="movie-id">ID: 32</div>
+                <a href="/peliculas/32" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">악마를 보았다 (I Saw the Devil)</div>
+                <div class="movie-id">ID: 33</div>
+                <a href="/peliculas/33" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">신과함께-죄와 벌</div>
+                <div class="movie-id">ID: 51</div>
+                <a href="/peliculas/51" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">헤어질 결심 (Decision to Leave)</div>
+                <div class="movie-id">ID: 58</div>
+                <a href="/peliculas/58" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">괴물 (The Host)</div>
+                <div class="movie-id">ID: 59</div>
+                <a href="/peliculas/59" class="movie-link">Ver película →</a>
+            </div>
+            <div class="movie-item">
+                <div class="movie-title">아저씨 (The Man from Nowhere)</div>
+                <div class="movie-id">ID: 60</div>
+                <a href="/peliculas/60" class="movie-link">Ver película →</a>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+            <h3 style="color: #00d4ff;">💡 ¿Cómo acceder a una película?</h3>
+            <p>Para ver una película específica, usa el formato:</p>
+            <code style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; color: #7b68ee;">
+                https://tu-sitio.com/peliculas/[ID]
+            </code>
+            <p style="margin-top: 1rem;">
+                <strong>Ejemplo:</strong> Para ver "Parásitos", visita 
+                <a href="/peliculas/2" style="color: #00d4ff;">/peliculas/2</a>
+            </p>
+            
+            <div style="margin-top: 2rem;">
+                <a href="/peliculas" style="background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                    🎬 Ver todas las películas
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

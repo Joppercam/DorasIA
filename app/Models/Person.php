@@ -13,6 +13,7 @@ class Person extends Model
 
     protected $fillable = [
         'name',
+        'name_es',
         'known_for_department',
         'biography',
         'biography_es',
@@ -87,6 +88,14 @@ class Person extends Model
     public function getDisplayPlaceOfBirthAttribute(): ?string
     {
         return $this->place_of_birth_es ?: $this->place_of_birth;
+    }
+    
+    /**
+     * Get display name (Spanish if available, otherwise original)
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->name_es ?: $this->name;
     }
 
     public function followers()

@@ -1,0 +1,5 @@
+{{-- Favicon inline SVG para mejor compatibilidad --}}
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231a1a2e'/><text x='16' y='23' font-family='Arial, sans-serif' font-size='20' font-weight='bold' text-anchor='middle' fill='%23ff006e'>D</text></svg>">
+
+{{-- Favicon PNG base64 para navegadores que no soportan SVG --}}
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABuklEQVRYhe2XP0sDQRDFf5toIYiNhYWFhVjYWIiIYGFhYSMiIiIiIiIiIv5pLCwsLCz8BoKNjYWFhYWFhYiIiIiI+AIewyZ7d3t7ScDCg4Hb3Zn3Znb2ZhNSSinF/0YN0A50AiNAL9ACtBb43ghwDpwAO8CXx/0M6AJ6gEFgAGgD6guMmQDugVNgE3jMNdAIzAHzQJPPYGHAJbAMXNkGqoBpYAmoDeggCO6ANWDL1GkC5oFFIMojSMAHsAJsZzUg4j0L6CQI3oAFYB+ogEHbtUQMsA7sIacqMoaBxQKKc+ENWAE2kgcRA8Ylckqk2CcugSVgVzwQMaDEu2TZEhZcALPAobiQq0gJcmVZTJQEKnKqgFFgDKgxysuBV2AXOELiBjCBRJdnNIrRJJFzFhA9aWQn5oB7x9xvz2v5ArOCnJJkkFOcFbQiIXMOdBtlA0CMJINcQT0SZ5+B2qy6VqSN7njaQI8VxEgyyBWMA1dO6Q8bqESi2zWTHGKxnXWRZKDrtCCRrZ3S70I0IrGumsm+EfvvYBu5grwYQ3b2jlL8W9mGXCpBP8YjGv5O7CO7KPtjXCr8Ao5aZqNrqS8JAAAAAElFTkSuQmCC">

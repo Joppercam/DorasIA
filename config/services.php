@@ -47,4 +47,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'tmdb' => [
+        'api_key' => env('TMDB_API_KEY'),
+        'base_url' => 'https://api.themoviedb.org/3',
+    ],
+
 ];

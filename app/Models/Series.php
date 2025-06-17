@@ -44,7 +44,11 @@ class Series extends Model
         'type',
         'tmdb_id',
         'imdb_id',
-        'is_korean_drama'
+        'is_korean_drama',
+        'drama_type',
+        'country_code',
+        'country_name',
+        'language_name'
     ];
 
     protected $casts = [
@@ -173,6 +177,110 @@ class Series extends Model
     public function getDisplayOverviewAttribute(): ?string
     {
         return $this->overview_es ?: $this->overview;
+    }
+
+    // === MÉTODOS PARA DORAMAS ASIÁTICOS ===
+    
+    /**
+     * Scope para K-Dramas (Coreanos)
+     */
+    public function scopeKoreanDramas($query)
+    {
+        return $query->where('drama_type', 'kdrama')->orWhere('country_code', 'KR');
+    }
+
+    /**
+     * Scope para C-Dramas (Chinos)
+     */
+    public function scopeChineseDramas($query)
+    {
+        return $query->where('drama_type', 'cdrama')->orWhere('country_code', 'CN');
+    }
+
+    /**
+     * Scope para J-Dramas (Japoneses)
+     */
+    public function scopeJapaneseDramas($query)
+    {
+        return $query->where('drama_type', 'jdrama')->orWhere('country_code', 'JP');
+    }
+
+    /**
+     * Scope para Thai Dramas (Tailandeses)
+     */
+    public function scopeThaiDramas($query)
+    {
+        return $query->where('drama_type', 'thdrama')->orWhere('country_code', 'TH');
+    }
+
+    /**
+     * Scope para todos los doramas asiáticos
+     */
+    public function scopeAsianDramas($query)
+    {
+        return $query->whereIn('country_code', ['KR', 'CN', 'JP', 'TH', 'TW']);
+    }
+
+    /**
+     * Scope por tipo de drama
+     */
+    public function scopeByDramaType($query, $type)
+    {
+        return $query->where('drama_type', $type);
+    }
+
+    /**
+     * Obtener el nombre del país en español
+     */
+    public function getCountryNameSpanishAttribute(): string
+    {
+        $countries = [
+            'KR' => 'Corea del Sur',
+            'CN' => 'China',
+            'JP' => 'Japón', 
+            'TH' => 'Tailandia',
+            'TW' => 'Taiwán',
+            'HK' => 'Hong Kong',
+            'VN' => 'Vietnam',
+            'PH' => 'Filipinas'
+        ];
+
+        return $countries[$this->country_code] ?? $this->country_name ?? 'Desconocido';
+    }
+
+    /**
+     * Obtener el tipo de drama formateado
+     */
+    public function getDramaTypeFormattedAttribute(): string
+    {
+        $types = [
+            'kdrama' => 'K-Drama',
+            'cdrama' => 'C-Drama',
+            'jdrama' => 'J-Drama', 
+            'thdrama' => 'Thai Drama',
+            'twdrama' => 'TW-Drama'
+        ];
+
+        return $types[$this->drama_type] ?? 'Drama Asiático';
+    }
+
+    /**
+     * Obtener bandera emoji del país
+     */
+    public function getCountryFlagAttribute(): string
+    {
+        $flags = [
+            'KR' => '🇰🇷',
+            'CN' => '🇨🇳', 
+            'JP' => '🇯🇵',
+            'TH' => '🇹🇭',
+            'TW' => '🇹🇼',
+            'HK' => '🇭🇰',
+            'VN' => '🇻🇳',
+            'PH' => '🇵🇭'
+        ];
+
+        return $flags[$this->country_code] ?? '🌏';
     }
 
     public function getDisplaySynopsisAttribute(): ?string

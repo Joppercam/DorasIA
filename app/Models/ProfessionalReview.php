@@ -8,6 +8,8 @@ class ProfessionalReview extends Model
 {
     protected $fillable = [
         'series_id',
+        'movie_id',
+        'reviewable_type',
         'source',
         'source_url',
         'author',
@@ -34,6 +36,29 @@ class ProfessionalReview extends Model
     public function series()
     {
         return $this->belongsTo(Series::class);
+    }
+
+    public function movie()
+    {
+        return $this->belongsTo(Movie::class);
+    }
+
+    // Polimorphic relationship helper
+    public function reviewable()
+    {
+        if ($this->reviewable_type === 'movie') {
+            return $this->movie();
+        }
+        return $this->series();
+    }
+
+    // Get the actual reviewable model
+    public function getReviewableAttribute()
+    {
+        if ($this->reviewable_type === 'movie') {
+            return $this->movie;
+        }
+        return $this->series;
     }
 
     // Getters para contenido en español

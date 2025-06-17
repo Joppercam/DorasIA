@@ -47,4 +47,13 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
+
+    // Accessor para obtener la película asociada
+    public function getMovieAttribute()
+    {
+        if ($this->commentable_type === Movie::class) {
+            return $this->commentable;
+        }
+        return null;
+    }
 }

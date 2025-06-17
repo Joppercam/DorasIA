@@ -11,8 +11,13 @@ class Movie extends Model
 
     protected $fillable = [
         'title',
+        'title_es',
+        'spanish_title',
+        'original_title',
         'display_title',
         'overview',
+        'overview_es',
+        'spanish_overview',
         'display_overview',
         'poster_path',
         'backdrop_path',
@@ -55,6 +60,21 @@ class Movie extends Model
     public function people()
     {
         return $this->belongsToMany(Person::class, 'movie_person')->withPivot(['character', 'order', 'department', 'job']);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(MovieRating::class);
+    }
+
+    public function watchlistItems()
+    {
+        return $this->hasMany(MovieWatchlist::class);
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     // Scopes
@@ -107,6 +127,17 @@ class Movie extends Model
         if (!$this->release_date) return null;
         
         return $this->release_date->format('Y');
+    }
+
+    // Accessors para contenido en español
+    public function getDisplayTitleAttribute()
+    {
+        return $this->spanish_title ?: $this->title_es ?: $this->title;
+    }
+
+    public function getDisplayOverviewAttribute()
+    {
+        return $this->spanish_overview ?: $this->overview_es ?: $this->overview;
     }
     
     // Rating methods

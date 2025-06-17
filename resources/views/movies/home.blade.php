@@ -1,47 +1,46 @@
 @extends('layouts.app')
 
-@section('title', 'Dorasia - Los Mejores K-Dramas')
+@section('title', 'Dorasia - Las Mejores Películas')
 
 @section('content')
 <div class="netflix-mobile-home">
     <!-- Hero Section -->
-    @if($popularSeries->first())
-    @php $heroSeries = $popularSeries->first(); @endphp
+    @if($featuredMovie)
     <div class="mobile-hero">
-        <div class="mobile-hero-image" style="background-image: url('{{ $heroSeries->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $heroSeries->backdrop_path : 'https://via.placeholder.com/375x250/333/666?text=K-Drama' }}')">
+        <div class="mobile-hero-image" style="background-image: url('{{ $featuredMovie->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $featuredMovie->backdrop_path : 'https://via.placeholder.com/375x250/333/666?text=K-Movie' }}')">
             <div class="mobile-hero-overlay"></div>
             <div class="mobile-hero-content">
                 <div class="mobile-hero-logo">
-                    <span class="hero-badge">SERIE</span>
-                    <h1 class="mobile-hero-title">{{ $heroSeries->display_title }}</h1>
+                    <span class="hero-badge">PELÍCULA</span>
+                    <h1 class="mobile-hero-title">{{ $featuredMovie->display_title }}</h1>
                 </div>
                 <div class="mobile-hero-info">
-                    @if($heroSeries->vote_average > 0)
+                    @if($featuredMovie->vote_average > 0)
                     <div class="hero-rating">
                         <span class="rating-stars">⭐</span>
-                        <span class="rating-number">{{ number_format($heroSeries->vote_average, 1) }}</span>
+                        <span class="rating-number">{{ number_format($featuredMovie->vote_average, 1) }}</span>
                     </div>
                     @endif
-                    @if(auth()->check() && $heroSeries->vote_average > 0)
-                    <span class="hero-match">{{ number_format($heroSeries->vote_average * 10) }}% de coincidencia</span>
+                    @if(auth()->check() && $featuredMovie->vote_average > 0)
+                    <span class="hero-match">{{ number_format($featuredMovie->vote_average * 10) }}% de coincidencia</span>
                     @endif
-                    @if($heroSeries->first_air_date)
-                    <span class="hero-year">{{ $heroSeries->first_air_date->format('Y') }}</span>
+                    @if($featuredMovie->release_date)
+                    <span class="hero-year">{{ $featuredMovie->release_date->format('Y') }}</span>
                     @endif
                     <span class="hero-maturity">16+</span>
-                    @if($heroSeries->number_of_seasons)
-                    <span class="hero-seasons">{{ $heroSeries->number_of_seasons }} temporada{{ $heroSeries->number_of_seasons > 1 ? 's' : '' }}</span>
+                    @if($featuredMovie->runtime)
+                    <span class="hero-seasons">{{ $featuredMovie->runtime }} min</span>
                     @endif
                 </div>
                 
-                @if($heroSeries->display_overview)
+                @if($featuredMovie->display_overview)
                 <p class="mobile-hero-description">
-                    {{ Str::limit($heroSeries->display_overview, 200) }}
+                    {{ Str::limit($featuredMovie->display_overview, 200) }}
                 </p>
                 @endif
                 
                 <div class="mobile-hero-actions">
-                    <a href="{{ route('series.show', $heroSeries->id) }}" class="mobile-info-btn">
+                    <a href="{{ route('movies.show', $featuredMovie->id) }}" class="mobile-info-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                         </svg>
@@ -56,9 +55,9 @@
     <!-- Categories -->
     <div class="mobile-categories">
         <div class="mobile-category-pills">
-            <a href="{{ route('home') }}" class="category-pill {{ request()->routeIs('home') ? 'active' : '' }}">Series</a>
-            <a href="{{ route('movies.index') }}" class="category-pill {{ request()->routeIs('movies.*') ? 'active' : '' }}">Películas</a>
-            <a href="{{ route('actors.index') }}" class="category-pill {{ request()->routeIs('actors.*') ? 'active' : '' }}">Actores</a>
+            <a href="{{ route('home') }}" class="category-pill">Series</a>
+            <a href="{{ route('movies.index') }}" class="category-pill active">Películas</a>
+            <a href="{{ route('actors.index') }}" class="category-pill">Actores</a>
             @auth
             <a href="{{ route('profile.watchlist') }}" class="category-pill {{ request()->routeIs('profile.watchlist') ? 'active' : '' }}">Mi lista</a>
             @endauth
@@ -69,15 +68,15 @@
     <div class="mobile-content-rows">
 
         <!-- Populares -->
-        @if(isset($popularSeries) && $popularSeries && $popularSeries->count() > 0)
+        @if(isset($popularMovies) && $popularMovies && $popularMovies->count() > 0)
         <section class="mobile-row">
             <h2 class="mobile-row-title">Populares en Dorasia</h2>
             <div class="mobile-row-content">
-                @foreach($popularSeries->take(20) as $series)
-                <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
+                @foreach($popularMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -88,30 +87,30 @@
                         <div class="mobile-card-ranking">{{ $loop->iteration }}</div>
                     </div>
                     <div class="mobile-card-info">
-                        <h3 class="mobile-card-title">{{ $series->display_title }}</h3>
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
                         <div class="mobile-card-meta">
-                            @if($series->vote_average > 0)
+                            @if($movie->vote_average > 0)
                             <div class="card-rating">
                                 <span class="rating-stars">⭐</span>
-                                <span class="rating-number">{{ number_format($series->vote_average, 1) }}</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
                             </div>
                             @endif
-                            @if(auth()->check() && $series->vote_average > 0)
-                            <span class="card-match">{{ number_format($series->vote_average * 10) }}% de coincidencia</span>
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
                             @endif
-                            @if($series->first_air_date)
-                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
                             @endif
                             <span class="card-maturity">16+</span>
                         </div>
                         <div class="mobile-card-genres">
-                            @if($series->genres)
-                                @foreach($series->genres->take(3) as $genre)
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
                                     <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
                                 @endforeach
                             @endif
                         </div>
-                        <p class="mobile-card-description">{{ Str::limit($series->overview_es ?: $series->overview, 100) }}</p>
+                        <p class="mobile-card-description">{{ Str::limit($movie->display_overview, 100) }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -120,15 +119,15 @@
         @endif
 
         <!-- Mejor Calificadas -->
-        @if(isset($topRatedSeries) && $topRatedSeries && $topRatedSeries->count() > 0)
+        @if(isset($topRatedMovies) && $topRatedMovies && $topRatedMovies->count() > 0)
         <section class="mobile-row">
             <h2 class="mobile-row-title">Mejor Calificadas</h2>
             <div class="mobile-row-content">
-                @foreach($topRatedSeries->take(20) as $series)
-                <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
+                @foreach($topRatedMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -138,25 +137,25 @@
                         </div>
                     </div>
                     <div class="mobile-card-info">
-                        <h3 class="mobile-card-title">{{ $series->display_title }}</h3>
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
                         <div class="mobile-card-meta">
-                            @if($series->vote_average > 0)
+                            @if($movie->vote_average > 0)
                             <div class="card-rating">
                                 <span class="rating-stars">⭐</span>
-                                <span class="rating-number">{{ number_format($series->vote_average, 1) }}</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
                             </div>
                             @endif
-                            @if(auth()->check() && $series->vote_average > 0)
-                            <span class="card-match">{{ number_format($series->vote_average * 10) }}% de coincidencia</span>
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
                             @endif
-                            @if($series->first_air_date)
-                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
                             @endif
                             <span class="card-maturity">16+</span>
                         </div>
                         <div class="mobile-card-genres">
-                            @if($series->genres)
-                                @foreach($series->genres->take(3) as $genre)
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
                                     <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
                                 @endforeach
                             @endif
@@ -168,16 +167,16 @@
         </section>
         @endif
 
-        <!-- Romance -->
-        @if(isset($romanceSeries) && $romanceSeries && $romanceSeries->count() > 0)
+        <!-- Recientes -->
+        @if(isset($recentMovies) && $recentMovies && $recentMovies->count() > 0)
         <section class="mobile-row">
-            <h2 class="mobile-row-title">Romance</h2>
+            <h2 class="mobile-row-title">Recientes</h2>
             <div class="mobile-row-content">
-                @foreach($romanceSeries->take(20) as $series)
-                <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
+                @foreach($recentMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -187,25 +186,123 @@
                         </div>
                     </div>
                     <div class="mobile-card-info">
-                        <h3 class="mobile-card-title">{{ $series->display_title }}</h3>
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
                         <div class="mobile-card-meta">
-                            @if($series->vote_average > 0)
+                            @if($movie->vote_average > 0)
                             <div class="card-rating">
                                 <span class="rating-stars">⭐</span>
-                                <span class="rating-number">{{ number_format($series->vote_average, 1) }}</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
                             </div>
                             @endif
-                            @if(auth()->check() && $series->vote_average > 0)
-                            <span class="card-match">{{ number_format($series->vote_average * 10) }}% de coincidencia</span>
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
                             @endif
-                            @if($series->first_air_date)
-                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
                             @endif
                             <span class="card-maturity">16+</span>
                         </div>
                         <div class="mobile-card-genres">
-                            @if($series->genres)
-                                @foreach($series->genres->take(3) as $genre)
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
+                                    <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        <!-- Acción -->
+        @if(isset($actionMovies) && $actionMovies && $actionMovies->count() > 0)
+        <section class="mobile-row">
+            <h2 class="mobile-row-title">Acción</h2>
+            <div class="mobile-row-content">
+                @foreach($actionMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
+                    <div class="mobile-card-image">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
+                        <div class="mobile-card-overlay">
+                            <div class="card-play-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mobile-card-info">
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
+                        <div class="mobile-card-meta">
+                            @if($movie->vote_average > 0)
+                            <div class="card-rating">
+                                <span class="rating-stars">⭐</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
+                            </div>
+                            @endif
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
+                            @endif
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
+                            @endif
+                            <span class="card-maturity">16+</span>
+                        </div>
+                        <div class="mobile-card-genres">
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
+                                    <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        <!-- Comedia -->
+        @if(isset($comedyMovies) && $comedyMovies && $comedyMovies->count() > 0)
+        <section class="mobile-row">
+            <h2 class="mobile-row-title">Comedia</h2>
+            <div class="mobile-row-content">
+                @foreach($comedyMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
+                    <div class="mobile-card-image">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
+                        <div class="mobile-card-overlay">
+                            <div class="card-play-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mobile-card-info">
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
+                        <div class="mobile-card-meta">
+                            @if($movie->vote_average > 0)
+                            <div class="card-rating">
+                                <span class="rating-stars">⭐</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
+                            </div>
+                            @endif
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
+                            @endif
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
+                            @endif
+                            <span class="card-maturity">16+</span>
+                        </div>
+                        <div class="mobile-card-genres">
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
                                     <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
                                 @endforeach
                             @endif
@@ -218,15 +315,15 @@
         @endif
 
         <!-- Drama -->
-        @if(isset($dramasSeries) && $dramasSeries && $dramasSeries->count() > 0)
+        @if(isset($dramaMovies) && $dramaMovies && $dramaMovies->count() > 0)
         <section class="mobile-row">
             <h2 class="mobile-row-title">Drama</h2>
             <div class="mobile-row-content">
-                @foreach($dramasSeries->take(20) as $series)
-                <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
+                @foreach($dramaMovies->take(10) as $movie)
+                <div class="mobile-card" onclick="location.href='{{ route('movies.show', $movie->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $movie->poster_path ? 'https://image.tmdb.org/t/p/w342' . $movie->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Movie' }}" 
+                             alt="{{ $movie->display_title }}" loading="lazy">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -236,74 +333,25 @@
                         </div>
                     </div>
                     <div class="mobile-card-info">
-                        <h3 class="mobile-card-title">{{ $series->display_title }}</h3>
+                        <h3 class="mobile-card-title">{{ $movie->display_title }}</h3>
                         <div class="mobile-card-meta">
-                            @if($series->vote_average > 0)
+                            @if($movie->vote_average > 0)
                             <div class="card-rating">
                                 <span class="rating-stars">⭐</span>
-                                <span class="rating-number">{{ number_format($series->vote_average, 1) }}</span>
+                                <span class="rating-number">{{ number_format($movie->vote_average, 1) }}</span>
                             </div>
                             @endif
-                            @if(auth()->check() && $series->vote_average > 0)
-                            <span class="card-match">{{ number_format($series->vote_average * 10) }}% de coincidencia</span>
+                            @if(auth()->check() && $movie->vote_average > 0)
+                            <span class="card-match">{{ number_format($movie->vote_average * 10) }}% de coincidencia</span>
                             @endif
-                            @if($series->first_air_date)
-                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
+                            @if($movie->release_date)
+                            <span class="card-year">{{ $movie->release_date->format('Y') }}</span>
                             @endif
                             <span class="card-maturity">16+</span>
                         </div>
                         <div class="mobile-card-genres">
-                            @if($series->genres)
-                                @foreach($series->genres->take(3) as $genre)
-                                    <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </section>
-        @endif
-
-        <!-- Próximamente -->
-        @if(isset($upcomingSeries) && $upcomingSeries && $upcomingSeries->count() > 0)
-        <section class="mobile-row">
-            <h2 class="mobile-row-title">Próximamente</h2>
-            <div class="mobile-row-content">
-                @foreach($upcomingSeries->take(20) as $series)
-                <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
-                    <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
-                        <div class="mobile-card-overlay">
-                            <div class="card-play-btn">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mobile-card-info">
-                        <h3 class="mobile-card-title">{{ $series->display_title }}</h3>
-                        <div class="mobile-card-meta">
-                            @if($series->vote_average > 0)
-                            <div class="card-rating">
-                                <span class="rating-stars">⭐</span>
-                                <span class="rating-number">{{ number_format($series->vote_average, 1) }}</span>
-                            </div>
-                            @endif
-                            @if(auth()->check() && $series->vote_average > 0)
-                            <span class="card-match">{{ number_format($series->vote_average * 10) }}% de coincidencia</span>
-                            @endif
-                            @if($series->first_air_date)
-                            <span class="card-year">{{ $series->first_air_date->format('Y') }}</span>
-                            @endif
-                            <span class="card-maturity">16+</span>
-                        </div>
-                        <div class="mobile-card-genres">
-                            @if($series->genres)
-                                @foreach($series->genres->take(3) as $genre)
+                            @if($movie->genres)
+                                @foreach($movie->genres->take(3) as $genre)
                                     <span class="card-genre">{{ $genre->display_name ?: $genre->name }}</span>@if(!$loop->last) • @endif
                                 @endforeach
                             @endif
@@ -440,19 +488,6 @@
     gap: 0.75rem;
 }
 
-.mobile-play-btn {
-    background: white;
-    color: black;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-}
-
 .mobile-info-btn {
     background: rgba(109, 109, 110, 0.7);
     color: white;
@@ -464,6 +499,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
+    text-decoration: none;
 }
 
 /* Categories */
@@ -528,7 +564,7 @@
 /* Cards */
 .mobile-card {
     flex-shrink: 0;
-    width: 200px;
+    width: 160px;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -539,8 +575,8 @@
 
 .mobile-card-image {
     position: relative;
-    width: 200px;
-    height: 300px;
+    width: 160px;
+    height: 240px;
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 0.5rem;
@@ -677,18 +713,17 @@
         flex-direction: column;
     }
     
-    .mobile-play-btn,
     .mobile-info-btn {
         justify-content: center;
     }
     
     .mobile-card {
-        width: 160px;
+        width: 140px;
     }
     
     .mobile-card-image {
-        width: 160px;
-        height: 240px;
+        width: 140px;
+        height: 210px;
     }
 }
 </style>

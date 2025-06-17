@@ -9,3 +9,10 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Custom Dorasia Styles */
+body {
+    background-color: #141414;
+    color: white;
+    font-family: Arial, sans-serif;
+}

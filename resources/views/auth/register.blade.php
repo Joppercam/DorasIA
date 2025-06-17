@@ -205,7 +205,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('registerForm');
     const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone/i.test(navigator.userAgent);
     
     // Show mobile status in debug info
@@ -225,25 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (lastRefreshSpan) {
         lastRefreshSpan.textContent = new Date().toLocaleTimeString();
-    }
-    
-    // For mobile devices, use the mobile route
-    if (isMobile) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Change to mobile route
-            form.action = '/register-mobile';
-            
-            // Remove CSRF token for mobile route
-            const csrfToken = form.querySelector('input[name="_token"]');
-            if (csrfToken) {
-                csrfToken.remove();
-            }
-            
-            // Submit the form
-            form.submit();
-        });
     }
 });
 </script>

@@ -10,6 +10,11 @@ class ActorsController extends Controller
 {
     public function index(Request $request)
     {
+        // Si no hay parámetros, mostrar home estilo Netflix
+        if (!$request->hasAny(['search', 'filter', 'page'])) {
+            return $this->actorsHome();
+        }
+
         $query = Person::query()
             ->whereNotNull('name');
         
@@ -22,25 +27,83 @@ class ActorsController extends Controller
             });
         }
         
-        // Filter by popular actors (with profile images and known for)
-        if ($request->get('filter') === 'popular') {
-            $query->whereNotNull('profile_path')
-                  ->where('popularity', '>', 5);
+        // Advanced filters
+        $filter = $request->get('filter', 'korean');
+        
+        switch ($filter) {
+            case 'popular':
+                $query->whereNotNull('profile_path')
+                      ->where('popularity', '>', 5);
+                break;
+                
+            case 'trending':
+                $query->whereNotNull('profile_path')
+                      ->whereHas('followers')
+                      ->withCount('followers')
+                      ->orderBy('followers_count', 'desc');
+                break;
+                
+            case 'young':
+                $query->whereNotNull('profile_path')
+                      ->whereNotNull('birthday')
+                      ->whereRaw('julianday("now") - julianday(birthday) < 35 * 365')
+                      ->where('popularity', '>', 2);
+                break;
+                
+            case 'veteran':
+                $query->whereNotNull('profile_path')
+                      ->whereNotNull('birthday')
+                      ->whereRaw('julianday("now") - julianday(birthday) > 45 * 365')
+                      ->where('popularity', '>', 2);
+                break;
+                
+            case 'actresses':
+                $query->whereNotNull('profile_path')
+                      ->where('gender', 1) // 1 = female in TMDB
+                      ->where('popularity', '>', 2);
+                break;
+                
+            case 'actors':
+                $query->whereNotNull('profile_path')
+                      ->where('gender', 2) // 2 = male in TMDB
+                      ->where('popularity', '>', 2);
+                break;
+                
+            case 'all':
+                // No additional filters
+                break;
+                
+            case 'korean':
+            default:
+                $query->where(function($q) {
+                    $q->where('place_of_birth', 'LIKE', '%Korea%')
+                      ->orWhere('place_of_birth', 'LIKE', '%South Korea%')
+                      ->orWhere('place_of_birth', 'LIKE', '%Seoul%')
+                      ->orWhere('place_of_birth', 'LIKE', '%Busan%')
+                      ->orWhere('place_of_birth', 'LIKE', '%Incheon%');
+                });
+                break;
         }
         
-        // Filter by Korean actors
-        if ($request->get('filter') === 'korean' || !$request->filled('filter')) {
-            $query->where(function($q) {
-                $q->where('place_of_birth', 'LIKE', '%Korea%')
-                  ->orWhere('place_of_birth', 'LIKE', '%South Korea%')
-                  ->orWhere('place_of_birth', 'LIKE', '%Seoul%')
-                  ->orWhere('place_of_birth', 'LIKE', '%Busan%')
-                  ->orWhere('place_of_birth', 'LIKE', '%Incheon%');
-            });
+        // Sorting options
+        $sortBy = $request->get('sort', 'popularity');
+        switch ($sortBy) {
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'birthday':
+                $query->whereNotNull('birthday')
+                      ->orderBy('birthday', 'desc');
+                break;
+            case 'popularity':
+            default:
+                if ($filter !== 'trending') { // trending already has its own order
+                    $query->orderBy('popularity', 'desc');
+                }
+                break;
         }
 
-        $actors = $query->orderBy('popularity', 'desc')
-                       ->paginate(24);
+        $actors = $query->paginate(24);
 
         // Get some featured actors for the hero section
         $featuredActors = Person::whereNotNull('profile_path')
@@ -82,6 +145,28 @@ class ActorsController extends Controller
         $followersCount = $actor->followers()->count();
 
         return view('actors.show', compact('actor', 'popularSeries', 'comments', 'isFollowing', 'followersCount'));
+    }
+
+    /**
+     * API for actor autocomplete
+     */
+    public function autocomplete(Request $request)
+    {
+        $query = $request->get('q');
+        
+        if (!$query || strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $actors = Person::where('name', 'LIKE', '%' . $query . '%')
+            ->whereNotNull('profile_path')
+            ->where('popularity', '>', 1)
+            ->select(['id', 'name', 'profile_path', 'popularity', 'place_of_birth'])
+            ->orderBy('popularity', 'desc')
+            ->limit(8)
+            ->get();
+
+        return response()->json($actors);
     }
     
     public function storeComment(Request $request, $id)
@@ -182,5 +267,77 @@ class ActorsController extends Controller
             'is_following' => false,
             'followers_count' => $followersCount
         ]);
+    }
+
+    /**
+     * Home de actores estilo Netflix
+     */
+    private function actorsHome()
+    {
+        // Actor destacado para el hero
+        $featuredActor = Person::whereNotNull('profile_path')
+            ->whereNotNull('biography')
+            ->where('popularity', '>', 10)
+            ->orderBy('popularity', 'desc')
+            ->first();
+
+        // Actores más populares
+        $popularActors = Person::whereNotNull('profile_path')
+            ->where('popularity', '>', 5)
+            ->orderBy('popularity', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Actores trending (con más seguidores recientes)
+        $trendingActors = Person::whereNotNull('profile_path')
+            ->whereHas('followers')
+            ->withCount('followers')
+            ->orderBy('followers_count', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Actores jóvenes (menores de 35 años)
+        $youngActors = Person::whereNotNull('profile_path')
+            ->whereNotNull('birthday')
+            ->whereRaw('julianday("now") - julianday(birthday) < 35 * 365')
+            ->where('popularity', '>', 3)
+            ->orderBy('popularity', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Actores veteranos (más de 45 años)
+        $veteranActors = Person::whereNotNull('profile_path')
+            ->whereNotNull('birthday')
+            ->whereRaw('julianday("now") - julianday(birthday) > 45 * 365')
+            ->where('popularity', '>', 3)
+            ->orderBy('popularity', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Actrices (género femenino)
+        $actresses = Person::whereNotNull('profile_path')
+            ->where('gender', 1) // 1 = female in TMDB
+            ->where('popularity', '>', 3)
+            ->orderBy('popularity', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Actores (género masculino)
+        $maleActors = Person::whereNotNull('profile_path')
+            ->where('gender', 2) // 2 = male in TMDB
+            ->where('popularity', '>', 3)
+            ->orderBy('popularity', 'desc')
+            ->limit(20)
+            ->get();
+
+        return view('actors.home', compact(
+            'featuredActor',
+            'popularActors',
+            'trendingActors',
+            'youngActors',
+            'veteranActors',
+            'actresses',
+            'maleActors'
+        ));
     }
 }

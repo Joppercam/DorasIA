@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $actor->name . ' - Actor - Dorasia')
+@section('title', $actor->display_name . ' - Actor - Dorasia')
 
 @section('content')
 <!-- Actor Hero Section -->
@@ -13,7 +13,7 @@
                 <div style="text-align: center;">
                     @if($actor->profile_path)
                     <img src="https://image.tmdb.org/t/p/w300{{ $actor->profile_path }}" 
-                         alt="{{ $actor->name }}"
+                         alt="{{ $actor->display_name }}"
                          style="width: 280px; height: 380px; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); border: 4px solid rgba(255,255,255,0.1);">
                     @else
                     <div style="width: 280px; height: 380px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);">
@@ -24,7 +24,7 @@
                 
                 <!-- Actor Info -->
                 <div style="padding-left: 1rem;">
-                    <h1 class="hero-title" style="margin-bottom: 1rem; font-size: 3.5rem; font-weight: 700;">{{ $actor->name }}</h1>
+                    <h1 class="hero-title" style="margin-bottom: 1rem; font-size: 3.5rem; font-weight: 700;">{{ $actor->display_name }}</h1>
                     
                     <!-- Actor Meta -->
                     <div class="hero-meta" style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
@@ -48,6 +48,18 @@
                             ⭐ Popularidad: {{ number_format($actor->popularity, 1) }}
                         </span>
                         @endif
+                        
+                        @if($actor->known_for_department)
+                        <span class="hero-category" style="background: rgba(156, 39, 176, 0.15); border-color: rgba(156, 39, 176, 0.3); padding: 0.6rem 1rem; font-size: 0.9rem;">
+                            🎭 {{ $actor->known_for_department }}
+                        </span>
+                        @endif
+                        
+                        @if($actor->gender)
+                        <span class="hero-category" style="background: rgba(233, 30, 99, 0.15); border-color: rgba(233, 30, 99, 0.3); padding: 0.6rem 1rem; font-size: 0.9rem;">
+                            {{ $actor->gender == 1 ? '👩 Femenino' : ($actor->gender == 2 ? '👨 Masculino' : '⚪ Otro') }}
+                        </span>
+                        @endif
                     </div>
                     
                     @if($actor->display_biography)
@@ -55,6 +67,22 @@
                         {{ Str::limit($actor->display_biography, 400) }}
                     </p>
                     @endif
+                    
+                    <!-- Follow Button -->
+                    @auth
+                    <div style="margin: 2rem 0;">
+                        <button id="followBtn" class="follow-btn" data-actor-id="{{ $actor->id }}" 
+                                data-following="{{ auth()->user()->isFollowingActor($actor->id) ? 'true' : 'false' }}">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                            </svg>
+                            <span class="follow-text">
+                                {{ auth()->user()->isFollowingActor($actor->id) ? 'Siguiendo' : 'Seguir' }}
+                            </span>
+                            <span class="followers-count">({{ $actor->followers()->count() }} seguidores)</span>
+                        </button>
+                    </div>
+                    @endauth
                     
                     @if($actor->also_known_as)
                     <div style="margin-top: 2rem;">
@@ -230,7 +258,7 @@
 
     <!-- Comments Section -->
     <section class="content-section">
-        <h2 class="section-title">💬 Comentarios sobre {{ $actor->name }} ({{ $comments->total() }})</h2>
+        <h2 class="section-title">💬 Comentarios sobre {{ $actor->display_name }} ({{ $comments->total() }})</h2>
         
         @auth
         <!-- Comment Form -->
@@ -239,7 +267,7 @@
                 @csrf
                 <textarea 
                     id="actorCommentContent" 
-                    placeholder="¿Qué opinas sobre {{ $actor->name }}? Comparte tu comentario..."
+                    placeholder="¿Qué opinas sobre {{ $actor->display_name }}? Comparte tu comentario..."
                     class="comment-textarea"
                     maxlength="1000"
                     required></textarea>
@@ -316,7 +344,7 @@
             </div>
             @empty
             <div class="no-comments">
-                <p>🤔 ¡Sé el primero en comentar sobre {{ $actor->name }}!</p>
+                <p>🤔 ¡Sé el primero en comentar sobre {{ $actor->display_name }}!</p>
             </div>
             @endforelse
         </div>
@@ -589,6 +617,57 @@
         text-align: center !important;
     }
 }
+
+/* Follow Button Styles */
+.follow-btn {
+    background: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 153, 255, 0.3);
+}
+
+.follow-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 153, 255, 0.4);
+}
+
+.follow-btn.following {
+    background: linear-gradient(135deg, #46d369 0%, #2ea54b 100%);
+    box-shadow: 0 4px 20px rgba(70, 211, 105, 0.3);
+}
+
+.follow-btn.following:hover {
+    box-shadow: 0 6px 25px rgba(70, 211, 105, 0.4);
+}
+
+.follow-btn .followers-count {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-left: 0.5rem;
+}
+
+.follow-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .follow-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 1.2rem;
+    }
+}
 </style>
 
 <script>
@@ -716,6 +795,70 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             notification.remove();
         }, 3000);
+    }
+    
+    // Follow Button Functionality
+    const followBtn = document.getElementById('followBtn');
+    if (followBtn) {
+        followBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const actorId = this.dataset.actorId;
+            const isFollowing = this.dataset.following === 'true';
+            
+            // Disable button during request
+            this.disabled = true;
+            
+            const url = isFollowing ? `/actors/${actorId}/unfollow` : `/actors/${actorId}/follow`;
+            const method = isFollowing ? 'DELETE' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button state
+                    this.dataset.following = data.is_following;
+                    
+                    // Update button text and style
+                    const followText = this.querySelector('.follow-text');
+                    const followersCount = this.querySelector('.followers-count');
+                    
+                    followText.textContent = data.is_following ? 'Siguiendo' : 'Seguir';
+                    followersCount.textContent = `(${data.followers_count} seguidores)`;
+                    
+                    // Update button class
+                    if (data.is_following) {
+                        this.classList.add('following');
+                    } else {
+                        this.classList.remove('following');
+                    }
+                    
+                    // Show notification
+                    showNotification(data.message, 'success');
+                } else {
+                    showNotification(data.message || 'Error al procesar la solicitud', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error de conexión', 'error');
+            })
+            .finally(() => {
+                // Re-enable button
+                this.disabled = false;
+            });
+        });
+        
+        // Set initial state
+        if (followBtn.dataset.following === 'true') {
+            followBtn.classList.add('following');
+        }
     }
 });
 </script>

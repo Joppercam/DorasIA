@@ -16,17 +16,45 @@
             <!-- Search Form -->
             <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
                 <form method="GET" action="{{ route('actors.index') }}" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <input 
-                        type="text" 
-                        name="search" 
-                        value="{{ request('search') }}"
-                        placeholder="Buscar actores..." 
-                        style="flex: 1; min-width: 200px; padding: 0.8rem 1rem; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333;">
+                    <div style="position: relative; flex: 1; min-width: 200px;">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            id="actorSearch"
+                            value="{{ request('search') }}"
+                            placeholder="Buscar actores..." 
+                            style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333;"
+                            autocomplete="off">
+                        <div id="autocompleteResults" style="
+                            position: absolute; 
+                            top: 100%; 
+                            left: 0; 
+                            right: 0; 
+                            background: white; 
+                            border-radius: 8px; 
+                            box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+                            max-height: 300px; 
+                            overflow-y: auto; 
+                            z-index: 1000; 
+                            display: none;
+                        "></div>
+                    </div>
                     
-                    <select name="filter" style="padding: 0.8rem 1rem; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333;">
-                        <option value="korean" {{ request('filter') === 'korean' ? 'selected' : '' }}>Actores Coreanos</option>
-                        <option value="popular" {{ request('filter') === 'popular' ? 'selected' : '' }}>Más Populares</option>
-                        <option value="" {{ !request('filter') ? 'selected' : '' }}>Todos</option>
+                    <select name="filter" style="padding: 0.8rem 1rem; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333; min-width: 180px;">
+                        <option value="korean" {{ request('filter', 'korean') === 'korean' ? 'selected' : '' }}>🇰🇷 Actores Coreanos</option>
+                        <option value="popular" {{ request('filter') === 'popular' ? 'selected' : '' }}>⭐ Más Populares</option>
+                        <option value="trending" {{ request('filter') === 'trending' ? 'selected' : '' }}>🔥 Trending</option>
+                        <option value="actresses" {{ request('filter') === 'actresses' ? 'selected' : '' }}>✨ Actrices</option>
+                        <option value="actors" {{ request('filter') === 'actors' ? 'selected' : '' }}>🎭 Actores</option>
+                        <option value="young" {{ request('filter') === 'young' ? 'selected' : '' }}>🌟 Jóvenes (-35)</option>
+                        <option value="veteran" {{ request('filter') === 'veteran' ? 'selected' : '' }}>👑 Veteranos (+45)</option>
+                        <option value="all" {{ request('filter') === 'all' ? 'selected' : '' }}>📺 Todos</option>
+                    </select>
+                    
+                    <select name="sort" style="padding: 0.8rem 1rem; border-radius: 8px; border: none; background: rgba(255,255,255,0.9); color: #333; min-width: 150px;">
+                        <option value="popularity" {{ request('sort', 'popularity') === 'popularity' ? 'selected' : '' }}>📈 Popularidad</option>
+                        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>🔤 Nombre A-Z</option>
+                        <option value="birthday" {{ request('sort') === 'birthday' ? 'selected' : '' }}>🎂 Más Jóvenes</option>
                     </select>
                     
                     <button type="submit" class="btn-hero" style="padding: 0.8rem 1.5rem;">
@@ -42,12 +70,13 @@
                 <div class="featured-actor-item">
                     @if($actor->profile_path)
                     <img src="https://image.tmdb.org/t/p/w200{{ $actor->profile_path }}" 
-                         alt="{{ $actor->name }}"
-                         class="featured-actor-img">
+                         alt="{{ $actor->display_name }}"
+                         class="featured-actor-img"
+                         loading="lazy">
                     @else
                     <div class="featured-actor-placeholder">👤</div>
                     @endif
-                    <span class="featured-actor-name">{{ Str::limit($actor->name, 15) }}</span>
+                    <span class="featured-actor-name">{{ Str::limit($actor->display_name, 15) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -90,8 +119,9 @@
                 <div class="cast-image">
                     @if($actor->profile_path)
                     <img src="https://image.tmdb.org/t/p/w300{{ $actor->profile_path }}" 
-                         alt="{{ $actor->name }}"
-                         class="cast-photo">
+                         alt="{{ $actor->display_name }}"
+                         class="cast-photo"
+                         loading="lazy">
                     @else
                     <div class="cast-placeholder">
                         👤
@@ -101,7 +131,7 @@
                 
                 <div class="cast-info">
                     <h3 class="cast-name">
-                        {{ $actor->name }}
+                        {{ $actor->display_name }}
                     </h3>
                     
                     <p class="cast-bio">
@@ -563,4 +593,99 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('actorSearch');
+    const autocompleteResults = document.getElementById('autocompleteResults');
+    let searchTimeout;
+
+    if (searchInput && autocompleteResults) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                autocompleteResults.style.display = 'none';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                performActorSearch(query);
+            }, 300);
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#actorSearch') && !e.target.closest('#autocompleteResults')) {
+                autocompleteResults.style.display = 'none';
+            }
+        });
+    }
+
+    function performActorSearch(query) {
+        autocompleteResults.innerHTML = '<div style="padding: 1rem; color: #666; text-align: center;">🔍 Buscando...</div>';
+        autocompleteResults.style.display = 'block';
+
+        fetch(`/api/actors/autocomplete?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayAutocompleteResults(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                autocompleteResults.innerHTML = '<div style="padding: 1rem; color: #666; text-align: center;">Error en la búsqueda</div>';
+            });
+    }
+
+    function displayAutocompleteResults(actors) {
+        if (actors.length === 0) {
+            autocompleteResults.innerHTML = '<div style="padding: 1rem; color: #666; text-align: center;">No se encontraron actores</div>';
+            return;
+        }
+
+        let html = '';
+        actors.forEach(actor => {
+            const profileUrl = actor.profile_path ? 
+                `https://image.tmdb.org/t/p/w92${actor.profile_path}` : 
+                'https://via.placeholder.com/92x138/333/666?text=Actor';
+            
+            html += `
+                <div style="
+                    display: flex; 
+                    align-items: center; 
+                    padding: 0.75rem 1rem; 
+                    border-bottom: 1px solid #eee; 
+                    cursor: pointer; 
+                    transition: background-color 0.2s;
+                " 
+                onmouseover="this.style.backgroundColor='#f5f5f5'" 
+                onmouseout="this.style.backgroundColor='white'"
+                onclick="selectActor('${actor.name}')">
+                    <img src="${profileUrl}" 
+                         alt="${actor.name}" 
+                         style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333; margin-bottom: 0.25rem;">${actor.name}</div>
+                        <div style="font-size: 0.85rem; color: #666;">
+                            ⭐ ${actor.popularity || 'N/A'} 
+                            ${actor.place_of_birth ? ` • ${actor.place_of_birth.substring(0, 30)}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        autocompleteResults.innerHTML = html;
+    }
+
+    window.selectActor = function(actorName) {
+        searchInput.value = actorName;
+        autocompleteResults.style.display = 'none';
+        // Auto-submit the form
+        searchInput.closest('form').submit();
+    };
+});
+</script>
 @endsection
