@@ -3670,7 +3670,7 @@
                         <li><a href="{{ route('profile.watched') }}">Series Vistas</a></li>
                         <li><hr style="margin: 0.5rem 0; border-color: rgba(255,255,255,0.2);"></li>
                         <li>
-                            <a href="{{ url('/working-logout') }}" 
+                            <a href="{{ url('/logout-mobile') }}" 
                                onclick="console.log('Logout clicked'); localStorage.clear(); sessionStorage.clear();"
                                style="display: block; padding: 0.75rem 1rem; color: #ff4757; text-decoration: none; transition: all 0.3s; background: rgba(255, 71, 87, 0.1); border-radius: 8px; margin: 0.25rem 0.5rem; font-weight: 600; text-align: center; border: 1px solid rgba(255, 71, 87, 0.3);"
                                onmouseover="this.style.background='rgba(255, 71, 87, 0.2)'"
@@ -3684,7 +3684,7 @@
                 </li>
                 @else
                 <li><a href="{{ route('login') }}">Iniciar Sesión</a></li>
-                <li><a href="{{ route('register.simple.form') }}" class="register-btn">Registrarse</a></li>
+                <li><a href="{{ route('register') }}" class="register-btn">Registrarse</a></li>
                 @endauth
             </ul>
         </div>

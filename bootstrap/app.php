@@ -19,25 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'manual.session.auth' => \App\Http\Middleware\ManualSessionAuth::class,
         ]);
         
-        // Add manual session auth to web middleware group (prepend to run first)
-        $middleware->web(prepend: [
-            \App\Http\Middleware\ManualSessionAuth::class,
-        ]);
+        // Standard Laravel session handling - remove manual auth middleware
         
         // CSRF verification enabled with specific exceptions
         $middleware->validateCsrfTokens(except: [
             // API routes that need CSRF exemption
             'api/*',
             'auth/google/callback',
-            // Simple registration route without CSRF
-            'registro',
-            // Simple login route without CSRF
-            'login-simple',
-            // Normal login route also exempt for now
-            'login',
-            // Emergency routes for hosting issues
-            'emergency-login-process',
-            'emergency-register-process',
             // Rating and interaction routes (AJAX)
             'series/*/rate',
             'movies/*/rate',

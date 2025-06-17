@@ -60,56 +60,7 @@ Route::get('/actores/{id}', [ActorsController::class, 'show'])->name('actors.sho
 Route::get('/proximamente', [App\Http\Controllers\UpcomingController::class, 'index'])->name('upcoming.index');
 Route::get('/proximamente/{upcomingSeries}', [App\Http\Controllers\UpcomingController::class, 'show'])->name('upcoming.show');
 
-// === AUTHENTICATION ROUTES ===
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('rate.limit:auth,5,1');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])
-    ->middleware('rate.limit:auth,3,1');
-
-// Registro simple sin CSRF
-Route::get('/registro', function() {
-    return view('auth.register-simple');
-})->name('register.simple.form');
-
-Route::post('/registro', [AuthController::class, 'registerSimple'])->name('register.simple');
-
-// Simple session debug like test-cookie
-Route::get('/debug-session', function() {
-    // First set cookie like in test-cookie
-    setcookie('session_test', 'working', time() + 3600, '/', '', false, false);
-    
-    return 'Session cookie set! Should work like test-cookie.';
-});
-
-// Debug route with explicit session middleware
-Route::get('/debug-auth', function() {
-    // Force session to start
-    session()->put('debug_test', 'test_value');
-    session()->save();
-    
-    return response()->json([
-        'authenticated' => Auth::check(),
-        'user_id' => Auth::id(),
-        'user' => Auth::user(),
-        'session_id' => session()->getId(),
-        'session_data' => session()->all(),
-        'cookies' => request()->cookies->all(),
-        'headers' => request()->headers->all(),
-        'session_config' => [
-            'driver' => config('session.driver'),
-            'cookie' => config('session.cookie'),
-            'domain' => config('session.domain'),
-            'path' => config('session.path'),
-            'secure' => config('session.secure'),
-            'http_only' => config('session.http_only'),
-            'same_site' => config('session.same_site'),
-        ]
-    ]);
-})->middleware('web');
 
 // Temporary admin login route
 Route::get('/admin-login', function() {
@@ -121,194 +72,20 @@ Route::get('/admin-login', function() {
     return redirect('/')->with('error', 'No se encontró un usuario administrador');
 });
 
-// EMERGENCY LOGIN/REGISTER ROUTES FOR HOSTING
-// These routes work without sessions/CSRF issues
+// === AUTHENTICATION ROUTES ===
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/emergency-login', function() {
-    return '
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Emergency Login - Dorasia</title>
-        <style>
-            body { font-family: Arial; padding: 40px; background: #1a1a2e; color: white; }
-            .form { max-width: 400px; margin: 0 auto; background: #16213e; padding: 30px; border-radius: 10px; }
-            input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
-            button { width: 100%; padding: 12px; background: #0f3460; color: white; border: none; border-radius: 5px; cursor: pointer; }
-            button:hover { background: #e94560; }
-            .link { color: #00d4ff; text-decoration: none; }
-        </style>
-    </head>
-    <body>
-        <div class="form">
-            <h2>🔐 Emergency Login - Dorasia</h2>
-            <form method="POST" action="/emergency-login-process">
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit">Iniciar Sesión</button>
-            </form>
-            <p><a href="/emergency-register" class="link">¿No tienes cuenta? Regístrate aquí</a></p>
-            <p><a href="/" class="link">← Volver a Dorasia</a></p>
-        </div>
-    </body>
-    </html>';
-});
-
-Route::post('/emergency-login-process', function() {
-    $email = request()->email;
-    $password = request()->password;
-    
-    $user = \App\Models\User::where("email", $email)->first();
-    
-    if ($user && \Hash::check($password, $user->password)) {
-        // Manual session bypass
-        setcookie("dorasia_user_id", $user->id, time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
-        setcookie("dorasia_user_token", hash("sha256", $user->id . $user->email), time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
-        
-        return redirect("/")->with("success", "Login exitoso!");
-    }
-    
-    return redirect("/emergency-login")->with("error", "Credenciales incorrectas");
-});
-
-Route::get('/emergency-register', function() {
-    return '
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Emergency Register - Dorasia</title>
-        <style>
-            body { font-family: Arial; padding: 40px; background: #1a1a2e; color: white; }
-            .form { max-width: 400px; margin: 0 auto; background: #16213e; padding: 30px; border-radius: 10px; }
-            input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
-            button { width: 100%; padding: 12px; background: #0f3460; color: white; border: none; border-radius: 5px; cursor: pointer; }
-            button:hover { background: #e94560; }
-            .link { color: #00d4ff; text-decoration: none; }
-        </style>
-    </head>
-    <body>
-        <div class="form">
-            <h2>📝 Emergency Register - Dorasia</h2>
-            <form method="POST" action="/emergency-register-process">
-                <input type="text" name="name" placeholder="Nombre completo" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password (min 8 chars)" required>
-                <button type="submit">Registrarse</button>
-            </form>
-            <p><a href="/emergency-login" class="link">¿Ya tienes cuenta? Inicia sesión</a></p>
-            <p><a href="/" class="link">← Volver a Dorasia</a></p>
-        </div>
-    </body>
-    </html>';
-});
-
-Route::post('/emergency-register-process', function() {
-    $name = request()->name;
-    $email = request()->email;
-    $password = request()->password;
-    
-    if (strlen($password) < 8) {
-        return redirect("/emergency-register")->with("error", "Password debe tener al menos 8 caracteres");
-    }
-    
-    if (\App\Models\User::where("email", $email)->exists()) {
-        return redirect("/emergency-register")->with("error", "Email ya está registrado");
-    }
-    
-    $user = \App\Models\User::create([
-        "name" => $name,
-        "email" => $email,
-        "password" => \Hash::make($password),
-        "email_verified_at" => now()
-    ]);
-    
-    // Manual session bypass
-    setcookie("dorasia_user_id", $user->id, time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
-    setcookie("dorasia_user_token", hash("sha256", $user->id . $user->email), time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
-    
-    return redirect("/")->with("success", "Registro exitoso! Bienvenido a Dorasia");
-});
-
-// Simple login routes without CSRF issues
-Route::get('/login-simple', function() {
-    return view('auth.login-simple');
-})->name('login.simple');
-
-Route::post('/login-simple', [AuthController::class, 'loginSimple'])->name('login.simple.post');
-
-// Working login bypass using manual cookies
-Route::get('/test-login', function() {
-    $user = \App\Models\User::where('email', 'jpablo.basualdo@gmail.com')->first();
-    if ($user) {
-        // Set cookie manually using setcookie
-        setcookie('user_logged_in', $user->id, time() + (480 * 60), '/', '', false, false);
-        setcookie('user_auth_token', hash('sha256', $user->id . $user->email), time() + (480 * 60), '/', '', false, false);
-        
-        return redirect('/admin-manual')
-            ->with('success', 'Login de prueba exitoso con cookies manuales');
-    }
-    return 'Usuario no encontrado';
-});
-
-// Manual admin access using cookies
-Route::get('/admin-manual', function() {
-    $userId = $_COOKIE['user_logged_in'] ?? null;
-    $authToken = $_COOKIE['user_auth_token'] ?? null;
-    
-    if ($userId && $authToken) {
-        $user = \App\Models\User::find($userId);
-        if ($user && hash('sha256', $user->id . $user->email) === $authToken && $user->is_admin) {
-            // Temporarily log in the user for this request
-            Auth::login($user);
-            // Use the actual controller method
-            return app(\App\Http\Controllers\Admin\AdminController::class)->dashboard();
-        }
-    }
-    
-    return redirect('/login-simple')->with('error', 'Acceso denegado');
-});
-
-// Test cookie setting
-Route::get('/test-cookie', function() {
-    // Use setcookie directly
-    setcookie('test_cookie', 'test_value', time() + 3600, '/', '', false, false);
-    return 'Cookie set via setcookie! Check /debug-auth to see if it appears.';
-});
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
 // Mobile-friendly logout route
-Route::get('/working-logout', function() {
-    $userId = Auth::id();
-    
-    // Limpiar cookies manuales
-    setcookie('user_logged_in', '', time() - 3600, '/', '', false, false);
-    setcookie('user_auth_token', '', time() - 3600, '/', '', false, false);
-    
+Route::get('/logout-mobile', function() {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-
-    \Log::info('Usuario cerró sesión (mobile)', ['user_id' => $userId]);
-
     return redirect()->route('home')->with('success', 'Has cerrado sesión exitosamente');
-});
-
-// Force login with cookies disabled
-Route::get('/force-login', function() {
-    $user = \App\Models\User::where('email', 'jpablo.basualdo@gmail.com')->first();
-    if ($user) {
-        // Bypass normal session system
-        session()->flush();
-        session()->regenerate();
-        
-        Auth::loginUsingId($user->id, true);
-        
-        // Force session data
-        session(['auth.password_confirmed_at' => time()]);
-        session()->save();
-        
-        return redirect('/admin');
-    }
-    return 'Usuario no encontrado';
 });
 
 // Auth check API
