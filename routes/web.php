@@ -74,17 +74,35 @@ Route::get('/admin-login', function() {
 
 // === AUTHENTICATION ROUTES ===
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('rate.limit:auth,5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware('rate.limit:auth,3,1');
 
-// Mobile-friendly logout route
-Route::get('/logout-mobile', function() {
+// Registro simple sin CSRF - ESTO FUNCIONA EN LOCAL
+Route::get('/registro', function() {
+    return view('auth.register-simple');
+})->name('register.simple.form');
+
+Route::post('/registro', [AuthController::class, 'registerSimple'])->name('register.simple');
+
+// Mobile-friendly logout route - FUNCIONA EN LOCAL
+Route::get('/working-logout', function() {
+    $userId = Auth::id();
+    
+    // Limpiar cookies manuales
+    setcookie('user_logged_in', '', time() - 3600, '/', '', false, false);
+    setcookie('user_auth_token', '', time() - 3600, '/', '', false, false);
+    
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
+    \Log::info('Usuario cerró sesión (mobile)', ['user_id' => $userId]);
+
     return redirect()->route('home')->with('success', 'Has cerrado sesión exitosamente');
 });
 
