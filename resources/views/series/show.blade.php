@@ -74,18 +74,14 @@
             @endif
             
             <!-- User Actions for Series - MOBILE -->
-            @auth
             <div class="movie-actions d-block d-md-none">
-                @include('components.movie-rating-buttons', ['movie' => $series])
+                @include('components.rating-buttons', ['series' => $series])
             </div>
-            @endauth
             
             <!-- User Actions -->
-            @auth
             <div class="hero-actions d-none d-md-flex">
                 @include('components.rating-buttons', ['series' => $series])
             </div>
-            @endauth
             
             <style>
                 /* FORCE DIFFERENT COLORS FOR SERIES BUTTONS */
@@ -416,83 +412,100 @@
     </section>
     @endif
 
-    <!-- Professional Reviews Section -->
+    <!-- Professional Reviews Accordion -->
     @if($positiveReviews->count() > 0 || $negativeReviews->count() > 0)
     <section class="content-section">
-        <h2 class="section-title">🎬 Críticas Profesionales</h2>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-            <!-- Positive Reviews -->
-            @if($positiveReviews->count() > 0)
-            <div>
-                <h3 style="color: #28a745; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 1.5rem;">👍</span> Críticas Positivas
-                </h3>
-                @foreach($positiveReviews as $review)
-                <div class="detail-section" style="margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                        <div>
-                            <h4 style="color: white; margin: 0; font-size: 1rem;">{{ $review->source }}</h4>
-                            @if($review->author)
-                            <span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">por {{ $review->author }}</span>
+        <div class="comments-accordion-container" x-data="{ open: false }">
+            <!-- Reviews Header -->
+            <div class="comments-header-accordion" @click="open = !open">
+                <div class="comments-header-info">
+                    <h2 class="comments-title-accordion">
+                        🎬 Críticas Profesionales
+                        <span class="comments-count-badge">{{ $positiveReviews->count() + $negativeReviews->count() }}</span>
+                    </h2>
+                    <p class="comments-subtitle-accordion">Opiniones de críticos y medios especializados sobre {{ $series->display_title }}</p>
+                </div>
+                <div class="comments-toggle">
+                    <span x-text="open ? '▼' : '▶'" class="toggle-icon"></span>
+                </div>
+            </div>
+
+            <!-- Reviews Content -->
+            <div class="comments-content-accordion" x-show="open" x-transition>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+                    <!-- Positive Reviews -->
+                    @if($positiveReviews->count() > 0)
+                    <div>
+                        <h3 style="color: #28a745; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.5rem;">👍</span> Críticas Positivas
+                        </h3>
+                        @foreach($positiveReviews as $review)
+                        <div class="detail-section" style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <div>
+                                    <h4 style="color: white; margin: 0; font-size: 1rem;">{{ $review->source }}</h4>
+                                    @if($review->author)
+                                    <span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">por {{ $review->author }}</span>
+                                    @endif
+                                </div>
+                                @if($review->rating)
+                                <div style="background: rgba(40, 167, 69, 0.2); color: #28a745; padding: 0.3rem 0.8rem; border-radius: 12px; font-weight: 600;">
+                                    ⭐ {{ $review->rating }}/{{ $review->max_rating }}
+                                </div>
+                                @endif
+                            </div>
+                            
+                            <p style="color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0.5rem 0;">
+                                "{{ $review->display_excerpt }}"
+                            </p>
+                            
+                            @if($review->source_url)
+                            <a href="{{ $review->source_url }}" target="_blank" style="color: #00d4ff; text-decoration: none; font-size: 0.85rem;">
+                                Leer crítica completa →
+                            </a>
                             @endif
                         </div>
-                        @if($review->rating)
-                        <div style="background: rgba(40, 167, 69, 0.2); color: #28a745; padding: 0.3rem 0.8rem; border-radius: 12px; font-weight: 600;">
-                            ⭐ {{ $review->rating }}/{{ $review->max_rating }}
-                        </div>
-                        @endif
+                        @endforeach
                     </div>
-                    
-                    <p style="color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0.5rem 0;">
-                        "{{ $review->display_excerpt }}"
-                    </p>
-                    
-                    @if($review->source_url)
-                    <a href="{{ $review->source_url }}" target="_blank" style="color: #00d4ff; text-decoration: none; font-size: 0.85rem;">
-                        Leer crítica completa →
-                    </a>
                     @endif
-                </div>
-                @endforeach
-            </div>
-            @endif
-            
-            <!-- Negative/Mixed Reviews -->
-            @if($negativeReviews->count() > 0)
-            <div>
-                <h3 style="color: #dc3545; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 1.5rem;">👎</span> Críticas Mixtas
-                </h3>
-                @foreach($negativeReviews as $review)
-                <div class="detail-section" style="margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                        <div>
-                            <h4 style="color: white; margin: 0; font-size: 1rem;">{{ $review->source }}</h4>
-                            @if($review->author)
-                            <span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">por {{ $review->author }}</span>
+                    
+                    <!-- Negative/Mixed Reviews -->
+                    @if($negativeReviews->count() > 0)
+                    <div>
+                        <h3 style="color: #dc3545; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.5rem;">👎</span> Críticas Mixtas
+                        </h3>
+                        @foreach($negativeReviews as $review)
+                        <div class="detail-section" style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <div>
+                                    <h4 style="color: white; margin: 0; font-size: 1rem;">{{ $review->source }}</h4>
+                                    @if($review->author)
+                                    <span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">por {{ $review->author }}</span>
+                                    @endif
+                                </div>
+                                @if($review->rating)
+                                <div style="background: rgba(220, 53, 69, 0.2); color: #dc3545; padding: 0.3rem 0.8rem; border-radius: 12px; font-weight: 600;">
+                                    ⭐ {{ $review->rating }}/{{ $review->max_rating }}
+                                </div>
+                                @endif
+                            </div>
+                            
+                            <p style="color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0.5rem 0;">
+                                "{{ $review->display_excerpt }}"
+                            </p>
+                            
+                            @if($review->source_url)
+                            <a href="{{ $review->source_url }}" target="_blank" style="color: #00d4ff; text-decoration: none; font-size: 0.85rem;">
+                                Leer crítica completa →
+                            </a>
                             @endif
                         </div>
-                        @if($review->rating)
-                        <div style="background: rgba(220, 53, 69, 0.2); color: #dc3545; padding: 0.3rem 0.8rem; border-radius: 12px; font-weight: 600;">
-                            ⭐ {{ $review->rating }}/{{ $review->max_rating }}
-                        </div>
-                        @endif
+                        @endforeach
                     </div>
-                    
-                    <p style="color: rgba(255,255,255,0.9); line-height: 1.5; margin: 0.5rem 0;">
-                        "{{ $review->display_excerpt }}"
-                    </p>
-                    
-                    @if($review->source_url)
-                    <a href="{{ $review->source_url }}" target="_blank" style="color: #00d4ff; text-decoration: none; font-size: 0.85rem;">
-                        Leer crítica completa →
-                    </a>
                     @endif
                 </div>
-                @endforeach
             </div>
-            @endif
         </div>
     </section>
     @endif

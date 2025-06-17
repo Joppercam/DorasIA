@@ -5,7 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dorasia - K-Dramas')</title>
-    {{-- @vite('resources/css/app.css') --}}
+    
+    <!-- Favicons -->
+    @include('components.favicon-inline')
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#1a1a2e">
+    
+    <!-- Meta tags para SEO y redes sociales -->
+    <meta name="description" content="Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.">
+    <meta property="og:title" content="@yield('title', 'Dorasia - K-Dramas y Películas Coreanas')">
+    <meta property="og:description" content="Descubre los mejores K-Dramas y películas coreanas con subtítulos en español.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* CSS UPDATE - COLORS FIXED v2 - <?php echo time(); ?> */
         body {
@@ -997,8 +1012,9 @@
         
         @media (max-width: 768px) {
             .carousel-container {
-                margin: 0 20px;
-                padding: 30px 0;
+                margin: 0 15px;
+                padding: 40px 0;
+                overflow: hidden;
             }
         }
 
@@ -1010,6 +1026,14 @@
             transition: transform 0.5s ease;
             will-change: transform;
             padding: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .carousel {
+                gap: 1rem !important;
+                padding: 40px 0 !important;
+                justify-content: flex-start !important;
+            }
         }
 
         .carousel-nav {
@@ -1057,37 +1081,43 @@
         }
 
         .card {
-            min-width: 200px !important;
-            height: 300px !important;
-            border-radius: 4px;
+            min-width: 350px !important;
+            height: 200px !important;
+            border-radius: 8px;
             overflow: hidden;
-            cursor: default;
+            cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             background-size: cover;
             background-position: center;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
             transform-origin: center;
         }
         
         @media (max-width: 768px) {
             .card {
-                min-width: 140px !important;
-                height: 210px !important;
+                min-width: 85vw !important;
+                max-width: 320px !important;
+                height: 380px !important;
+                border-radius: 15px !important;
+                border: 3px solid rgba(255,255,255,0.2) !important;
+                margin: 0 auto !important;
             }
             
             .card.hovering {
-                transform: scale(1.1) translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+                transform: scale(1.05) translateY(-8px) !important;
+                box-shadow: 0 30px 60px rgba(0,0,0,0.95) !important;
+                border-color: rgba(255,255,255,0.5) !important;
+                z-index: 100 !important;
             }
         }
         
         .card.hovering {
-            transform: scale(1.15) translateY(-15px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            transform: scale(1.2) translateY(-20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
             z-index: 100;
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         
 
@@ -1130,12 +1160,12 @@
             display: inline-block;
             background: rgba(0, 212, 255, 0.9);
             color: white;
-            padding: 0.2rem 0.5rem;
+            padding: 0.3rem 0.7rem;
             border-radius: 12px;
-            font-size: 0.6rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-right: 0.3rem;
-            margin-bottom: 0.3rem;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             backdrop-filter: blur(10px);
@@ -1167,17 +1197,52 @@
             background: rgba(40, 167, 69, 0.9);
         }
 
+        .card-type-badge {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 0.35rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .card-type-badge {
+                font-size: 0.6rem !important;
+                padding: 0.2rem 0.4rem !important;
+                border-radius: 8px !important;
+                font-weight: 700 !important;
+            }
+        }
+
+        .card-type-badge.movie {
+            background: linear-gradient(135deg, #ff6b9d, #ff8e8e);
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
+        }
+
         .card-info {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.95) 100%);
-            padding: 1rem 0.8rem 0.8rem;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.95) 100%);
+            padding: 1.2rem 1.2rem 1rem;
             color: white;
             opacity: 1;
             transform: translateY(0);
             transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .card-info {
+                padding: 1.5rem 1.2rem 1.2rem !important;
+                background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.95) 100%) !important;
+            }
         }
         
         /* Netflix-style expanded info on hover */
@@ -1403,9 +1468,9 @@
 
         .card-title {
             font-weight: 700;
-            margin-bottom: 0.3rem;
-            font-size: 0.85rem;
-            line-height: 1.1;
+            margin-bottom: 0.4rem;
+            font-size: 1.1rem;
+            line-height: 1.2;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -1413,24 +1478,50 @@
             overflow: hidden;
         }
 
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 1.3rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 0.5rem !important;
+                font-weight: 800 !important;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.9) !important;
+            }
+        }
+
         .card-meta {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            margin-bottom: 0.3rem;
-            font-size: 0.7rem;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .card-meta {
+                font-size: 1rem !important;
+                gap: 0.6rem !important;
+                margin-bottom: 0.4rem !important;
+            }
         }
 
         .card-rating {
             background: rgba(255, 215, 0, 0.2);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             color: #ffd700;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 0.1rem;
+            gap: 0.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .card-rating {
+                font-size: 0.85rem !important;
+                padding: 4px 8px !important;
+                border-radius: 6px !important;
+            }
         }
 
         .card-year {
@@ -1440,7 +1531,15 @@
 
         .card-episodes {
             color: #aaa;
-            font-size: 0.65rem;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .card-episodes {
+                font-size: 0.85rem !important;
+                color: #ccc !important;
+                font-weight: 500 !important;
+            }
         }
 
         .card-genre {
@@ -1520,6 +1619,15 @@
             font-size: 0.55rem;
             font-weight: 500;
             color: white;
+        }
+
+        @media (max-width: 768px) {
+            .streaming-platform {
+                font-size: 0.65rem !important;
+                padding: 0.2rem 0.5rem !important;
+                border-radius: 10px !important;
+                font-weight: 500 !important;
+            }
         }
 
         /* Footer Styles - OLD (commented out - using component instead) */
@@ -1632,15 +1740,24 @@
             background: linear-gradient(135deg, #e50914, #b20710);
             color: white;
             text-decoration: none;
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem 1rem;
             border-radius: 15px;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
             box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
             opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .card-view-btn {
+                font-size: 1rem !important;
+                padding: 0.6rem 1.2rem !important;
+                border-radius: 15px !important;
+                font-weight: 700 !important;
+            }
         }
         
         @media (max-width: 768px) {
@@ -2554,6 +2671,44 @@
                 display: block !important;
             }
             
+            /* Mejorar logout en móvil */
+            .navbar-nav .dropdown-menu a[href*="logout"] {
+                min-height: 48px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 1.1rem !important;
+                font-weight: 600 !important;
+                margin: 0.5rem 0 !important;
+                -webkit-tap-highlight-color: rgba(255, 71, 87, 0.3) !important;
+                touch-action: manipulation !important;
+            }
+            
+            /* Mejorar toda la experiencia táctil del menú móvil */
+            @media (max-width: 768px) {
+                .navbar-nav a {
+                    min-height: 44px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1) !important;
+                    touch-action: manipulation !important;
+                }
+                
+                .dropdown-toggle {
+                    position: relative !important;
+                }
+                
+                .dropdown-toggle:after {
+                    content: " ▼" !important;
+                    font-size: 0.8rem !important;
+                    margin-left: 0.5rem !important;
+                }
+                
+                .dropdown.active .dropdown-toggle:after {
+                    content: " ▲" !important;
+                }
+            }
+            
             /* Hero móvil con poster */
             .hero-section {
                 min-height: auto;
@@ -2802,6 +2957,11 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1400;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: none;
+        }
+        
+        .mobile-search.show {
+            display: block;
         }
         
         
@@ -2944,6 +3104,17 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        
+        .search-item-description {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.3;
+            margin-top: 0.25rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         .search-no-results {
@@ -3455,7 +3626,7 @@
             <!-- Desktop Search Bar -->
             <div class="search-container desktop-search" style="flex: 1; max-width: 400px; margin: 0 2rem;">
                 <div class="search-input-container">
-                    <input type="text" id="globalSearch" placeholder="Buscar series, actores..." class="search-input">
+                    <input type="text" id="globalSearch" placeholder="Buscar series, películas, actores..." class="search-input">
                     <div class="search-icon">🔍</div>
                 </div>
                 <div class="search-results" id="searchResults" style="display: none;"></div>
@@ -3501,32 +3672,27 @@
                         <li>
                             <a href="{{ url('/working-logout') }}" 
                                onclick="console.log('Logout clicked'); localStorage.clear(); sessionStorage.clear();"
-                               style="display: block; padding: 0.5rem 1rem; color: white; text-decoration: none; transition: background-color 0.3s;">
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                        <li>
-                            <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
-                                @csrf
-                            </form>
-                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
-                               style="display: block; padding: 0.5rem 1rem; color: white; text-decoration: none; transition: background-color 0.3s;">
-                                Cerrar Sesión (POST)
+                               style="display: block; padding: 0.75rem 1rem; color: #ff4757; text-decoration: none; transition: all 0.3s; background: rgba(255, 71, 87, 0.1); border-radius: 8px; margin: 0.25rem 0.5rem; font-weight: 600; text-align: center; border: 1px solid rgba(255, 71, 87, 0.3);"
+                               onmouseover="this.style.background='rgba(255, 71, 87, 0.2)'"
+                               onmouseout="this.style.background='rgba(255, 71, 87, 0.1)'"
+                               ontouchstart="this.style.background='rgba(255, 71, 87, 0.2)'"
+                               ontouchend="this.style.background='rgba(255, 71, 87, 0.1)'">
+                                🚪 Cerrar Sesión
                             </a>
                         </li>
                     </ul>
                 </li>
                 @else
                 <li><a href="{{ route('login') }}">Iniciar Sesión</a></li>
-                <li><a href="{{ route('register') }}" class="register-btn">Registrarse</a></li>
+                <li><a href="{{ route('register.simple.form') }}" class="register-btn">Registrarse</a></li>
                 @endauth
             </ul>
         </div>
         
         <!-- Mobile Search Container -->
-        <div class="search-container mobile-search" id="mobileSearchContainer" style="display: none;">
+        <div class="search-container mobile-search" id="mobileSearchContainer">
             <div class="search-input-container">
-                <input type="text" id="mobileGlobalSearch" placeholder="Buscar series, actores..." class="search-input">
+                <input type="text" id="mobileGlobalSearch" placeholder="Buscar series, películas, actores..." class="search-input">
                 <div class="search-icon">🔍</div>
             </div>
             <div class="search-results" id="mobileSearchResults" style="display: none;"></div>
@@ -3566,18 +3732,22 @@
         function toggleMobileSearch() {
             const mobileSearchContainer = document.getElementById('mobileSearchContainer');
             const mobileNav = document.getElementById('navbar-nav');
+            const mobileSearchInput = document.getElementById('mobileGlobalSearch');
             
-            if (mobileSearchContainer.style.display === 'block') {
-                mobileSearchContainer.style.display = 'none';
-            } else {
-                mobileSearchContainer.style.display = 'block';
+            // Toggle the show class
+            mobileSearchContainer.classList.toggle('show');
+            
+            if (mobileSearchContainer.classList.contains('show')) {
                 // Close mobile menu if open
-                mobileNav.classList.remove('mobile-open');
+                if (mobileNav) {
+                    mobileNav.classList.remove('mobile-open');
+                }
                 
                 // Focus on mobile search input
-                const mobileSearchInput = document.getElementById('mobileGlobalSearch');
                 setTimeout(() => {
-                    mobileSearchInput.focus();
+                    if (mobileSearchInput) {
+                        mobileSearchInput.focus();
+                    }
                 }, 100);
             }
         }
@@ -3629,12 +3799,13 @@
 
         // Rating functionality
         function rateSeries(seriesId, ratingType, button) {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             
             if (!csrfToken) {
                 showRatingToast('Token de seguridad no encontrado', 'error');
                 return;
             }
+            
             
             fetch(`/series/${seriesId}/rate`, {
                 method: 'POST',
@@ -3650,13 +3821,13 @@
             .then(response => {
                 if (!response.ok) {
                     if (response.status === 401) {
-                        throw new Error('No autorizado - Por favor inicia sesión');
+                        throw new Error('❌ No autorizado - Por favor inicia sesión');
                     } else if (response.status === 419) {
-                        throw new Error('Sesión expirada - Por favor recarga la página');
+                        throw new Error('⏰ Sesión expirada - Intenta refrescar la página');
                     } else if (response.status === 422) {
-                        throw new Error('Datos de calificación inválidos');
+                        throw new Error('❗ Datos de calificación inválidos');
                     } else {
-                        throw new Error(`Error del servidor: ${response.status}`);
+                        throw new Error(`🚫 Error del servidor: ${response.status}`);
                     }
                 }
                 return response.json();
@@ -3785,13 +3956,13 @@
             .then(response => {
                 if (!response.ok) {
                     if (response.status === 401) {
-                        throw new Error('No autorizado - Por favor inicia sesión');
+                        throw new Error('❌ No autorizado - Por favor inicia sesión');
                     } else if (response.status === 419) {
-                        throw new Error('Sesión expirada - Por favor recarga la página');
+                        throw new Error('⏰ Sesión expirada - Intenta refrescar la página');
                     } else if (response.status === 422) {
-                        throw new Error('Datos de calificación inválidos');
+                        throw new Error('❗ Datos de calificación inválidos');
                     } else {
-                        throw new Error(`Error del servidor: ${response.status}`);
+                        throw new Error(`🚫 Error del servidor: ${response.status}`);
                     }
                 }
                 return response.json();
@@ -4056,6 +4227,20 @@
                     button.classList.add('active');
                     button.title = 'Ya la viste';
                     
+                    // Only update counter if it wasn't already watched
+                    if (!data.already_watched) {
+                        const watchedCountEl = button.parentElement.querySelector('.count-number');
+                        if (watchedCountEl) {
+                            const currentCount = parseInt(watchedCountEl.textContent) || 0;
+                            watchedCountEl.textContent = currentCount + 1;
+                        }
+                    }
+                    
+                    // Disable button to prevent multiple clicks
+                    button.disabled = true;
+                    button.style.opacity = '0.7';
+                    button.style.cursor = 'not-allowed';
+                    
                     // Show toast notification
                     showRatingToast(data.message);
                 }
@@ -4146,13 +4331,15 @@
                             '/images/placeholder-poster.jpg';
                         const year = series.first_air_date ? new Date(series.first_air_date).getFullYear() : '';
                         
-                        const displayTitle = series.spanish_title || series.display_title || series.title;
+                        const displayTitle = series.title_es || series.spanish_title || series.title;
+                        const displayOverview = series.overview_es || series.spanish_overview || series.overview;
                         html += `
                             <a href="/series/${series.id}" class="search-item">
                                 <img src="${posterUrl}" alt="${displayTitle}" class="search-item-image" onerror="this.src='/images/placeholder-poster.jpg'">
                                 <div class="search-item-info">
                                     <div class="search-item-title">${displayTitle}</div>
                                     <div class="search-item-meta">${year} • ⭐ ${series.vote_average || 'N/A'}</div>
+                                    ${displayOverview ? `<div class="search-item-description">${displayOverview.substring(0, 80)}${displayOverview.length > 80 ? '...' : ''}</div>` : ''}
                                 </div>
                             </a>
                         `;
@@ -4315,12 +4502,48 @@
         });
         
         // Funcionalidad de búsqueda móvil
-        function toggleMobileSearch() {
-            const searchContainer = document.querySelector('.search-container.mobile-search');
-            if (searchContainer) {
-                searchContainer.classList.toggle('mobile-active');
-            }
-        }
+        
+        // Mejorar dropdown táctil en móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            // Manejar dropdowns en móvil
+            const dropdowns = document.querySelectorAll('.navbar-nav .dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                
+                if (toggle && menu) {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Cerrar otros dropdowns
+                        dropdowns.forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown) {
+                                otherDropdown.classList.remove('active');
+                                const otherMenu = otherDropdown.querySelector('.dropdown-menu');
+                                if (otherMenu) otherMenu.style.display = 'none';
+                            }
+                        });
+                        
+                        // Toggle este dropdown
+                        dropdown.classList.toggle('active');
+                        const isActive = dropdown.classList.contains('active');
+                        menu.style.display = isActive ? 'block' : 'none';
+                    });
+                }
+            });
+            
+            // Cerrar dropdowns al tocar fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    dropdowns.forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                        const menu = dropdown.querySelector('.dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    });
+                }
+            });
+        });
         
         // Cerrar menú al hacer click fuera
         document.addEventListener('click', function(e) {

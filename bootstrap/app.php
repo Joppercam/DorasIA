@@ -15,18 +15,36 @@ return Application::configure(basePath: dirname(__DIR__))
             'chilean.localization' => \App\Http\Middleware\ChileanLocalization::class,
             'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'manual.session.auth' => \App\Http\Middleware\ManualSessionAuth::class,
         ]);
         
-        // Auto-authenticate for development
-        // UNCOMMENT FOR PRODUCTION TO ENABLE AUTO-LOGIN
-        // $middleware->web(append: [
-        //     \App\Http\Middleware\StaticAuth::class,
-        // ]);
+        // Add manual session auth to web middleware group (prepend to run first)
+        $middleware->web(prepend: [
+            \App\Http\Middleware\ManualSessionAuth::class,
+        ]);
         
-        // CSRF verification disabled for development
-        // ENABLE FOR PRODUCTION SECURITY
+        // CSRF verification enabled with specific exceptions
         $middleware->validateCsrfTokens(except: [
-            '*'  // Disable for ALL routes - CHANGE IN PRODUCTION
+            // API routes that need CSRF exemption
+            'api/*',
+            'auth/google/callback',
+            // Simple registration route without CSRF
+            'registro',
+            // Simple login route without CSRF
+            'login-simple',
+            // Normal login route also exempt for now
+            'login',
+            // Rating and interaction routes (AJAX)
+            'series/*/rate',
+            'movies/*/rate',
+            'series/*/watchlist',
+            'movies/*/watchlist',
+            'series/*/watched',
+            'series/*/comments',
+            'actors/*/comments',
+            'episodes/*/watched',
+            'episodes/*/progress',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

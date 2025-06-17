@@ -274,7 +274,11 @@ class HomeController extends Controller
             'polymorphicComments as comments_count' => function ($query) {
                 $query->where('is_approved', true)->whereNull('parent_id');
             }
-        ])->findOrFail($id);
+        ])->find($id);
+        
+        if (!$series) {
+            abort(404, 'Serie no encontrada');
+        }
         
         // Load comments with user info - visible to everyone
         $comments = $series->comments()
@@ -470,6 +474,8 @@ class HomeController extends Controller
                                    ->where('series_id', $series->id)
                                    ->first();
 
+        $alreadyWatched = $watchHistory && $watchHistory->status === 'completed';
+
         if (!$watchHistory) {
             WatchHistory::create([
                 'user_id' => $userId,
@@ -491,7 +497,8 @@ class HomeController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => '🎬 ¡Marcada como vista!'
+            'already_watched' => $alreadyWatched,
+            'message' => $alreadyWatched ? '✅ Ya la tenías marcada como vista' : '🎬 ¡Marcada como vista!'
         ]);
     }
 
@@ -535,18 +542,26 @@ class HomeController extends Controller
         // Sanitize search query
         $searchTerm = '%' . $query . '%';
 
-        // Search series - prioritize Spanish titles
+        // Search series - prioritize Spanish content
         $series = Series::where(function($q) use ($searchTerm) {
-            $q->where('spanish_title', 'LIKE', $searchTerm)
-              ->orWhere('title', 'LIKE', $searchTerm)
-              ->orWhere('display_title', 'LIKE', $searchTerm)
-              ->orWhere('original_title', 'LIKE', $searchTerm)
+            $q->where('title_es', 'LIKE', $searchTerm)
+              ->orWhere('spanish_title', 'LIKE', $searchTerm)
+              ->orWhere('overview_es', 'LIKE', $searchTerm)
               ->orWhere('spanish_overview', 'LIKE', $searchTerm)
-              ->orWhere('overview', 'LIKE', $searchTerm)
-              ->orWhere('display_overview', 'LIKE', $searchTerm);
+              ->orWhere('synopsis_es', 'LIKE', $searchTerm)
+              ->orWhere('tagline_es', 'LIKE', $searchTerm)
+              ->orWhere('title', 'LIKE', $searchTerm)
+              ->orWhere('original_title', 'LIKE', $searchTerm)
+              ->orWhere('overview', 'LIKE', $searchTerm);
         })
-        ->select(['id', 'title', 'display_title', 'original_title', 'spanish_title', 'poster_path', 'first_air_date', 'vote_average'])
-        ->orderBy('popularity', 'desc')
+        ->select(['id', 'title', 'title_es', 'original_title', 'spanish_title', 'overview_es', 'spanish_overview', 'poster_path', 'first_air_date', 'vote_average'])
+        ->orderByRaw('CASE 
+            WHEN title_es LIKE ? THEN 1
+            WHEN spanish_title LIKE ? THEN 2
+            WHEN overview_es LIKE ? THEN 3
+            WHEN spanish_overview LIKE ? THEN 4
+            ELSE 5
+        END, popularity DESC', [$searchTerm, $searchTerm, $searchTerm, $searchTerm])
         ->limit(5)
         ->get();
 

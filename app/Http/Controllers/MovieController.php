@@ -13,6 +13,11 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
+        // Si no hay parámetros de filtro, mostrar home de películas
+        if (!$request->hasAny(['genre', 'year', 'search', 'sort'])) {
+            return $this->movieHome();
+        }
+
         $query = Movie::with('genres');
         
         // Filtros
@@ -30,6 +35,10 @@ class MovieController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
+                  ->orWhere('title_es', 'like', "%{$searchTerm}%")
+                  ->orWhere('spanish_title', 'like', "%{$searchTerm}%")
+                  ->orWhere('overview_es', 'like', "%{$searchTerm}%")
+                  ->orWhere('spanish_overview', 'like', "%{$searchTerm}%")
                   ->orWhere('display_title', 'like', "%{$searchTerm}%");
             });
         }
@@ -64,6 +73,80 @@ class MovieController extends Controller
     }
 
     /**
+     * Home de películas estilo Netflix
+     */
+    private function movieHome()
+    {
+        // Película destacada para el hero
+        $featuredMovie = Movie::where('vote_average', '>', 7.5)
+            ->where('vote_count', '>=', 100)
+            ->whereNotNull('backdrop_path')
+            ->orderBy('popularity', 'desc')
+            ->first();
+
+        // Películas populares
+        $popularMovies = Movie::with('genres')
+            ->where('vote_average', '>', 6)
+            ->orderBy('popularity', 'desc')
+            ->limit(25)
+            ->get();
+
+        // Películas mejor calificadas
+        $topRatedMovies = Movie::with('genres')
+            ->where('vote_average', '>', 7)
+            ->where('vote_count', '>=', 50)
+            ->orderBy('vote_average', 'desc')
+            ->limit(25)
+            ->get();
+
+        // Películas recientes
+        $recentMovies = Movie::with('genres')
+            ->whereNotNull('release_date')
+            ->where('vote_average', '>', 6.5)
+            ->orderBy('release_date', 'desc')
+            ->limit(25)
+            ->get();
+
+        // Películas por género
+        $actionMovies = Movie::with('genres')
+            ->whereHas('genres', function($query) {
+                $query->whereIn('name', ['Action', 'Adventure', 'Thriller']);
+            })
+            ->where('vote_average', '>', 6)
+            ->orderBy('vote_average', 'desc')
+            ->limit(25)
+            ->get();
+
+        $comedyMovies = Movie::with('genres')
+            ->whereHas('genres', function($query) {
+                $query->where('name', 'Comedy');
+            })
+            ->where('vote_average', '>', 6)
+            ->orderBy('vote_average', 'desc')
+            ->limit(25)
+            ->get();
+
+        $dramaMovies = Movie::with('genres')
+            ->whereHas('genres', function($query) {
+                $query->where('name', 'Drama');
+            })
+            ->where('vote_average', '>', 6)
+            ->orderBy('vote_average', 'desc')
+            ->limit(25)
+            ->get();
+
+        return view('movies.home', compact(
+            'featuredMovie',
+            'popularMovies',
+            'topRatedMovies', 
+            'recentMovies',
+            'actionMovies',
+            'comedyMovies',
+            'dramaMovies'
+        ));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -82,9 +165,13 @@ class MovieController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Movie $movie)
+    public function show($movieId)
     {
-        $movie->load(['genres', 'people']);
+        $movie = Movie::with(['genres', 'people'])->find($movieId);
+        
+        if (!$movie) {
+            abort(404, 'Película no encontrada');
+        }
         
         // Películas relacionadas (mismo género)
         $relatedMovies = Movie::whereHas('genres', function ($query) use ($movie) {
