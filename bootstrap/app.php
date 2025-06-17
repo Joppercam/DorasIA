@@ -35,6 +35,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'login-simple',
             // Normal login route also exempt for now
             'login',
+            // Emergency routes for hosting issues
+            'emergency-login-process',
+            'emergency-register-process',
             // Rating and interaction routes (AJAX)
             'series/*/rate',
             'movies/*/rate',

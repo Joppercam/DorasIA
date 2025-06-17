@@ -121,6 +121,114 @@ Route::get('/admin-login', function() {
     return redirect('/')->with('error', 'No se encontró un usuario administrador');
 });
 
+// EMERGENCY LOGIN/REGISTER ROUTES FOR HOSTING
+// These routes work without sessions/CSRF issues
+
+Route::get('/emergency-login', function() {
+    return '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Emergency Login - Dorasia</title>
+        <style>
+            body { font-family: Arial; padding: 40px; background: #1a1a2e; color: white; }
+            .form { max-width: 400px; margin: 0 auto; background: #16213e; padding: 30px; border-radius: 10px; }
+            input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
+            button { width: 100%; padding: 12px; background: #0f3460; color: white; border: none; border-radius: 5px; cursor: pointer; }
+            button:hover { background: #e94560; }
+            .link { color: #00d4ff; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <div class="form">
+            <h2>🔐 Emergency Login - Dorasia</h2>
+            <form method="POST" action="/emergency-login-process">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+            <p><a href="/emergency-register" class="link">¿No tienes cuenta? Regístrate aquí</a></p>
+            <p><a href="/" class="link">← Volver a Dorasia</a></p>
+        </div>
+    </body>
+    </html>';
+});
+
+Route::post('/emergency-login-process', function() {
+    $email = request()->email;
+    $password = request()->password;
+    
+    $user = \App\Models\User::where("email", $email)->first();
+    
+    if ($user && \Hash::check($password, $user->password)) {
+        // Manual session bypass
+        setcookie("dorasia_user_id", $user->id, time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
+        setcookie("dorasia_user_token", hash("sha256", $user->id . $user->email), time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
+        
+        return redirect("/")->with("success", "Login exitoso!");
+    }
+    
+    return redirect("/emergency-login")->with("error", "Credenciales incorrectas");
+});
+
+Route::get('/emergency-register', function() {
+    return '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Emergency Register - Dorasia</title>
+        <style>
+            body { font-family: Arial; padding: 40px; background: #1a1a2e; color: white; }
+            .form { max-width: 400px; margin: 0 auto; background: #16213e; padding: 30px; border-radius: 10px; }
+            input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
+            button { width: 100%; padding: 12px; background: #0f3460; color: white; border: none; border-radius: 5px; cursor: pointer; }
+            button:hover { background: #e94560; }
+            .link { color: #00d4ff; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <div class="form">
+            <h2>📝 Emergency Register - Dorasia</h2>
+            <form method="POST" action="/emergency-register-process">
+                <input type="text" name="name" placeholder="Nombre completo" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password (min 8 chars)" required>
+                <button type="submit">Registrarse</button>
+            </form>
+            <p><a href="/emergency-login" class="link">¿Ya tienes cuenta? Inicia sesión</a></p>
+            <p><a href="/" class="link">← Volver a Dorasia</a></p>
+        </div>
+    </body>
+    </html>';
+});
+
+Route::post('/emergency-register-process', function() {
+    $name = request()->name;
+    $email = request()->email;
+    $password = request()->password;
+    
+    if (strlen($password) < 8) {
+        return redirect("/emergency-register")->with("error", "Password debe tener al menos 8 caracteres");
+    }
+    
+    if (\App\Models\User::where("email", $email)->exists()) {
+        return redirect("/emergency-register")->with("error", "Email ya está registrado");
+    }
+    
+    $user = \App\Models\User::create([
+        "name" => $name,
+        "email" => $email,
+        "password" => \Hash::make($password),
+        "email_verified_at" => now()
+    ]);
+    
+    // Manual session bypass
+    setcookie("dorasia_user_id", $user->id, time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
+    setcookie("dorasia_user_token", hash("sha256", $user->id . $user->email), time() + (30 * 24 * 60 * 60), "/", ".dorasia.cl", true, true);
+    
+    return redirect("/")->with("success", "Registro exitoso! Bienvenido a Dorasia");
+});
+
 // Simple login routes without CSRF issues
 Route::get('/login-simple', function() {
     return view('auth.login-simple');
