@@ -820,6 +820,51 @@ Route::prefix('admin')->middleware('admin')->name('admin.')->group(function () {
     Route::delete('/comments/{comment}', [App\Http\Controllers\Admin\AdminController::class, 'deleteComment'])->name('comments.delete');
 });
 
+// === UTILIDAD PARA HOSTING - LIMPIAR CACHE VIA WEB ===
+Route::get('/clear-cache-hosting', function() {
+    try {
+        // Limpiar cache de aplicación
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        $output1 = \Illuminate\Support\Facades\Artisan::output();
+        
+        // Limpiar cache de vistas
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        $output2 = \Illuminate\Support\Facades\Artisan::output();
+        
+        // Limpiar cache de configuración
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        $output3 = \Illuminate\Support\Facades\Artisan::output();
+        
+        // Verificar datos de actores
+        $actorContentCount = \App\Models\ActorContent::count();
+        $featuredCount = \App\Models\ActorContent::featured()->count();
+        
+        return response()->json([
+            'success' => true,
+            'message' => '🚀 Cache limpiada exitosamente desde hosting!',
+            'details' => [
+                'cache_clear' => trim($output1),
+                'view_clear' => trim($output2), 
+                'config_clear' => trim($output3),
+                'actor_content_count' => $actorContentCount,
+                'featured_content_count' => $featuredCount,
+                'timestamp' => now()->format('Y-m-d H:i:s')
+            ],
+            'next_steps' => [
+                '1. Cache limpiada ✅',
+                '2. Haz hard refresh del navegador (Ctrl+Shift+R)',
+                '3. Las secciones de actores deberían aparecer ahora'
+            ]
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => true,
+            'message' => 'Error al limpiar cache: ' . $e->getMessage()
+        ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+})->name('clear.cache.hosting');
+
 // === SOCIAL FEATURES FOR ACTOR CONTENT ===
 Route::middleware('auth')->group(function () {
     // Reactions
