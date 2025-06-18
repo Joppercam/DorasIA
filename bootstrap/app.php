@@ -19,10 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'manual.session.auth' => \App\Http\Middleware\ManualSessionAuth::class,
         ]);
         
-        // Add manual session auth for logout móvil compatibility
-        $middleware->web(prepend: [
-            \App\Http\Middleware\ManualSessionAuth::class,
-        ]);
+        // Manual session auth disabled temporarily to reduce resource usage
+        // $middleware->web(prepend: [
+        //     \App\Http\Middleware\ManualSessionAuth::class,
+        // ]);
         
         // CSRF verification enabled with specific exceptions
         $middleware->validateCsrfTokens(except: [

@@ -217,39 +217,27 @@ Route::get('/login', function() {
 })->name('login');
 
 Route::post('/login-process', function() {
-    $email = request()->email;
-    $password = request()->password;
-    
-    // Validación básica
-    if (!$email || !$password) {
-        return redirect('/login')->with('error', 'Email y contraseña son requeridos');
+    try {
+        $email = request()->email;
+        $password = request()->password;
+        
+        // Validación básica
+        if (!$email || !$password) {
+            return redirect('/login');
+        }
+        
+        // Login simple con Laravel Auth
+        if (\Auth::attempt(['email' => $email, 'password' => $password], true)) {
+            request()->session()->regenerate();
+            return redirect('/');
+        }
+        
+        return redirect('/login');
+        
+    } catch (\Exception $e) {
+        // Fallar silenciosamente para evitar loops
+        return redirect('/login');
     }
-    
-    // Buscar usuario manualmente
-    $user = \App\Models\User::where('email', $email)->first();
-    
-    if ($user && \Hash::check($password, $user->password)) {
-        // Login con Laravel Auth
-        \Auth::login($user, true); // true = remember
-        
-        // Configurar cookies manuales adicionales
-        setcookie('user_logged_in', $user->id, time() + (86400 * 30), '/', '.dorasia.cl', false, false);
-        setcookie('user_auth_token', hash('sha256', $user->id . $user->email), time() + (86400 * 30), '/', '.dorasia.cl', false, false);
-        
-        // Regenerar sesión
-        request()->session()->regenerate();
-        
-        \Log::info('Login exitoso', [
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'session_id' => session()->getId()
-        ]);
-        
-        return redirect('/')->with('success', '¡Bienvenido de vuelta, ' . $user->name . '!');
-    }
-    
-    \Log::warning('Login fallido', ['email' => $email]);
-    return redirect('/login')->with('error', 'Credenciales incorrectas');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -578,26 +566,16 @@ Route::post('/registro-process', function() {
     }
 })->name('register.simple');
 
-// Mobile-friendly logout route - FUNCIONA EN LOCAL Y HOSTING
+// Logout simple y eficiente
 Route::get('/working-logout', function() {
-    $userId = Auth::id();
-    
-    // Limpiar cookies manuales para localhost
-    setcookie('user_logged_in', '', time() - 3600, '/', '', false, false);
-    setcookie('user_auth_token', '', time() - 3600, '/', '', false, false);
-    
-    // Limpiar cookies manuales para hosting .dorasia.cl
-    setcookie('user_logged_in', '', time() - 3600, '/', '.dorasia.cl', false, false);
-    setcookie('user_auth_token', '', time() - 3600, '/', '.dorasia.cl', false, false);
-    
-    // Laravel logout estándar
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-
-    \Log::info('Usuario cerró sesión', ['user_id' => $userId, 'domain' => request()->getHost()]);
-
-    return redirect('/')->with('success', 'Has cerrado sesión exitosamente');
+    try {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/');
+    } catch (\Exception $e) {
+        return redirect('/');
+    }
 });
 
 // Auth check API
