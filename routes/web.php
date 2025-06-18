@@ -21,6 +21,15 @@ Route::get('/api/search', [HomeController::class, 'search'])
     ->middleware('rate.limit:search,30,1')
     ->name('api.search');
 
+// Smart Search Engine - Búsqueda semántica inteligente
+Route::get('/api/smart-search', [App\Http\Controllers\SmartSearchController::class, 'search'])
+    ->middleware('rate.limit:search,60,1')
+    ->name('api.smart.search');
+
+Route::get('/api/search/autocomplete', [App\Http\Controllers\SmartSearchController::class, 'autocomplete'])
+    ->middleware('rate.limit:search,120,1')
+    ->name('api.search.autocomplete');
+
 // PWA Push Notifications API
 Route::post('/api/push/subscribe', function() {
     try {
@@ -88,6 +97,32 @@ Route::post('/api/push/test', function() {
 Route::get('/api/actors/autocomplete', [ActorsController::class, 'autocomplete'])
     ->middleware('rate.limit:search,60,1')
     ->name('api.actors.autocomplete');
+
+// Recommendation Engine API
+Route::get('/api/recommendations', [App\Http\Controllers\RecommendationController::class, 'getRecommendations'])
+    ->name('api.recommendations');
+
+Route::get('/api/user/insights', [App\Http\Controllers\RecommendationController::class, 'getUserInsights'])
+    ->middleware('auth')
+    ->name('api.user.insights');
+
+// AI Tagging System API
+Route::post('/api/ai/tags/generate', [App\Http\Controllers\AITaggingController::class, 'generateSeriesTags'])
+    ->name('api.ai.tags.generate');
+
+Route::post('/api/ai/tags/bulk', [App\Http\Controllers\AITaggingController::class, 'generateBulkTags'])
+    ->name('api.ai.tags.bulk');
+
+Route::get('/api/ai/tags/search', [App\Http\Controllers\AITaggingController::class, 'searchByTags'])
+    ->name('api.ai.tags.search');
+
+Route::get('/api/ai/tags/stats', [App\Http\Controllers\AITaggingController::class, 'getTagsStats'])
+    ->name('api.ai.tags.stats');
+
+// Analytics Dashboard API
+Route::get('/api/analytics/dashboard', [App\Http\Controllers\AnalyticsController::class, 'getDashboard'])
+    ->middleware('auth')
+    ->name('api.analytics.dashboard');
 
 // === CONTENT ROUTES ===
 // News routes
