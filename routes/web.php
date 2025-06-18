@@ -578,21 +578,26 @@ Route::post('/registro-process', function() {
     }
 })->name('register.simple');
 
-// Mobile-friendly logout route - FUNCIONA EN LOCAL
+// Mobile-friendly logout route - FUNCIONA EN LOCAL Y HOSTING
 Route::get('/working-logout', function() {
     $userId = Auth::id();
     
-    // Limpiar cookies manuales
+    // Limpiar cookies manuales para localhost
     setcookie('user_logged_in', '', time() - 3600, '/', '', false, false);
     setcookie('user_auth_token', '', time() - 3600, '/', '', false, false);
     
+    // Limpiar cookies manuales para hosting .dorasia.cl
+    setcookie('user_logged_in', '', time() - 3600, '/', '.dorasia.cl', false, false);
+    setcookie('user_auth_token', '', time() - 3600, '/', '.dorasia.cl', false, false);
+    
+    // Laravel logout estándar
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
 
-    \Log::info('Usuario cerró sesión (mobile)', ['user_id' => $userId]);
+    \Log::info('Usuario cerró sesión', ['user_id' => $userId, 'domain' => request()->getHost()]);
 
-    return redirect()->route('home')->with('success', 'Has cerrado sesión exitosamente');
+    return redirect('/')->with('success', 'Has cerrado sesión exitosamente');
 });
 
 // Auth check API
