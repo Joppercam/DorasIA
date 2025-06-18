@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradiente principal TikTok style -->
+    <linearGradient id="tiktokGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff0050;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#7b68ee;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9d4edd;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Fondo oscuro -->
+    <radialGradient id="darkBg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Efecto neón -->
+    <filter id="neon" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Sombra intensa -->
+    <filter id="strongShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="15" flood-color="#00d4ff" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  
+  <!-- Fondo -->
+  <rect width="500" height="500" fill="url(#darkBg)"/>
+  
+  <!-- Marco decorativo -->
+  <rect x="20" y="20" width="460" height="460" rx="50" 
+        fill="none" 
+        stroke="url(#tiktokGradient)" 
+        stroke-width="3" 
+        opacity="0.4"/>
+  
+  <!-- Elemento central: Logo K-Drama -->
+  <g transform="translate(250, 180)">
+    <!-- Base circular con efecto -->
+    <circle r="80" fill="url(#tiktokGradient)" opacity="0.2"/>
+    <circle r="70" fill="none" stroke="url(#tiktokGradient)" stroke-width="4" filter="url(#neon)"/>
+    
+    <!-- Símbolo de reproducción + corazón -->
+    <g>
+      <!-- Corazón de K-Drama -->
+      <path d="M-30,-15 C-45,-35 -70,-35 -70,-10 C-70,15 -30,45 0,65 C30,45 70,15 70,-10 C70,-35 45,-35 30,-15 C20,-25 -20,-25 -30,-15 Z" 
+            fill="url(#tiktokGradient)" 
+            filter="url(#neon)"/>
+      
+      <!-- Play button -->
+      <polygon points="-12,0 15,-12 15,12" fill="#ffffff" opacity="1"/>
+    </g>
+  </g>
+  
+  <!-- Texto DORASIA con efecto TikTok -->
+  <g transform="translate(250, 320)">
+    <!-- Sombra del texto -->
+    <text x="2" y="2" 
+          font-family="Arial Black, Impact, sans-serif" 
+          font-size="60" 
+          font-weight="900" 
+          text-anchor="middle" 
+          fill="#000000" 
+          opacity="0.5">
+      DORAS<tspan fill="#ff0050">IA</tspan>
+    </text>
+    
+    <!-- Texto principal -->
+    <text x="0" y="0" 
+          font-family="Arial Black, Impact, sans-serif" 
+          font-size="60" 
+          font-weight="900" 
+          text-anchor="middle" 
+          fill="url(#tiktokGradient)" 
+          filter="url(#strongShadow)">
+      DORAS<tspan fill="#00d4ff" filter="url(#neon)">IA</tspan>
+    </text>
+  </g>
+  
+  <!-- Subtítulo moderno -->
+  <text x="250" y="380" 
+        font-family="Arial, sans-serif" 
+        font-size="22" 
+        font-weight="700" 
+        text-anchor="middle" 
+        fill="#ffffff" 
+        opacity="0.9"
+        letter-spacing="2px">
+    K-DRAMAS
+  </text>
+  
+  <!-- Elementos decorativos animados -->
+  <g opacity="0.8">
+    <!-- Estrellas que parpadean -->
+    <circle cx="100" cy="100" r="3" fill="#ff0050">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="2;4;2" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="400" cy="120" r="2.5" fill="#00d4ff">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="380" cy="380" r="3" fill="#7b68ee">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="120" cy="400" r="2" fill="#9d4edd">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Formas geométricas modernas -->
+    <rect x="50" y="250" width="8" height="8" fill="#00d4ff" opacity="0.6" transform="rotate(45 54 254)">
+      <animateTransform attributeName="transform" type="rotate" values="0 54 254;360 54 254" dur="8s" repeatCount="indefinite"/>
+    </rect>
+    
+    <polygon points="450,300 460,285 470,300 460,315" fill="#ff0050" opacity="0.5">
+      <animateTransform attributeName="transform" type="rotate" values="0 460 300;360 460 300" dur="6s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+  
+  <!-- Robot/IA indicator -->
+  <circle cx="420" cy="80" r="20" fill="url(#tiktokGradient)" opacity="0.8"/>
+  <text x="420" y="90" font-size="24" text-anchor="middle">🤖</text>
+</svg>

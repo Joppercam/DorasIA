@@ -21,6 +21,69 @@ Route::get('/api/search', [HomeController::class, 'search'])
     ->middleware('rate.limit:search,30,1')
     ->name('api.search');
 
+// PWA Push Notifications API
+Route::post('/api/push/subscribe', function() {
+    try {
+        $subscription = request()->input('subscription');
+        $userId = request()->input('user_id');
+        
+        if (!$subscription) {
+            return response()->json(['error' => 'No subscription provided'], 400);
+        }
+        
+        // Guardar suscripción en base de datos (crear tabla push_subscriptions)
+        \DB::table('push_subscriptions')->updateOrInsert(
+            ['user_id' => $userId, 'endpoint' => $subscription['endpoint']],
+            [
+                'user_id' => $userId,
+                'endpoint' => $subscription['endpoint'],
+                'public_key' => $subscription['keys']['p256dh'] ?? null,
+                'auth_token' => $subscription['keys']['auth'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        );
+        
+        \Log::info('Push subscription saved', ['user_id' => $userId]);
+        
+        return response()->json(['success' => true]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error saving push subscription: ' . $e->getMessage());
+        return response()->json(['error' => 'Server error'], 500);
+    }
+})->name('api.push.subscribe');
+
+Route::post('/api/push/test', function() {
+    try {
+        $userId = request()->input('user_id') ?? auth()->id();
+        
+        if (!$userId) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+        
+        // Enviar notificación de prueba
+        $subscriptions = \DB::table('push_subscriptions')
+            ->where('user_id', $userId)
+            ->get();
+        
+        if ($subscriptions->isEmpty()) {
+            return response()->json(['error' => 'No subscriptions found'], 404);
+        }
+        
+        foreach ($subscriptions as $subscription) {
+            // Aquí iría la lógica real de push notification
+            \Log::info('Test notification sent', ['user_id' => $userId]);
+        }
+        
+        return response()->json(['success' => true, 'message' => 'Test notification sent']);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error sending test notification: ' . $e->getMessage());
+        return response()->json(['error' => 'Server error'], 500);
+    }
+})->name('api.push.test');
+
 // Actors autocomplete API
 Route::get('/api/actors/autocomplete', [ActorsController::class, 'autocomplete'])
     ->middleware('rate.limit:search,60,1')

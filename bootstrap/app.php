@@ -43,6 +43,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'actors/*/comments',
             'episodes/*/watched',
             'episodes/*/progress',
+            // PWA Push Notifications
+            'api/push/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

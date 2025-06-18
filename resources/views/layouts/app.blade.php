@@ -9,8 +9,18 @@
     <!-- Favicons -->
     @include('components.favicon-inline')
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#1a1a2e">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dorasia">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#00d4ff">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
     
     <!-- Meta tags para SEO y redes sociales -->
     <meta name="description" content="Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.">
@@ -4597,5 +4607,17 @@
         }
     });
     </script>
+    
+    <!-- PWA Script -->
+    <script src="/js/pwa.js"></script>
+    
+    <!-- PWA User ID for notifications -->
+    @auth
+    <meta name="user-id" content="{{ Auth::id() }}">
+    <script>
+        // Store user ID for PWA
+        localStorage.setItem('dorasia_user_id', '{{ Auth::id() }}');
+    </script>
+    @endauth
 </body>
 </html>
