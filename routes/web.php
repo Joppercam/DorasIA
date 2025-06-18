@@ -220,16 +220,35 @@ Route::post('/login-process', function() {
     $email = request()->email;
     $password = request()->password;
     
-    $credentials = [
-        'email' => $email,
-        'password' => $password
-    ];
-    
-    if (\Auth::attempt($credentials)) {
-        request()->session()->regenerate();
-        return redirect()->intended('/')->with('success', '¡Bienvenido de vuelta!');
+    // Validación básica
+    if (!$email || !$password) {
+        return redirect('/login')->with('error', 'Email y contraseña son requeridos');
     }
     
+    // Buscar usuario manualmente
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if ($user && \Hash::check($password, $user->password)) {
+        // Login con Laravel Auth
+        \Auth::login($user, true); // true = remember
+        
+        // Configurar cookies manuales adicionales
+        setcookie('user_logged_in', $user->id, time() + (86400 * 30), '/', '.dorasia.cl', false, false);
+        setcookie('user_auth_token', hash('sha256', $user->id . $user->email), time() + (86400 * 30), '/', '.dorasia.cl', false, false);
+        
+        // Regenerar sesión
+        request()->session()->regenerate();
+        
+        \Log::info('Login exitoso', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'session_id' => session()->getId()
+        ]);
+        
+        return redirect('/')->with('success', '¡Bienvenido de vuelta, ' . $user->name . '!');
+    }
+    
+    \Log::warning('Login fallido', ['email' => $email]);
     return redirect('/login')->with('error', 'Credenciales incorrectas');
 });
 
@@ -581,11 +600,21 @@ Route::get('/auth/check', [AuthController::class, 'check'])->name('auth.check');
 
 // Simple auth test after login
 Route::get('/test-auth-simple', function() {
-    if (Auth::check()) {
-        return 'Estás logueado como: ' . Auth::user()->name . ' (ID: ' . Auth::id() . ')';
-    } else {
-        return 'No estás logueado';
+    $sessionId = session()->getId();
+    $laraveAuth = Auth::check();
+    $userId = $_COOKIE['user_logged_in'] ?? 'no cookie';
+    $authToken = $_COOKIE['user_auth_token'] ?? 'no token';
+    
+    $response = "SESSION ID: " . $sessionId . "\n";
+    $response .= "LARAVEL AUTH: " . ($laraveAuth ? 'SÍ' : 'NO') . "\n";
+    $response .= "COOKIE USER ID: " . $userId . "\n";
+    $response .= "COOKIE TOKEN: " . substr($authToken, 0, 20) . "...\n";
+    
+    if ($laraveAuth) {
+        $response .= "USUARIO: " . Auth::user()->name . " (ID: " . Auth::id() . ")\n";
     }
+    
+    return '<pre>' . $response . '</pre>';
 });
 
 // Google OAuth routes
