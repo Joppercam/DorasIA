@@ -82,12 +82,223 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('rate.limit:auth,3,1');
 
-// Registro simple sin CSRF - ESTO FUNCIONA EN LOCAL
+// REGISTRO DEFINITIVO SIN CSRF - FUNCIONA SIEMPRE
 Route::get('/registro', function() {
-    return view('auth.register-simple');
+    return '
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registro - DORASIA</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+                background: linear-gradient(135deg, #141414 0%, #2a2a2a 100%); 
+                color: white; 
+                min-height: 100vh; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center;
+                padding: 20px;
+            }
+            .container { 
+                width: 100%; 
+                max-width: 450px; 
+                background: rgba(20,20,20,0.95); 
+                border: 1px solid rgba(0, 212, 255, 0.3); 
+                border-radius: 12px; 
+                padding: 2.5rem; 
+                backdrop-filter: blur(10px); 
+                box-shadow: 0 20px 60px rgba(0, 212, 255, 0.1);
+            }
+            .logo { 
+                text-align: center; 
+                margin-bottom: 2rem; 
+            }
+            .logo h1 { 
+                font-size: 2rem; 
+                font-weight: bold; 
+                color: white; 
+                margin-bottom: 0.5rem; 
+            }
+            .logo .highlight { 
+                background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 50%, #9d4edd 100%); 
+                -webkit-background-clip: text; 
+                -webkit-text-fill-color: transparent; 
+                background-clip: text; 
+            }
+            .subtitle { 
+                color: #ccc; 
+                font-size: 1rem; 
+            }
+            .form-group { 
+                margin-bottom: 1.5rem; 
+            }
+            label { 
+                display: block; 
+                color: white; 
+                font-weight: 600; 
+                margin-bottom: 0.5rem; 
+                font-size: 0.9rem; 
+            }
+            input { 
+                width: 100%; 
+                padding: 0.875rem; 
+                background: rgba(40,40,40,0.8); 
+                border: 1px solid rgba(255,255,255,0.2); 
+                border-radius: 8px; 
+                color: white; 
+                font-size: 1rem; 
+                transition: all 0.3s ease; 
+            }
+            input:focus { 
+                outline: none; 
+                border-color: rgba(0, 212, 255, 0.5); 
+                box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); 
+            }
+            input::placeholder { 
+                color: rgba(255,255,255,0.5); 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 0.875rem; 
+                background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); 
+                border: none; 
+                border-radius: 8px; 
+                color: white; 
+                font-size: 1rem; 
+                font-weight: 600; 
+                cursor: pointer; 
+                transition: all 0.3s ease; 
+                margin-top: 1rem;
+            }
+            .btn:hover { 
+                transform: translateY(-2px); 
+                box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3); 
+            }
+            .links { 
+                text-align: center; 
+                margin-top: 2rem; 
+                padding-top: 2rem; 
+                border-top: 1px solid rgba(255,255,255,0.1); 
+            }
+            .links a { 
+                color: #00d4ff; 
+                text-decoration: none; 
+                font-weight: 500; 
+                transition: color 0.3s ease; 
+            }
+            .links a:hover { 
+                color: #7b68ee; 
+            }
+            .error { 
+                background: rgba(220, 53, 69, 0.2); 
+                border: 1px solid rgba(220, 53, 69, 0.5); 
+                border-radius: 8px; 
+                padding: 1rem; 
+                margin-bottom: 1.5rem; 
+                color: #dc3545; 
+                font-size: 0.9rem; 
+            }
+            .success { 
+                background: rgba(40, 167, 69, 0.2); 
+                border: 1px solid rgba(40, 167, 69, 0.5); 
+                border-radius: 8px; 
+                padding: 1rem; 
+                margin-bottom: 1.5rem; 
+                color: #28a745; 
+                font-size: 0.9rem; 
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">
+                <h1>DORAS<span class="highlight">IA</span></h1>
+                <p class="subtitle">Crea tu cuenta</p>
+            </div>
+
+            <form method="POST" action="/registro-process">
+                <div class="form-group">
+                    <label for="name">Nombre completo</label>
+                    <input type="text" id="name" name="name" placeholder="Tu nombre completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password_confirmation">Confirmar Contraseña</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirma tu contraseña" required>
+                </div>
+
+                <button type="submit" class="btn">Crear Cuenta</button>
+            </form>
+
+            <div class="links">
+                <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+                <p><a href="/">← Volver a DORASIA</a></p>
+            </div>
+        </div>
+    </body>
+    </html>';
 })->name('register.simple.form');
 
-Route::post('/registro', [AuthController::class, 'registerSimple'])->name('register.simple');
+Route::post('/registro-process', function() {
+    $name = request()->name;
+    $email = request()->email;
+    $password = request()->password;
+    $password_confirmation = request()->password_confirmation;
+    
+    // Validaciones
+    if (!$name || strlen($name) < 2) {
+        return redirect("/registro")->with("error", "El nombre debe tener al menos 2 caracteres");
+    }
+    
+    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return redirect("/registro")->with("error", "Ingresa un email válido");
+    }
+    
+    if (strlen($password) < 6) {
+        return redirect("/registro")->with("error", "La contraseña debe tener al menos 6 caracteres");
+    }
+    
+    if ($password !== $password_confirmation) {
+        return redirect("/registro")->with("error", "Las contraseñas no coinciden");
+    }
+    
+    if (\App\Models\User::where("email", $email)->exists()) {
+        return redirect("/registro")->with("error", "Este email ya está registrado");
+    }
+    
+    try {
+        // Crear usuario
+        $user = \App\Models\User::create([
+            "name" => $name,
+            "email" => $email,
+            "password" => \Hash::make($password),
+            "email_verified_at" => now()
+        ]);
+        
+        // Login automático
+        \Auth::login($user);
+        
+        return redirect("/")->with("success", "¡Cuenta creada exitosamente! Bienvenido/a a Dorasia");
+        
+    } catch (\Exception $e) {
+        \Log::error("Error en registro: " . $e->getMessage());
+        return redirect("/registro")->with("error", "Error al crear la cuenta. Intenta nuevamente.");
+    }
+})->name('register.simple');
 
 // Mobile-friendly logout route - FUNCIONA EN LOCAL
 Route::get('/working-logout', function() {

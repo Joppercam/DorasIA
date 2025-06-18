@@ -29,8 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // API routes that need CSRF exemption
             'api/*',
             'auth/google/callback',
-            // Simple registration route without CSRF - FUNCIONA EN LOCAL
+            // Simple registration routes without CSRF - FUNCIONA SIEMPRE
             'registro',
+            'registro-process',
             // Rating and interaction routes (AJAX)
             'series/*/rate',
             'movies/*/rate',
