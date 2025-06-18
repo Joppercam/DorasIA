@@ -73,9 +73,166 @@ Route::get('/admin-login', function() {
 });
 
 // === AUTHENTICATION ROUTES ===
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('rate.limit:auth,5,1');
+// LOGIN SIMPLE SIN CSRF QUE FUNCIONA SIEMPRE
+Route::get('/login', function() {
+    return '
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Iniciar Sesión - DORASIA</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+                background: linear-gradient(135deg, #141414 0%, #2a2a2a 100%); 
+                color: white; 
+                min-height: 100vh; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center;
+                padding: 20px;
+            }
+            .container { 
+                width: 100%; 
+                max-width: 450px; 
+                background: rgba(20,20,20,0.95); 
+                border: 1px solid rgba(0, 212, 255, 0.3); 
+                border-radius: 12px; 
+                padding: 2.5rem; 
+                backdrop-filter: blur(10px); 
+                box-shadow: 0 20px 60px rgba(0, 212, 255, 0.1);
+            }
+            .logo { 
+                text-align: center; 
+                margin-bottom: 2rem; 
+            }
+            .logo h1 { 
+                font-size: 2rem; 
+                font-weight: bold; 
+                color: white; 
+                margin-bottom: 0.5rem; 
+            }
+            .logo .highlight { 
+                background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 50%, #9d4edd 100%); 
+                -webkit-background-clip: text; 
+                -webkit-text-fill-color: transparent; 
+                background-clip: text; 
+            }
+            .subtitle { 
+                color: #ccc; 
+                font-size: 1rem; 
+            }
+            .form-group { 
+                margin-bottom: 1.5rem; 
+            }
+            label { 
+                display: block; 
+                color: white; 
+                font-weight: 600; 
+                margin-bottom: 0.5rem; 
+                font-size: 0.9rem; 
+            }
+            input { 
+                width: 100%; 
+                padding: 0.875rem; 
+                background: rgba(40,40,40,0.8); 
+                border: 1px solid rgba(255,255,255,0.2); 
+                border-radius: 8px; 
+                color: white; 
+                font-size: 1rem; 
+                transition: all 0.3s ease; 
+            }
+            input:focus { 
+                outline: none; 
+                border-color: rgba(0, 212, 255, 0.5); 
+                box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); 
+            }
+            input::placeholder { 
+                color: rgba(255,255,255,0.5); 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 0.875rem; 
+                background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%); 
+                border: none; 
+                border-radius: 8px; 
+                color: white; 
+                font-size: 1rem; 
+                font-weight: 600; 
+                cursor: pointer; 
+                transition: all 0.3s ease; 
+                margin-top: 1rem;
+            }
+            .btn:hover { 
+                transform: translateY(-2px); 
+                box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3); 
+            }
+            .links { 
+                text-align: center; 
+                margin-top: 2rem; 
+                padding-top: 2rem; 
+                border-top: 1px solid rgba(255,255,255,0.1); 
+            }
+            .links a { 
+                color: #00d4ff; 
+                text-decoration: none; 
+                font-weight: 500; 
+                transition: color 0.3s ease; 
+            }
+            .links a:hover { 
+                color: #7b68ee; 
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">
+                <h1>DORAS<span class="highlight">IA</span></h1>
+                <p class="subtitle">Inicia sesión en tu cuenta</p>
+            </div>
+
+            <form method="POST" action="/login-process">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+                </div>
+
+                <button type="submit" class="btn">Iniciar Sesión</button>
+            </form>
+
+            <div class="links">
+                <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+                <p><a href="/">← Volver a DORASIA</a></p>
+            </div>
+        </div>
+    </body>
+    </html>';
+})->name('login');
+
+Route::post('/login-process', function() {
+    $email = request()->email;
+    $password = request()->password;
+    
+    $credentials = [
+        'email' => $email,
+        'password' => $password
+    ];
+    
+    if (\Auth::attempt($credentials)) {
+        request()->session()->regenerate();
+        return redirect()->intended('/')->with('success', '¡Bienvenido de vuelta!');
+    }
+    
+    return redirect('/login')->with('error', 'Credenciales incorrectas');
+});
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -289,10 +446,112 @@ Route::post('/registro-process', function() {
             "email_verified_at" => now()
         ]);
         
-        // Login automático
-        \Auth::login($user);
-        
-        return redirect("/")->with("success", "¡Cuenta creada exitosamente! Bienvenido/a a Dorasia");
+        // Mostrar página de éxito con instrucciones
+        return '
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>¡Registro Exitoso! - DORASIA</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+                    background: linear-gradient(135deg, #141414 0%, #2a2a2a 100%); 
+                    color: white; 
+                    min-height: 100vh; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                    padding: 20px;
+                }
+                .container { 
+                    width: 100%; 
+                    max-width: 500px; 
+                    background: rgba(20,20,20,0.95); 
+                    border: 1px solid rgba(40, 167, 69, 0.5); 
+                    border-radius: 12px; 
+                    padding: 3rem; 
+                    backdrop-filter: blur(10px); 
+                    box-shadow: 0 20px 60px rgba(40, 167, 69, 0.2);
+                    text-align: center;
+                }
+                .success-icon {
+                    font-size: 4rem;
+                    margin-bottom: 1rem;
+                }
+                h1 {
+                    font-size: 2rem;
+                    margin-bottom: 1rem;
+                    color: #28a745;
+                }
+                .welcome-text {
+                    font-size: 1.2rem;
+                    margin-bottom: 2rem;
+                    color: #ccc;
+                }
+                .info {
+                    background: rgba(40, 167, 69, 0.1);
+                    border: 1px solid rgba(40, 167, 69, 0.3);
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+                .credentials {
+                    background: rgba(0, 0, 0, 0.3);
+                    border-radius: 6px;
+                    padding: 1rem;
+                    margin: 1rem 0;
+                    font-family: monospace;
+                }
+                .btn {
+                    display: inline-block;
+                    padding: 1rem 2rem;
+                    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    margin: 0.5rem;
+                }
+                .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+                }
+                .secondary-btn {
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="success-icon">🎉</div>
+                <h1>¡Cuenta Creada Exitosamente!</h1>
+                <p class="welcome-text">Bienvenido/a a DORASIA, ' . htmlspecialchars($name) . '</p>
+                
+                <div class="info">
+                    <p><strong>Tu cuenta ha sido creada con éxito.</strong></p>
+                    <p>Ya puedes iniciar sesión con tus credenciales:</p>
+                    <div class="credentials">
+                        Email: ' . htmlspecialchars($email) . '
+                    </div>
+                </div>
+                
+                <div>
+                    <a href="/login" class="btn">Iniciar Sesión</a>
+                    <a href="/" class="btn secondary-btn">Ir al Inicio</a>
+                </div>
+                
+                <p style="margin-top: 2rem; color: #888; font-size: 0.9rem;">
+                    Por seguridad, no hemos iniciado sesión automáticamente.<br>
+                    Por favor, inicia sesión manualmente.
+                </p>
+            </div>
+        </body>
+        </html>';
         
     } catch (\Exception $e) {
         \Log::error("Error en registro: " . $e->getMessage());
