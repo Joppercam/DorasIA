@@ -12,6 +12,7 @@ use App\Models\Comment;
 use App\Models\Episode;
 use App\Models\EpisodeProgress;
 use App\Models\UpcomingSeries;
+use App\Models\ActorContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -57,6 +58,10 @@ class HomeController extends Controller
 
     public function index()
     {
+        // Generar semilla basada en el día para rotación diaria
+        $dailySeed = date('Y-m-d');
+        $hourlySeed = date('Y-m-d-H'); // Para rotación cada hora
+        
         // Cache de series candidatas para el hero (30 minutos) - Optimizado con bonus de recencia
         $featuredCandidates = Cache::remember('hero.featured_candidates', 1800, function () {
             $candidates = Series::where('vote_average', '>', 7.5)
@@ -65,99 +70,110 @@ class HomeController extends Controller
                 ->whereNotNull('spanish_overview')
                 ->selectRaw('*, vote_average + (CASE WHEN first_air_date >= date("now", "-2 years") THEN 0.5 ELSE 0 END) as hero_score')
                 ->orderBy('hero_score', 'desc')
-                ->limit(20)
+                ->limit(50) // Aumentado para más variedad
                 ->get();
 
             // Si no hay suficientes candidatos, ampliar criterios
-            if ($candidates->count() < 10) {
+            if ($candidates->count() < 20) {
                 $candidates = Series::where('vote_average', '>', 7)
                     ->where('vote_count', '>=', 50)
                     ->whereNotNull('backdrop_path')
                     ->selectRaw('*, vote_average + (CASE WHEN first_air_date >= date("now", "-2 years") THEN 0.3 ELSE 0 END) as hero_score')
                     ->orderBy('hero_score', 'desc')
-                    ->limit(20)
+                    ->limit(50)
                     ->get();
             }
 
             return $candidates;
         });
 
-        // Seleccionar una serie aleatoria del grupo de candidatas
-        $featuredSeries = $featuredCandidates->count() > 0 
-            ? $featuredCandidates->random() 
-            : Series::orderBy('vote_average', 'desc')->first();
+        // Rotación del hero cada 2 horas usando una semilla temporal
+        $heroRotationSeed = floor(time() / 7200); // Cambia cada 2 horas
+        $featuredSeries = $this->getRotatedSelection($featuredCandidates, 1, $heroRotationSeed)->first();
         
-        // Pasar también las series candidatas para rotación en el frontend
-        $heroSeriesList = $featuredCandidates->take(10);
+        if (!$featuredSeries) {
+            $featuredSeries = Series::orderBy('vote_average', 'desc')->first();
+        }
+        
+        // Lista de candidatos para rotación en el frontend (10 diferentes cada vez)
+        $heroSeriesList = $this->getRotatedSelection($featuredCandidates, 10, $heroRotationSeed);
 
-        // Series más populares con caché (1 hora) - Algoritmo mejorado
-        $popularSeries = Cache::remember('series.popular', 3600, function () {
+        // Series más populares con rotación diaria
+        $popularSeriesPool = Cache::remember('series.popular.pool', 3600, function () {
             return $this->getSeriesWithUserRatings()
                 ->selectRaw('*, (popularity * 0.6 + vote_average * 0.2 + (CASE WHEN first_air_date >= date("now", "-6 months") THEN 2 ELSE 0 END)) as trending_score')
                 ->where('vote_average', '>', 6)
                 ->orderBy('trending_score', 'desc')
-                ->limit(25)
+                ->limit(50) // Pool más grande
                 ->get();
         });
+        $popularSeries = $this->getRotatedSelection($popularSeriesPool, 25, $dailySeed);
 
-        // Series mejor calificadas con caché (1 hora) - Agregado mínimo de votos
-        $topRatedSeries = Cache::remember('series.top_rated', 3600, function () {
+        // Series mejor calificadas con rotación diaria
+        $topRatedSeriesPool = Cache::remember('series.top_rated.pool', 3600, function () {
             return $this->getSeriesWithUserRatings()
                 ->where('vote_average', '>', 7)
                 ->where('vote_count', '>=', 50)
                 ->orderBy('vote_average', 'desc')
-                ->limit(25)
+                ->limit(50) // Pool más grande
                 ->get();
         });
+        $topRatedSeries = $this->getRotatedSelection($topRatedSeriesPool, 25, $dailySeed);
 
-        // Series recientes con caché (30 minutos) - Agregado filtro de calidad mínima
-        $recentSeries = Cache::remember('series.recent', 1800, function () {
+        // Series recientes con rotación por hora
+        $recentSeriesPool = Cache::remember('series.recent.pool', 1800, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereNotNull('first_air_date')
                 ->where('vote_average', '>', 6.5)
                 ->orderBy('first_air_date', 'desc')
-                ->limit(25)
+                ->limit(50) // Pool más grande
                 ->get();
         });
+        $recentSeries = $this->getRotatedSelection($recentSeriesPool, 25, $hourlySeed);
 
-        // Series por género con caché (2 horas - cambian menos frecuentemente)
-        $dramasSeries = Cache::remember('series.genre.drama', 7200, function () {
+        // Series por género con rotación diaria
+        $dramasSeriesPool = Cache::remember('series.genre.drama.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Drama');
-                })->orderBy('vote_average', 'desc')->limit(25)->get();
+                })->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $dramasSeries = $this->getRotatedSelection($dramasSeriesPool, 25, $dailySeed);
 
-        $comedySeries = Cache::remember('series.genre.comedy', 7200, function () {
+        $comedySeriesPool = Cache::remember('series.genre.comedy.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Comedy');
-                })->orderBy('vote_average', 'desc')->limit(25)->get();
+                })->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $comedySeries = $this->getRotatedSelection($comedySeriesPool, 25, $dailySeed);
 
-        $romanceSeries = Cache::remember('series.genre.romance', 7200, function () {
+        $romanceSeriesPool = Cache::remember('series.genre.romance.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->whereIn('name', ['Romance', 'Romantic Comedy', 'Family']);
                 })->where('vote_average', '>', 6)
-                ->orderBy('vote_average', 'desc')->limit(25)->get();
+                ->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $romanceSeries = $this->getRotatedSelection($romanceSeriesPool, 25, $dailySeed);
 
-        $actionSeries = Cache::remember('series.genre.action', 7200, function () {
+        $actionSeriesPool = Cache::remember('series.genre.action.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Action & Adventure');
-                })->orderBy('vote_average', 'desc')->limit(25)->get();
+                })->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $actionSeries = $this->getRotatedSelection($actionSeriesPool, 25, $dailySeed);
 
-        $mysterySeries = Cache::remember('series.genre.mystery', 7200, function () {
+        $mysterySeriesPool = Cache::remember('series.genre.mystery.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Mystery');
-                })->orderBy('vote_average', 'desc')->limit(25)->get();
+                })->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $mysterySeries = $this->getRotatedSelection($mysterySeriesPool, 25, $dailySeed);
 
-        $historicalSeries = Cache::remember('series.genre.historical', 7200, function () {
+        $historicalSeriesPool = Cache::remember('series.genre.historical.pool', 7200, function () {
             return $this->getSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->whereIn('name', ['War & Politics', 'History', 'Period Drama']);
@@ -173,8 +189,9 @@ class HomeController extends Controller
                           ->orWhere('spanish_overview', 'LIKE', '%tradicional%');
                 })
                 ->where('vote_average', '>', 6)
-                ->orderBy('vote_average', 'desc')->limit(25)->get();
+                ->orderBy('vote_average', 'desc')->limit(40)->get();
         });
+        $historicalSeries = $this->getRotatedSelection($historicalSeriesPool, 25, $dailySeed);
 
 
         // Series más vistas (recently watched by users) - 25 para carrusel infinito
@@ -198,34 +215,100 @@ class HomeController extends Controller
                 ->get();
         });
 
-        // Películas populares con caché (1 hora)
-        $popularMovies = Cache::remember('movies.popular', 3600, function () {
+        // Películas populares con rotación diaria
+        $popularMoviesPool = Cache::remember('movies.popular.pool', 3600, function () {
             return Movie::with('genres')
                 ->where('vote_average', '>', 6)
                 ->orderBy('popularity', 'desc')
-                ->limit(25)
+                ->limit(40)
                 ->get();
         });
+        $popularMovies = $this->getRotatedSelection($popularMoviesPool, 25, $dailySeed);
 
-        // Películas mejor calificadas con caché (1 hora)
-        $topRatedMovies = Cache::remember('movies.top_rated', 3600, function () {
+        // Películas mejor calificadas con rotación diaria
+        $topRatedMoviesPool = Cache::remember('movies.top_rated.pool', 3600, function () {
             return Movie::with('genres')
                 ->where('vote_average', '>', 7)
                 ->where('vote_count', '>=', 50)
                 ->orderBy('vote_average', 'desc')
-                ->limit(25)
+                ->limit(40)
                 ->get();
         });
+        $topRatedMovies = $this->getRotatedSelection($topRatedMoviesPool, 25, $dailySeed);
 
-        // Películas recientes con caché (30 minutos)
-        $recentMovies = Cache::remember('movies.recent', 1800, function () {
+        // Películas recientes con rotación por hora
+        $recentMoviesPool = Cache::remember('movies.recent.pool', 1800, function () {
             return Movie::with('genres')
                 ->whereNotNull('release_date')
                 ->where('vote_average', '>', 6.5)
                 ->orderBy('release_date', 'desc')
-                ->limit(25)
+                ->limit(40)
                 ->get();
         });
+        $recentMovies = $this->getRotatedSelection($recentMoviesPool, 25, $hourlySeed);
+
+        // ===== CONTENIDO EXCLUSIVO DE ACTORES =====
+        
+        // Contenido destacado de actores
+        $featuredActorContent = Cache::remember('actor.content.featured', 1800, function () {
+            return ActorContent::featured()
+                ->published()
+                ->with(['actor'])
+                ->orderBy('published_at', 'desc')
+                ->limit(6)
+                ->get();
+        });
+
+        // Contenido reciente de actores (últimos 7 días)
+        $recentActorContent = Cache::remember('actor.content.recent', 900, function () {
+            return ActorContent::published()
+                ->recent(7)
+                ->with(['actor'])
+                ->orderBy('published_at', 'desc')
+                ->limit(8)
+                ->get();
+        });
+
+        // Contenido más popular de actores (por vistas)
+        $popularActorContent = Cache::remember('actor.content.popular', 3600, function () {
+            return ActorContent::published()
+                ->with(['actor'])
+                ->where('view_count', '>', 100)
+                ->orderBy('view_count', 'desc')
+                ->limit(6)
+                ->get();
+        });
+
+        // Actores con más contenido exclusivo
+        $actorsWithContent = Cache::remember('actors.with.content', 7200, function () {
+            return Person::whereHas('exclusiveContent', function($query) {
+                $query->published();
+            })
+            ->withCount(['exclusiveContent as content_count' => function($query) {
+                $query->published();
+            }])
+            ->with(['exclusiveContent' => function($query) {
+                $query->published()->latest()->limit(3);
+            }])
+            ->orderBy('content_count', 'desc')
+            ->limit(8)
+            ->get();
+        });
+
+        // Contenido personalizado para usuarios autenticados
+        $personalizedActorContent = collect();
+        if (Auth::check()) {
+            $followedActorIds = Auth::user()->followedActors()->pluck('person_id');
+            
+            if ($followedActorIds->isNotEmpty()) {
+                $personalizedActorContent = ActorContent::whereIn('person_id', $followedActorIds)
+                    ->published()
+                    ->with(['actor'])
+                    ->orderBy('published_at', 'desc')
+                    ->limit(8)
+                    ->get();
+            }
+        }
 
         return view('home', compact(
             'featuredSeries',
@@ -243,7 +326,12 @@ class HomeController extends Controller
             'upcomingSeries',
             'popularMovies',
             'topRatedMovies',
-            'recentMovies'
+            'recentMovies',
+            'featuredActorContent',
+            'recentActorContent',
+            'popularActorContent',
+            'actorsWithContent',
+            'personalizedActorContent'
         ));
     }
 
@@ -787,6 +875,121 @@ class HomeController extends Controller
         return response()->json([
             'success' => true,
             'episodes' => $episodes
+        ]);
+    }
+
+    /**
+     * Método para rotar selecciones basado en una semilla temporal
+     * Asegura que el mismo seed siempre retorne la misma selección
+     */
+    private function getRotatedSelection($collection, $count, $seed)
+    {
+        if ($collection->isEmpty()) {
+            return collect();
+        }
+
+        // Convertir la semilla en un número entero si es string
+        if (is_string($seed)) {
+            $seed = crc32($seed);
+        }
+
+        // Usar la semilla para generar un offset consistente
+        $offset = abs($seed) % max(1, $collection->count() - $count + 1);
+        
+        // Si no hay suficientes elementos, duplicar la colección
+        if ($collection->count() < $count) {
+            $repeated = collect();
+            while ($repeated->count() < $count) {
+                $repeated = $repeated->concat($collection);
+            }
+            $collection = $repeated;
+        }
+
+        // Crear una "rotación" circular basada en el offset
+        $rotated = $collection->skip($offset)->take($count);
+        
+        // Si no obtuvimos suficientes elementos, completar desde el inicio
+        if ($rotated->count() < $count) {
+            $needed = $count - $rotated->count();
+            $rotated = $rotated->concat($collection->take($needed));
+        }
+
+        return $rotated;
+    }
+
+    /**
+     * Endpoint para obtener carruseles rotados dinámicamente via AJAX
+     */
+    public function getRotatedCarousel(Request $request)
+    {
+        $type = $request->get('type');
+        $seed = $request->get('seed', time());
+        $count = $request->get('count', 25);
+
+        switch ($type) {
+            case 'popular':
+                $pool = Cache::remember('series.popular.pool', 3600, function () {
+                    return $this->getSeriesWithUserRatings()
+                        ->selectRaw('*, (popularity * 0.6 + vote_average * 0.2 + (CASE WHEN first_air_date >= date("now", "-6 months") THEN 2 ELSE 0 END)) as trending_score')
+                        ->where('vote_average', '>', 6)
+                        ->orderBy('trending_score', 'desc')
+                        ->limit(50)
+                        ->get();
+                });
+                break;
+
+            case 'top_rated':
+                $pool = Cache::remember('series.top_rated.pool', 3600, function () {
+                    return $this->getSeriesWithUserRatings()
+                        ->where('vote_average', '>', 7)
+                        ->where('vote_count', '>=', 50)
+                        ->orderBy('vote_average', 'desc')
+                        ->limit(50)
+                        ->get();
+                });
+                break;
+
+            case 'recent':
+                $pool = Cache::remember('series.recent.pool', 1800, function () {
+                    return $this->getSeriesWithUserRatings()
+                        ->whereNotNull('first_air_date')
+                        ->where('vote_average', '>', 6.5)
+                        ->orderBy('first_air_date', 'desc')
+                        ->limit(50)
+                        ->get();
+                });
+                break;
+
+            case 'romance':
+                $pool = Cache::remember('series.genre.romance.pool', 7200, function () {
+                    return $this->getSeriesWithUserRatings()
+                        ->whereHas('genres', function($query) {
+                            $query->whereIn('name', ['Romance', 'Romantic Comedy', 'Family']);
+                        })->where('vote_average', '>', 6)
+                        ->orderBy('vote_average', 'desc')->limit(40)->get();
+                });
+                break;
+
+            case 'drama':
+                $pool = Cache::remember('series.genre.drama.pool', 7200, function () {
+                    return $this->getSeriesWithUserRatings()
+                        ->whereHas('genres', function($query) {
+                            $query->where('name', 'Drama');
+                        })->orderBy('vote_average', 'desc')->limit(40)->get();
+                });
+                break;
+
+            default:
+                return response()->json(['error' => 'Invalid carousel type'], 400);
+        }
+
+        $rotatedSelection = $this->getRotatedSelection($pool, $count, $seed);
+
+        return response()->json([
+            'success' => true,
+            'series' => $rotatedSelection,
+            'type' => $type,
+            'count' => $rotatedSelection->count()
         ]);
     }
 }

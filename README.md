@@ -7,6 +7,7 @@
 ### 🎬 Contenido Rico
 - **2,340+ K-Dramas** importados desde TMDB
 - **5,860+ actores y directores** con información detallada
+- **Hub de contenido exclusivo de actores** con entrevistas, biografías y noticias
 - **Traducciones completas** al español chileno
 - **Categorías organizadas**: Romance, Drama, Acción, Comedia, Misterio, Históricos
 
@@ -15,6 +16,15 @@
 - **Carruseles infinitos** con efectos hover avanzados
 - **Diseño Netflix-style** completamente responsive
 - **Información detallada** con reparto e plataformas de streaming
+
+### 🎭 Hub de Contenido de Actores
+- **Entrevistas transcritas** con formato pregunta/respuesta
+- **Biografías detalladas** con historias personales
+- **Noticias y artículos** de análisis profesional
+- **Cronologías de carrera** paso a paso
+- **Curiosidades y datos** únicos de cada actor
+- **Videos externos** de TikTok, YouTube e Instagram (cuando disponibles)
+- **Sistema honesto**: Solo contenido real, sin promesas falsas
 
 ### 🔧 Tecnología
 - **Laravel 11** con PHP 8.2+
@@ -51,11 +61,13 @@ php artisan import:korean-dramas --pages=50
 ## 🔮 Roadmap Futuro
 
 ### Fase 2 - Sistema de Usuarios
-- [ ] Registro y autenticación
-- [ ] Perfiles personalizados
-- [ ] Listas de "Favoritos" y "Por Ver"
+- [x] Registro y autenticación
+- [x] Perfiles personalizados
+- [x] Listas de "Favoritos" y "Por Ver"
+- [x] **Contenido exclusivo de actores** para usuarios registrados
 
 ### Fase 3 - Funciones Sociales
+- [x] Sistema de compartir contenido (Web Share API)
 - [ ] Sistema de comentarios y reseñas
 - [ ] Ratings y puntuaciones
 - [ ] Seguimiento de otros usuarios
@@ -67,10 +79,18 @@ php artisan import:korean-dramas --pages=50
 - [ ] Notificaciones inteligentes
 - [ ] Chatbot de recomendaciones
 
+### Fase 5 - Marketplace de Productos
+- [ ] **Marketplace de productos** basado en el engagement del contenido de actores
+- [ ] Productos oficiales y merchandising
+- [ ] Colaboraciones con marcas
+- [ ] Sistema de afiliados
+
 ## 📊 Estado Actual
 
 ```
 ✅ Contenido: 2,340+ series, 5,860+ personas
+✅ Hub de Actores: Entrevistas, biografías, noticias exclusivas
+✅ Videos Externos: Soporte TikTok, YouTube, Instagram
 ✅ Interfaz: Netflix-style completamente funcional
 ✅ Responsive: Optimizado para móviles
 ✅ Localización: Español chileno completo
@@ -79,6 +99,7 @@ php artisan import:korean-dramas --pages=50
 
 ## 🛠️ Comandos Artisan Personalizados
 
+### Importación de Contenido
 ```bash
 # Importar por categorías
 php artisan import:romance-dramas
@@ -91,6 +112,31 @@ php artisan translate:existing-content
 # Importación masiva
 php artisan import:korean-dramas --pages=100 --with-details
 ```
+
+### Contenido de Actores
+```bash
+# Generar contenido inicial de actores (entrevistas, biografías, noticias)
+php artisan db:seed --class=ImprovedActorContentSeeder
+
+# Agregar video externo a un actor
+php artisan actors:add-video {actor_id} {video_url} --title="Título" --type=video
+# Ejemplo:
+php artisan actors:add-video 123 "https://youtube.com/watch?v=..." --title="Entrevista exclusiva" --type=interview
+
+# Soporta TikTok, YouTube e Instagram
+php artisan actors:add-video 456 "https://tiktok.com/@actor/video/..." --type=behind_scenes
+```
+
+### Tipos de Contenido Disponibles
+- **interview**: Entrevistas transcritas (solo texto)
+- **biography**: Biografías detalladas
+- **news**: Noticias y novedades
+- **article**: Artículos de análisis
+- **timeline**: Cronologías de carrera
+- **trivia**: Curiosidades y datos divertidos
+- **social**: Contenido de redes sociales
+
+**Nota importante**: El seeder genera solo contenido de texto auténtico. Para agregar videos reales, usa el comando `actors:add-video` con URLs válidas.
 
 ## 📁 Estructura del Proyecto
 

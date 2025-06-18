@@ -8,7 +8,7 @@
     @if($popularSeries->first())
     @php $heroSeries = $popularSeries->first(); @endphp
     <div class="mobile-hero">
-        <div class="mobile-hero-image" style="background-image: url('{{ $heroSeries->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $heroSeries->backdrop_path : 'https://via.placeholder.com/375x250/333/666?text=K-Drama' }}')">
+        <div class="mobile-hero-image" style="background-image: url('{{ $heroSeries->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $heroSeries->backdrop_path : '/images/no-backdrop.svg' }}')">
             <div class="mobile-hero-overlay"></div>
             <div class="mobile-hero-content">
                 <div class="mobile-hero-logo">
@@ -70,14 +70,14 @@
 
         <!-- Populares -->
         @if(isset($popularSeries) && $popularSeries && $popularSeries->count() > 0)
-        <section class="mobile-row">
+        <section class="mobile-row" data-type="popular">
             <h2 class="mobile-row-title">Populares en Dorasia</h2>
             <div class="mobile-row-content">
                 @foreach($popularSeries->take(20) as $series)
                 <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : '/images/no-poster-series.svg' }}" 
+                             alt="{{ $series->display_title }}" loading="lazy" onerror="this.src='/images/no-poster-series.svg'">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -121,14 +121,14 @@
 
         <!-- Mejor Calificadas -->
         @if(isset($topRatedSeries) && $topRatedSeries && $topRatedSeries->count() > 0)
-        <section class="mobile-row">
+        <section class="mobile-row" data-type="top_rated">
             <h2 class="mobile-row-title">Mejor Calificadas</h2>
             <div class="mobile-row-content">
                 @foreach($topRatedSeries->take(20) as $series)
                 <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : '/images/no-poster-series.svg' }}" 
+                             alt="{{ $series->display_title }}" loading="lazy" onerror="this.src='/images/no-poster-series.svg'">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -170,14 +170,14 @@
 
         <!-- Romance -->
         @if(isset($romanceSeries) && $romanceSeries && $romanceSeries->count() > 0)
-        <section class="mobile-row">
+        <section class="mobile-row" data-type="romance">
             <h2 class="mobile-row-title">Romance</h2>
             <div class="mobile-row-content">
                 @foreach($romanceSeries->take(20) as $series)
                 <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : '/images/no-poster-series.svg' }}" 
+                             alt="{{ $series->display_title }}" loading="lazy" onerror="this.src='/images/no-poster-series.svg'">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -219,14 +219,14 @@
 
         <!-- Drama -->
         @if(isset($dramasSeries) && $dramasSeries && $dramasSeries->count() > 0)
-        <section class="mobile-row">
+        <section class="mobile-row" data-type="drama">
             <h2 class="mobile-row-title">Drama</h2>
             <div class="mobile-row-content">
                 @foreach($dramasSeries->take(20) as $series)
                 <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : '/images/no-poster-series.svg' }}" 
+                             alt="{{ $series->display_title }}" loading="lazy" onerror="this.src='/images/no-poster-series.svg'">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -274,8 +274,8 @@
                 @foreach($upcomingSeries->take(20) as $series)
                 <div class="mobile-card" onclick="location.href='{{ route('series.show', $series->id) }}'">
                     <div class="mobile-card-image">
-                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : 'https://via.placeholder.com/160x240/333/666?text=K-Drama' }}" 
-                             alt="{{ $series->display_title }}" loading="lazy">
+                        <img src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w342' . $series->poster_path : '/images/no-poster-series.svg' }}" 
+                             alt="{{ $series->display_title }}" loading="lazy" onerror="this.src='/images/no-poster-series.svg'">
                         <div class="mobile-card-overlay">
                             <div class="card-play-btn">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -308,6 +308,229 @@
                                 @endforeach
                             @endif
                         </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        <!-- Contenido Personalizado de Actores (Solo para usuarios autenticados) -->
+        @auth
+        @if($personalizedActorContent->count() > 0)
+        <section class="mobile-row actor-content-section" data-type="personalized_actor_content">
+            <div class="section-header">
+                <h2 class="mobile-row-title">✨ Nuevo de tus Actores Favoritos</h2>
+                <div class="exclusive-badge">Solo para ti</div>
+            </div>
+            <div class="actor-content-row">
+                @foreach($personalizedActorContent->take(6) as $content)
+                <div class="actor-content-card" onclick="location.href='{{ route('actors.content.show', [$content->actor->id, $content->id]) }}'">
+                    <div class="content-thumbnail">
+                        @if($content->actor->profile_path)
+                        <img src="https://image.tmdb.org/t/p/w500{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" loading="lazy" onerror="this.src='/images/no-actor-photo.svg'">
+                        @else
+                        <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" loading="lazy">
+                        @endif
+                        
+                        <!-- Indicator del tipo de contenido -->
+                        <div class="content-type-indicator">
+                            @switch($content->type)
+                                @case('interview') 🎤 @break
+                                @case('behind_scenes') 🎬 @break
+                                @case('news') 📰 @break
+                                @case('biography') 📖 @break
+                                @case('gallery') 📸 @break
+                                @case('video') 🎥 @break
+                                @case('article') 📝 @break
+                                @case('timeline') 📅 @break
+                                @case('trivia') 💡 @break
+                                @case('social') 📱 @break
+                                @default 📄
+                            @endswitch
+                        </div>
+                        
+                        @if($content->duration)
+                        <div class="content-duration">{{ $content->formatted_duration }}</div>
+                        @endif
+                        
+                        @if($content->is_featured)
+                        <div class="content-badge featured">⭐ DESTACADO</div>
+                        @elseif($content->is_exclusive)
+                        <div class="content-badge exclusive">🔒 EXCLUSIVO</div>
+                        @endif
+                        
+                        <div class="content-overlay">
+                            <div class="content-play-btn">▶️</div>
+                        </div>
+                    </div>
+                    <div class="content-info">
+                        <div class="content-type">{{ $content->type_name }}</div>
+                        <h3 class="content-title">{{ Str::limit($content->title, 60) }}</h3>
+                        <div class="content-actor">
+                            @if($content->actor->profile_path)
+                            <img src="https://image.tmdb.org/t/p/w45{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" class="actor-thumb" onerror="this.src='/images/no-actor-photo.svg'">
+                            @else
+                            <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" class="actor-thumb">
+                            @endif
+                            <span class="actor-name">{{ $content->actor->display_name }}</span>
+                        </div>
+                        <div class="content-meta">
+                            <span class="content-date">{{ $content->published_at->diffForHumans() }}</span>
+                            <div class="content-stats">
+                                <span>👁️ {{ number_format($content->view_count) }}</span>
+                                <span>❤️ {{ number_format($content->like_count) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+        @endauth
+
+        <!-- Contenido Destacado de Actores -->
+        @if($featuredActorContent->count() > 0)
+        <section class="mobile-row actor-content-section" data-type="featured_actor_content">
+            <div class="section-header">
+                <h2 class="mobile-row-title">🌟 Contenido Destacado de Actores</h2>
+                @guest
+                <div class="register-prompt">🔐 <a href="{{ route('login') }}">Inicia sesión</a> para acceso completo</div>
+                @endguest
+            </div>
+            <div class="actor-content-row">
+                @foreach($featuredActorContent->take(6) as $content)
+                <div class="actor-content-card featured-content" 
+                     onclick="@auth location.href='{{ route('actors.content.show', [$content->actor->id, $content->id]) }}' @else location.href='{{ route('login') }}' @endauth">
+                    <div class="content-thumbnail">
+                        @if($content->actor->profile_path)
+                        <img src="https://image.tmdb.org/t/p/w500{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" loading="lazy" onerror="this.src='/images/no-actor-photo.svg'">
+                        @else
+                        <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" loading="lazy">
+                        @endif
+                        @if($content->duration)
+                        <div class="content-duration">{{ $content->formatted_duration }}</div>
+                        @endif
+                        @guest
+                        <div class="content-lock">🔐</div>
+                        @endguest
+                        <div class="content-overlay">
+                            <div class="content-play-btn">@auth ▶️ @else 🔑 @endauth</div>
+                        </div>
+                        <div class="featured-badge">⭐ Destacado</div>
+                    </div>
+                    <div class="content-info">
+                        <div class="content-type">{{ $content->type_name }}</div>
+                        <h3 class="content-title">{{ Str::limit($content->title, 60) }}</h3>
+                        <div class="content-actor">
+                            @if($content->actor->profile_path)
+                            <img src="https://image.tmdb.org/t/p/w45{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" class="actor-thumb" onerror="this.src='/images/no-actor-photo.svg'">
+                            @else
+                            <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" class="actor-thumb">
+                            @endif
+                            <span class="actor-name">{{ $content->actor->display_name }}</span>
+                        </div>
+                        <div class="content-meta">
+                            <span class="content-date">{{ $content->published_at->diffForHumans() }}</span>
+                            <div class="content-stats">
+                                <span>👁️ {{ number_format($content->view_count) }}</span>
+                                <span>❤️ {{ number_format($content->like_count) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        <!-- Contenido Reciente de Actores -->
+        @if($recentActorContent->count() > 0)
+        <section class="mobile-row actor-content-section" data-type="recent_actor_content">
+            <div class="section-header">
+                <h2 class="mobile-row-title">🕐 Últimas Novedades de Actores</h2>
+                @guest
+                <div class="register-prompt">🔐 <a href="{{ route('register.simple.form') }}">Regístrate gratis</a></div>
+                @endguest
+            </div>
+            <div class="actor-content-row">
+                @foreach($recentActorContent->take(8) as $content)
+                <div class="actor-content-card" 
+                     onclick="@auth location.href='{{ route('actors.content.show', [$content->actor->id, $content->id]) }}' @else location.href='{{ route('login') }}' @endauth">
+                    <div class="content-thumbnail">
+                        @if($content->actor->profile_path)
+                        <img src="https://image.tmdb.org/t/p/w500{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" loading="lazy" onerror="this.src='/images/no-actor-photo.svg'">
+                        @else
+                        <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" loading="lazy">
+                        @endif
+                        @if($content->duration)
+                        <div class="content-duration">{{ $content->formatted_duration }}</div>
+                        @endif
+                        @guest
+                        <div class="content-lock">🔐</div>
+                        @endguest
+                        <div class="content-overlay">
+                            <div class="content-play-btn">@auth ▶️ @else 🔑 @endauth</div>
+                        </div>
+                        <div class="new-badge">🆕 Nuevo</div>
+                    </div>
+                    <div class="content-info">
+                        <div class="content-type">{{ $content->type_name }}</div>
+                        <h3 class="content-title">{{ Str::limit($content->title, 60) }}</h3>
+                        <div class="content-actor">
+                            @if($content->actor->profile_path)
+                            <img src="https://image.tmdb.org/t/p/w45{{ $content->actor->profile_path }}" alt="{{ $content->actor->display_name }}" class="actor-thumb" onerror="this.src='/images/no-actor-photo.svg'">
+                            @else
+                            <img src="/images/no-actor-photo.svg" alt="{{ $content->actor->display_name }}" class="actor-thumb">
+                            @endif
+                            <span class="actor-name">{{ $content->actor->display_name }}</span>
+                        </div>
+                        <div class="content-meta">
+                            <span class="content-date">{{ $content->published_at->diffForHumans() }}</span>
+                            <div class="content-stats">
+                                <span>👁️ {{ number_format($content->view_count) }}</span>
+                                <span>❤️ {{ number_format($content->like_count) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        <!-- Actores con Contenido Exclusivo -->
+        @if($actorsWithContent->count() > 0)
+        <section class="mobile-row actors-with-content-section" data-type="actors_with_content">
+            <div class="section-header">
+                <h2 class="mobile-row-title">🎭 Actores con Contenido Exclusivo</h2>
+                <a href="{{ route('actors.index') }}" class="view-all-link">Ver todos</a>
+            </div>
+            <div class="actors-content-row">
+                @foreach($actorsWithContent->take(8) as $actor)
+                <div class="actor-with-content-card" onclick="location.href='{{ route('actors.show', $actor->id) }}'">
+                    <div class="actor-profile">
+                        @if($actor->profile_path)
+                        <img src="https://image.tmdb.org/t/p/w185{{ $actor->profile_path }}" alt="{{ $actor->display_name }}" loading="lazy" onerror="this.src='/images/no-actor-photo.svg'">
+                        @else
+                        <img src="/images/no-actor-photo.svg" alt="{{ $actor->display_name }}" loading="lazy">
+                        @endif
+                        <div class="content-count-badge">{{ $actor->content_count }} contenidos</div>
+                    </div>
+                    <div class="actor-info">
+                        <h3 class="actor-name">{{ $actor->display_name }}</h3>
+                        <div class="content-preview">
+                            @foreach($actor->exclusiveContent->take(3) as $content)
+                            <div class="content-preview-item">
+                                <span class="content-type-mini">{{ $content->type_name }}</span>
+                                <span class="content-title-mini">{{ Str::limit($content->title, 40) }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @guest
+                        <div class="exclusive-prompt">🔐 Regístrate para ver</div>
+                        @endguest
                     </div>
                 </div>
                 @endforeach
@@ -689,6 +912,467 @@
     .mobile-card-image {
         width: 160px;
         height: 240px;
+    }
+}
+
+/* === ACTOR CONTENT SECTIONS === */
+
+/* Actor Content Sections */
+.actor-content-section {
+    margin-bottom: 2.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.exclusive-badge {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+
+.register-prompt {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.register-prompt a {
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.view-all-link {
+    color: #00d4ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* Actor Content Row */
+.actor-content-row {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scroll-behavior: smooth;
+}
+
+.actor-content-row::-webkit-scrollbar {
+    display: none;
+}
+
+.actor-content-card {
+    flex-shrink: 0;
+    width: 220px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.actor-content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 212, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.actor-content-card.featured-content {
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.actor-content-card.featured-content:hover {
+    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+}
+
+/* Content type indicator */
+.content-type-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    z-index: 2;
+}
+
+/* Content badges */
+.content-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    z-index: 2;
+}
+
+.content-badge.featured {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+    color: #000;
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.content-badge.exclusive {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    border: 1px solid rgba(0, 212, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Content Thumbnail */
+.content-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.content-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Cambiar a contain para mostrar la imagen completa */
+    object-position: center;
+}
+
+.content-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #333 0%, #555 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.content-duration {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.content-lock {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    padding: 0.3rem;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.actor-content-card:hover .content-overlay {
+    opacity: 1;
+}
+
+.content-play-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #333;
+}
+
+.featured-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.new-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: linear-gradient(135deg, #46d369 0%, #2ea54b 100%);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+/* Content Info */
+.content-info {
+    padding: 1rem;
+}
+
+.content-type {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00d4ff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.content-title {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.content-actor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.actor-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.actor-name {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.content-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.content-stats {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Actors with Content Section */
+.actors-with-content-section .actors-content-row {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.actor-with-content-card {
+    flex-shrink: 0;
+    width: 180px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.actor-with-content-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 212, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.actor-profile {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+}
+
+.actor-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.actor-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.content-count-badge {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.actor-info {
+    padding: 1rem;
+}
+
+.actor-info .actor-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.content-preview {
+    margin-bottom: 0.5rem;
+}
+
+.content-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+}
+
+.content-type-mini {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00d4ff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+    min-width: fit-content;
+}
+
+.content-title-mini {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
+}
+
+.exclusive-prompt {
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Mobile Responsive for Actor Content */
+@media (max-width: 768px) {
+    .actor-content-card {
+        width: 180px;
+    }
+    
+    .content-thumbnail {
+        height: 110px;
+    }
+    
+    .content-info {
+        padding: 0.8rem;
+    }
+    
+    .content-title {
+        font-size: 0.8rem;
+    }
+    
+    .actor-with-content-card {
+        width: 150px;
+    }
+    
+    .actor-profile {
+        height: 120px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .actor-content-card {
+        width: 160px;
+    }
+    
+    .content-thumbnail {
+        height: 100px;
+    }
+    
+    .actor-with-content-card {
+        width: 130px;
+    }
+    
+    .actor-profile {
+        height: 100px;
     }
 }
 </style>

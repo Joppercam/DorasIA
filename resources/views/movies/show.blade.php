@@ -7,7 +7,7 @@
 
     <!-- Movie Hero Section -->
     <section class="movie-hero" 
-             style="background-image: url('{{ $movie->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $movie->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=K-Movie' }}')">
+             style="background-image: url('{{ $movie->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $movie->backdrop_path : '/images/no-backdrop.svg' }}')">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="movie-hero-container">
@@ -16,9 +16,12 @@
                     @if($movie->poster_path)
                         <img src="https://image.tmdb.org/t/p/w500{{ $movie->poster_path }}" 
                              alt="{{ $movie->display_title ?: $movie->title }}"
-                             class="poster-image">
+                             class="poster-image"
+                             onerror="this.src='/images/no-poster-movie.svg'">
                     @else
-                        <div class="poster-placeholder">🎬</div>
+                        <img src="/images/no-poster-movie.svg" 
+                             alt="{{ $movie->display_title ?: $movie->title }}"
+                             class="poster-image">
                     @endif
                 </div>
                 

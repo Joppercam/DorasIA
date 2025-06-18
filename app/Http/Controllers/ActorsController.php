@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use App\Models\ActorFollow;
+use App\Models\ActorContent;
 use Illuminate\Http\Request;
 
 class ActorsController extends Controller
@@ -144,7 +145,46 @@ class ActorsController extends Controller
         // Get followers count
         $followersCount = $actor->followers()->count();
 
-        return view('actors.show', compact('actor', 'popularSeries', 'comments', 'isFollowing', 'followersCount'));
+        // Contenido exclusivo para usuarios registrados
+        $exclusiveContent = collect();
+        $contentStats = [];
+        $featuredContent = collect();
+        $recentContent = collect();
+
+        if (auth()->check()) {
+            // Contenido destacado
+            $featuredContent = $actor->featuredContent()
+                ->with(['likes', 'views'])
+                ->take(3)
+                ->get();
+
+            // Contenido reciente
+            $recentContent = $actor->publishedContent()
+                ->with(['likes', 'views'])
+                ->recent(30) // Último mes
+                ->take(6)
+                ->get();
+
+            // Estadísticas de contenido por tipo
+            $contentStats = $actor->getContentStats();
+
+            // Todo el contenido exclusivo disponible
+            $exclusiveContent = $actor->publishedContent()
+                ->with(['likes', 'views'])
+                ->paginate(10, ['*'], 'content_page');
+        }
+
+        return view('actors.show', compact(
+            'actor', 
+            'popularSeries', 
+            'comments', 
+            'isFollowing', 
+            'followersCount',
+            'exclusiveContent',
+            'contentStats',
+            'featuredContent',
+            'recentContent'
+        ));
     }
 
     /**
@@ -339,5 +379,178 @@ class ActorsController extends Controller
             'actresses',
             'maleActors'
         ));
+    }
+
+    /**
+     * Ver contenido específico del actor
+     */
+    public function showContent($actorId, $contentId)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Necesitas estar registrado para ver contenido exclusivo');
+        }
+
+        $actor = Person::findOrFail($actorId);
+        $content = ActorContent::where('person_id', $actorId)
+            ->where('id', $contentId)
+            ->published()
+            ->firstOrFail();
+
+        // Incrementar vista
+        $content->incrementViews(auth()->id());
+
+        // Contenido relacionado
+        $relatedContent = $actor->publishedContent()
+            ->where('id', '!=', $contentId)
+            ->where('type', $content->type)
+            ->take(6)
+            ->get();
+
+        // Verificar si el usuario ha dado like
+        $hasLiked = $content->hasLikedByUser(auth()->id());
+
+        // Obtener reacción actual del usuario
+        $userReaction = $content->getUserReaction(auth()->id());
+        
+        // Obtener conteos de reacciones
+        $reactionCounts = $content->reaction_counts;
+        
+        // Obtener comentarios
+        $comments = $content->comments()->with('user', 'replies.user')->get();
+
+        return view('actors.content.show', compact(
+            'actor',
+            'content',
+            'relatedContent',
+            'hasLiked',
+            'userReaction',
+            'reactionCounts',
+            'comments'
+        ));
+    }
+
+    /**
+     * Ver contenido por tipo
+     */
+    public function showContentByType($actorId, $type)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Necesitas estar registrado para ver contenido exclusivo');
+        }
+
+        $actor = Person::findOrFail($actorId);
+        
+        // Validar tipo
+        if (!array_key_exists($type, ActorContent::TYPES)) {
+            abort(404);
+        }
+
+        $content = $actor->getContentByType($type)->paginate(12);
+        $typeName = ActorContent::TYPES[$type];
+
+        return view('actors.content.by-type', compact(
+            'actor',
+            'content',
+            'type',
+            'typeName'
+        ));
+    }
+
+    /**
+     * Toggle like en contenido
+     */
+    public function toggleContentLike(Request $request, $actorId, $contentId)
+    {
+        if (!auth()->check()) {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+
+        $content = ActorContent::where('person_id', $actorId)
+            ->where('id', $contentId)
+            ->firstOrFail();
+
+        $liked = $content->toggleLike(auth()->id());
+
+        return response()->json([
+            'success' => true,
+            'liked' => $liked,
+            'like_count' => $content->fresh()->like_count
+        ]);
+    }
+
+    /**
+     * Feed personalizado de contenido de actores seguidos
+     */
+    public function getPersonalizedFeed(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+
+        $user = auth()->user();
+        
+        // Obtener IDs de actores seguidos
+        $followedActorIds = $user->followedActors()->pluck('person_id');
+
+        if ($followedActorIds->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'content' => [],
+                'message' => 'Sigue algunos actores para ver contenido personalizado'
+            ]);
+        }
+
+        // Obtener contenido reciente de actores seguidos
+        $content = ActorContent::whereIn('person_id', $followedActorIds)
+            ->published()
+            ->with(['actor', 'likes', 'views'])
+            ->orderBy('published_at', 'desc')
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * Buscar contenido de actores
+     */
+    public function searchContent(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+
+        $query = $request->get('q');
+        $type = $request->get('type');
+        $actorId = $request->get('actor_id');
+
+        $contentQuery = ActorContent::published()
+            ->with(['actor', 'likes', 'views']);
+
+        if ($query) {
+            $contentQuery->where(function($q) use ($query) {
+                $q->where('title', 'LIKE', "%{$query}%")
+                  ->orWhere('content', 'LIKE', "%{$query}%")
+                  ->orWhereJsonContains('tags', $query);
+            });
+        }
+
+        if ($type) {
+            $contentQuery->where('type', $type);
+        }
+
+        if ($actorId) {
+            $contentQuery->where('person_id', $actorId);
+        }
+
+        $content = $contentQuery->orderBy('published_at', 'desc')
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'content' => $content
+        ]);
     }
 }

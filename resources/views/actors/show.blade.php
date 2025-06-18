@@ -244,6 +244,156 @@
     </section>
     @endif
 
+    <!-- Contenido Exclusivo - Solo para usuarios registrados -->
+    @auth
+    @if($featuredContent->count() > 0 || $recentContent->count() > 0 || $exclusiveContent->count() > 0)
+    <section class="content-section exclusive-content-section">
+        <div class="exclusive-header">
+            <h2 class="section-title">✨ Contenido Exclusivo de {{ $actor->display_name }}</h2>
+            <div class="exclusive-badge">
+                <span>🔐 Solo para usuarios registrados</span>
+            </div>
+        </div>
+
+        <!-- Estadísticas de contenido -->
+        @if(count($contentStats) > 0)
+        <div class="content-stats">
+            <h3 class="stats-title">📊 Contenido Disponible</h3>
+            <div class="stats-grid">
+                @foreach($contentStats as $type => $count)
+                <div class="stat-item">
+                    <a href="{{ route('actors.content.type', [$actor->id, $type]) }}" class="stat-link">
+                        <div class="stat-icon">
+                            @switch($type)
+                                @case('interview') 🎤 @break
+                                @case('behind_scenes') 🎬 @break
+                                @case('biography') 📖 @break
+                                @case('news') 📰 @break
+                                @case('gallery') 🖼️ @break
+                                @case('video') 📹 @break
+                                @case('article') 📝 @break
+                                @case('timeline') ⏰ @break
+                                @case('trivia') 🧩 @break
+                                @case('social') 📱 @break
+                                @default 📄
+                            @endswitch
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-type">{{ \App\Models\ActorContent::TYPES[$type] ?? ucfirst($type) }}</span>
+                            <span class="stat-count">{{ $count }} contenidos</span>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Contenido Destacado -->
+        @if($featuredContent->count() > 0)
+        <div class="featured-content">
+            <h3 class="subsection-title">🌟 Contenido Destacado</h3>
+            <div class="featured-content-grid">
+                @foreach($featuredContent as $content)
+                <div class="featured-content-card">
+                    <a href="{{ route('actors.content.show', [$actor->id, $content->id]) }}" class="content-link">
+                        @if($content->thumbnail_url)
+                        <div class="content-thumbnail">
+                            <img src="{{ $content->thumbnail_url }}" alt="{{ $content->title }}">
+                            @if($content->duration)
+                            <div class="content-duration">{{ $content->formatted_duration }}</div>
+                            @endif
+                            <div class="content-overlay">
+                                <div class="content-play-btn">▶️</div>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="content-info">
+                            <div class="content-type-badge">{{ $content->type_name }}</div>
+                            <h4 class="content-title">{{ $content->title }}</h4>
+                            <div class="content-meta">
+                                <span class="content-date">{{ $content->published_at->diffForHumans() }}</span>
+                                <div class="content-stats">
+                                    <span class="content-views">👁️ {{ number_format($content->view_count) }}</span>
+                                    <span class="content-likes">❤️ {{ number_format($content->like_count) }}</span>
+                                </div>
+                            </div>
+                            @if($content->content)
+                            <p class="content-excerpt">{{ Str::limit($content->content, 120) }}</p>
+                            @endif
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Contenido Reciente -->
+        @if($recentContent->count() > 0)
+        <div class="recent-content">
+            <h3 class="subsection-title">🕐 Contenido Reciente</h3>
+            <div class="recent-content-grid">
+                @foreach($recentContent as $content)
+                <div class="content-card">
+                    <a href="{{ route('actors.content.show', [$actor->id, $content->id]) }}" class="content-link">
+                        @if($content->thumbnail_url)
+                        <div class="content-thumbnail-small">
+                            <img src="{{ $content->thumbnail_url }}" alt="{{ $content->title }}">
+                            @if($content->duration)
+                            <div class="content-duration-small">{{ $content->formatted_duration }}</div>
+                            @endif
+                        </div>
+                        @endif
+                        <div class="content-info-small">
+                            <div class="content-type-badge-small">{{ $content->type_name }}</div>
+                            <h5 class="content-title-small">{{ $content->title }}</h5>
+                            <div class="content-meta-small">
+                                <span class="content-date-small">{{ $content->published_at->diffForHumans() }}</span>
+                                <div class="content-stats-small">
+                                    <span>👁️ {{ number_format($content->view_count) }}</span>
+                                    <span>❤️ {{ number_format($content->like_count) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Ver Todo el Contenido -->
+        @if($exclusiveContent->count() > 0)
+        <div class="all-content-link">
+            <a href="#all-content" class="view-all-btn">
+                📚 Ver Todo el Contenido Exclusivo ({{ $exclusiveContent->total() }})
+            </a>
+        </div>
+        @endif
+    </section>
+    @endif
+    @else
+    <!-- Prompt para usuarios no registrados -->
+    <section class="content-section">
+        <div class="exclusive-content-prompt">
+            <div class="prompt-icon">🔐</div>
+            <h3 class="prompt-title">Contenido Exclusivo Disponible</h3>
+            <p class="prompt-description">
+                {{ $actor->display_name }} tiene contenido exclusivo disponible incluyendo entrevistas, 
+                behind-the-scenes, biografías detalladas y mucho más.
+            </p>
+            <div class="prompt-actions">
+                <a href="{{ route('login') }}" class="prompt-btn primary">🔑 Iniciar Sesión</a>
+                <a href="{{ route('register.simple.form') }}" class="prompt-btn secondary">✨ Registrarse Gratis</a>
+            </div>
+            <p class="prompt-note">
+                ¡Es completamente gratis y tienes acceso inmediato!
+            </p>
+        </div>
+    </section>
+    @endauth
+
     <!-- Biography Extended -->
     @if($actor->display_biography && strlen($actor->display_biography) > 300)
     <section class="content-section">
@@ -666,6 +816,475 @@
         width: 100%;
         justify-content: center;
         padding: 1.2rem;
+    }
+}
+
+/* Exclusive Content Styles */
+.exclusive-content-section {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(123, 104, 238, 0.05) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin: 2rem 0;
+}
+
+.exclusive-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.exclusive-badge {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Content Stats */
+.content-stats {
+    margin-bottom: 2.5rem;
+}
+
+.stats-title {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.stat-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-type {
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.stat-count {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+}
+
+/* Featured Content */
+.featured-content {
+    margin-bottom: 2.5rem;
+}
+
+.subsection-title {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.featured-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.featured-content-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.featured-content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+}
+
+.content-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.content-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.content-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.content-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.featured-content-card:hover .content-overlay {
+    opacity: 1;
+}
+
+.content-play-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.content-info {
+    padding: 1.5rem;
+}
+
+.content-type-badge {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+}
+
+.content-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+}
+
+.content-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.content-date {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+}
+
+.content-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.content-excerpt {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Recent Content */
+.recent-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.content-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.content-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.content-card .content-link {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: center;
+}
+
+.content-thumbnail-small {
+    position: relative;
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.content-thumbnail-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.content-duration-small {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.1rem 0.3rem;
+    border-radius: 6px;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+.content-info-small {
+    flex: 1;
+}
+
+.content-type-badge-small {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00d4ff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.3rem;
+}
+
+.content-title-small {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+}
+
+.content-meta-small {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.content-stats-small {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* View All Button */
+.all-content-link {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.view-all-btn {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.view-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+/* Exclusive Content Prompt */
+.exclusive-content-prompt {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 104, 238, 0.1) 100%);
+    border: 2px solid rgba(0, 212, 255, 0.2);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.prompt-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.prompt-title {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.prompt-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.prompt-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.prompt-btn {
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.prompt-btn.primary {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.prompt-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+.prompt-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.prompt-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: white;
+}
+
+.prompt-note {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Mobile Optimizations for Exclusive Content */
+@media (max-width: 768px) {
+    .exclusive-content-section {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .exclusive-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .featured-content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .recent-content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-card .content-link {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .content-thumbnail-small {
+        width: 100%;
+        height: 120px;
+    }
+    
+    .prompt-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .prompt-btn {
+        width: 100%;
+        max-width: 300px;
     }
 }
 </style>

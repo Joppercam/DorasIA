@@ -87,10 +87,11 @@
                 <div class="group cursor-pointer" onclick="window.location.href='{{ route('series.show', $serie->id) }}'">
                     <div class="relative overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
                         <img 
-                            src="{{ $serie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $serie->poster_path : '/images/no-poster.jpg' }}" 
+                            src="{{ $serie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $serie->poster_path : '/images/no-poster-series.svg' }}" 
                             alt="{{ $serie->display_title ?? $serie->title }}"
                             class="w-full h-[300px] object-cover"
                             loading="lazy"
+                            onerror="this.src='/images/no-poster-series.svg'"
                         >
                         
                         <!-- Overlay con información -->

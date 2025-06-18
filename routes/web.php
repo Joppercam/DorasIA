@@ -21,6 +21,11 @@ Route::get('/api/search', [HomeController::class, 'search'])
     ->middleware('rate.limit:search,30,1')
     ->name('api.search');
 
+// Carousel rotation API
+Route::get('/api/carousel/rotate', [HomeController::class, 'getRotatedCarousel'])
+    ->middleware('rate.limit:carousel,60,1')
+    ->name('api.carousel.rotate');
+
 // Smart Search Engine - Búsqueda semántica inteligente
 Route::get('/api/smart-search', [App\Http\Controllers\SmartSearchController::class, 'search'])
     ->middleware('rate.limit:search,60,1')
@@ -153,6 +158,19 @@ Route::get('/peliculas/{movie}', function($movie) {
 // Actors routes
 Route::get('/actores', [ActorsController::class, 'index'])->name('actors.index');
 Route::get('/actores/{id}', [ActorsController::class, 'show'])->name('actors.show');
+
+// Actor content routes (solo para usuarios registrados)
+Route::middleware('auth')->group(function () {
+    Route::get('/actores/{actor}/contenido/{content}', [ActorsController::class, 'showContent'])->name('actors.content.show');
+    Route::get('/actores/{actor}/contenido/tipo/{type}', [ActorsController::class, 'showContentByType'])->name('actors.content.type');
+    Route::post('/actores/{actor}/contenido/{content}/like', [ActorsController::class, 'toggleContentLike'])->name('actors.content.like');
+});
+
+// Actor content API routes
+Route::middleware('auth')->group(function () {
+    Route::get('/api/actors/feed', [ActorsController::class, 'getPersonalizedFeed'])->name('api.actors.feed');
+    Route::get('/api/actors/content/search', [ActorsController::class, 'searchContent'])->name('api.actors.content.search');
+});
 
 // Upcoming series routes
 Route::get('/proximamente', [App\Http\Controllers\UpcomingController::class, 'index'])->name('upcoming.index');
@@ -800,4 +818,21 @@ Route::prefix('admin')->middleware('admin')->name('admin.')->group(function () {
     // Comments management
     Route::get('/comments', [App\Http\Controllers\Admin\AdminController::class, 'comments'])->name('comments');
     Route::delete('/comments/{comment}', [App\Http\Controllers\Admin\AdminController::class, 'deleteComment'])->name('comments.delete');
+});
+
+// === SOCIAL FEATURES FOR ACTOR CONTENT ===
+Route::middleware('auth')->group(function () {
+    // Reactions
+    Route::post('/actor-content/{content}/reaction', [App\Http\Controllers\ActorContentSocialController::class, 'addReaction'])
+        ->name('actor.content.reaction');
+    
+    // Comments
+    Route::get('/actor-content/{content}/comments', [App\Http\Controllers\ActorContentSocialController::class, 'getComments'])
+        ->name('actor.content.comments.get');
+    Route::post('/actor-content/{content}/comments', [App\Http\Controllers\ActorContentSocialController::class, 'addComment'])
+        ->name('actor.content.comments.add');
+    Route::put('/actor-content/comments/{comment}', [App\Http\Controllers\ActorContentSocialController::class, 'editComment'])
+        ->name('actor.content.comments.edit');
+    Route::delete('/actor-content/comments/{comment}', [App\Http\Controllers\ActorContentSocialController::class, 'deleteComment'])
+        ->name('actor.content.comments.delete');
 });

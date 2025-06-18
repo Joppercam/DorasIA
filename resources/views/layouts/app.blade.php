@@ -4611,6 +4611,143 @@
     <!-- PWA Script -->
     <script src="/js/pwa.js"></script>
     
+    <!-- Carousel Rotation Script -->
+    <script src="/js/carousel-rotation.js"></script>
+    
+    <!-- Share Content Function -->
+    <script>
+        function shareContent(title, url, description = '') {
+            const shareData = {
+                title: title + ' - Dorasia',
+                text: description || `Descubre "${title}" en Dorasia, la mejor plataforma de K-Dramas`,
+                url: url
+            };
+
+            if (navigator.share) {
+                // Usar Web Share API nativa en dispositivos móviles
+                navigator.share(shareData)
+                    .then(() => console.log('Contenido compartido exitosamente'))
+                    .catch((error) => console.log('Error al compartir:', error));
+            } else {
+                // Fallback para navegadores de escritorio
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showShareNotification('¡Enlace copiado al portapapeles!');
+                    }).catch(() => {
+                        showShareModal(title, url);
+                    });
+                } else {
+                    showShareModal(title, url);
+                }
+            }
+        }
+
+        function showShareNotification(message) {
+            // Crear notificación temporal
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                font-weight: 600;
+                z-index: 9999;
+                box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animación de entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showShareModal(title, url) {
+            // Crear modal de compartir
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                backdrop-filter: blur(5px);
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: #2a2a2a;
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            `;
+
+            modalContent.innerHTML = `
+                <h3 style="margin-bottom: 1rem; color: #00d4ff;">📤 Compartir "${title}"</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="text" value="${url}" readonly 
+                           style="width: 100%; padding: 0.8rem; border: 1px solid #555; border-radius: 8px; background: #1a1a1a; color: white; font-size: 0.9rem;"
+                           onclick="this.select()">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" 
+                       target="_blank" 
+                       style="background: #1877f2; color: white; padding: 0.7rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                        📘 Facebook
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + ' - Dorasia')}" 
+                       target="_blank"
+                       style="background: #1da1f2; color: white; padding: 0.7rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                        🐦 Twitter
+                    </a>
+                    <a href="https://wa.me/?text=${encodeURIComponent(title + ' - Dorasia: ' + url)}" 
+                       target="_blank"
+                       style="background: #25d366; color: white; padding: 0.7rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                        💬 WhatsApp
+                    </a>
+                </div>
+                <button onclick="this.closest('.share-modal').remove()" 
+                        style="margin-top: 1.5rem; background: #555; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; cursor: pointer;">
+                    Cerrar
+                </button>
+            `;
+
+            modal.className = 'share-modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Cerrar modal al hacer click fuera
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+    </script>
+    
     <!-- PWA User ID for notifications -->
     @auth
     <meta name="user-id" content="{{ Auth::id() }}">

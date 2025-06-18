@@ -104,11 +104,12 @@
                                 @if($movie->poster_path)
                                     <img src="https://image.tmdb.org/t/p/w500{{ $movie->poster_path }}" 
                                          alt="{{ $movie->display_title ?: $movie->title }}"
-                                         loading="lazy">
+                                         loading="lazy"
+                                         onerror="this.src='/images/no-poster-movie.svg'">
                                 @else
-                                    <div class="movie-placeholder">
-                                        🎬
-                                    </div>
+                                    <img src="/images/no-poster-movie.svg" 
+                                         alt="{{ $movie->display_title ?: $movie->title }}"
+                                         loading="lazy">
                                 @endif
                                 
                                 <!-- Rating badge -->

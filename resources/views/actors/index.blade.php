@@ -72,9 +72,13 @@
                     <img src="https://image.tmdb.org/t/p/w200{{ $actor->profile_path }}" 
                          alt="{{ $actor->display_name }}"
                          class="featured-actor-img"
-                         loading="lazy">
+                         loading="lazy"
+                         onerror="this.src='/images/no-actor-photo.svg'">
                     @else
-                    <div class="featured-actor-placeholder">👤</div>
+                    <img src="/images/no-actor-photo.svg" 
+                         alt="{{ $actor->display_name }}"
+                         class="featured-actor-img"
+                         loading="lazy">
                     @endif
                     <span class="featured-actor-name">{{ Str::limit($actor->display_name, 15) }}</span>
                 </div>
@@ -121,11 +125,13 @@
                     <img src="https://image.tmdb.org/t/p/w300{{ $actor->profile_path }}" 
                          alt="{{ $actor->display_name }}"
                          class="cast-photo"
-                         loading="lazy">
+                         loading="lazy"
+                         onerror="this.src='/images/no-actor-photo.svg'">
                     @else
-                    <div class="cast-placeholder">
-                        👤
-                    </div>
+                    <img src="/images/no-actor-photo.svg" 
+                         alt="{{ $actor->display_name }}"
+                         class="cast-photo"
+                         loading="lazy">
                     @endif
                 </div>
                 

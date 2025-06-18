@@ -19,5 +19,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Contenido mejorado de actores
+        $this->call([
+            ImprovedActorContentSeeder::class,
+        ]);
     }
 }

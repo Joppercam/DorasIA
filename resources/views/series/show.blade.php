@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section" style="background-image: url('{{ $series->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $series->backdrop_path : 'https://via.placeholder.com/1920x1080/333/666?text=' . urlencode($series->title) }}')">
+<section class="hero-section" style="background-image: url('{{ $series->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $series->backdrop_path : '/images/no-backdrop.svg' }}')">
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <div class="hero-info-box">
@@ -13,11 +13,12 @@
                 @if($series->poster_path)
                 <img src="https://image.tmdb.org/t/p/w500{{ $series->poster_path }}" 
                      alt="{{ $series->display_title }}"
-                     class="series-mobile-poster">
+                     class="series-mobile-poster"
+                     onerror="this.src='/images/no-poster-series.svg'">
                 @else
-                <div class="series-mobile-poster-placeholder">
-                    📺
-                </div>
+                <img src="/images/no-poster-series.svg" 
+                     alt="{{ $series->display_title }}"
+                     class="series-mobile-poster">
                 @endif
             </div>
             

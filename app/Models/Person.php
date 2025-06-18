@@ -113,4 +113,65 @@ class Person extends Model
     {
         return $this->followers()->count();
     }
+
+    /**
+     * Relación con contenido exclusivo del actor
+     */
+    public function exclusiveContent()
+    {
+        return $this->hasMany(ActorContent::class);
+    }
+
+    /**
+     * Contenido exclusivo publicado
+     */
+    public function publishedContent()
+    {
+        return $this->exclusiveContent()
+            ->published()
+            ->orderBy('published_at', 'desc');
+    }
+
+    /**
+     * Contenido destacado
+     */
+    public function featuredContent()
+    {
+        return $this->exclusiveContent()
+            ->featured()
+            ->published()
+            ->orderBy('published_at', 'desc');
+    }
+
+    /**
+     * Obtener contenido por tipo
+     */
+    public function getContentByType($type)
+    {
+        return $this->exclusiveContent()
+            ->byType($type)
+            ->published()
+            ->orderBy('published_at', 'desc');
+    }
+
+    /**
+     * Verificar si tiene contenido exclusivo
+     */
+    public function hasExclusiveContent()
+    {
+        return $this->exclusiveContent()->exclusive()->published()->exists();
+    }
+
+    /**
+     * Obtener conteo de contenido por tipo
+     */
+    public function getContentStats()
+    {
+        return $this->exclusiveContent()
+            ->published()
+            ->selectRaw('type, COUNT(*) as count')
+            ->groupBy('type')
+            ->pluck('count', 'type')
+            ->toArray();
+    }
 }
