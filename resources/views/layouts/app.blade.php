@@ -32,7 +32,7 @@
     <meta name="rating" content="general">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="@yield('og_title', '@yield('title', 'Dorasia - Los Mejores K-Dramas y Películas Coreanas')')">
+    <meta property="og:title" content="@yield('og_title', 'Dorasia - Los Mejores K-Dramas y Películas Coreanas')">
     <meta property="og:description" content="@yield('og_description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.')">
     <meta property="og:image" content="@yield('og_image', '/og-image.png')">
     <meta property="og:url" content="{{ url()->current() }}">
