@@ -1,2 +1,41 @@
 User-agent: *
-  Disallow:
+Allow: /
+
+# Permitir todos los bots principales
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Disallow archivos temporales y admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /storage/
+Disallow: /.env
+Disallow: /vendor/
+Disallow: /node_modules/
+
+# Sitemap - será creado dinámicamente
+Sitemap: https://dorasia.com/sitemap.xml
+
+# Crawl-delay para ser respetuosos
+Crawl-delay: 1

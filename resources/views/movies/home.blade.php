@@ -1,6 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Dorasia - Las Mejores Películas')
+@section('title', 'Películas Coreanas Online - Las Mejores Películas Coreanas | Dorasia')
+
+@section('description', 'Descubre las mejores películas coreanas con subtítulos en español. Ver Parasite, Train to Busan, Memories of Murder, Oldboy y más clásicos del cine coreano en Dorasia.')
+
+@section('keywords', 'películas coreanas, cine coreano, subtítulos español, peliculas coreanas online, parasite, train to busan, oldboy, memories of murder, dorasia, películas asiáticas')
+
+@section('og_title', 'Las Mejores Películas Coreanas Online | Dorasia')
+@section('og_description', 'Descubre el mejor cine coreano con subtítulos en español. Películas premiadas, clásicos y estrenos del cine de Corea del Sur.')
+
+@section('twitter_title', 'Películas Coreanas | Dorasia')
+@section('twitter_description', 'Las mejores películas coreanas con subtítulos en español en una sola plataforma.')
 
 @section('content')
 <div class="netflix-mobile-home">

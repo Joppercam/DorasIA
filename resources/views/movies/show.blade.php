@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
-@section('title', ($movie->display_title ?: $movie->title) . ' - Dorasia')
+@section('title', $movie->display_title . ' - Ver Película Coreana Online | Dorasia')
+
+@section('description', 'Ver ' . $movie->display_title . ' online con subtítulos en español. ' . Str::limit($movie->display_overview ?? 'Película coreana disponible en Dorasia.', 140) . ' Reparto, sinopsis y más.')
+
+@section('keywords', 'ver ' . strtolower($movie->display_title) . ' online, ' . strtolower($movie->display_title) . ' subtítulos español, película coreana ' . strtolower($movie->display_title) . ', cine coreano, dorasia, ' . ($movie->genres ? $movie->genres->pluck('name')->map(fn($g) => strtolower($g))->implode(', ') : 'drama, acción'))
+
+@section('og_title', $movie->display_title . ' - Película Coreana | Dorasia')
+@section('og_description', 'Descubre ' . $movie->display_title . '. ' . Str::limit($movie->display_overview ?? 'Película coreana con subtítulos en español.', 150))
+@section('og_image', $movie->poster_path ? $movie->posterUrl('w500') : '/og-image.png')
+@section('og_type', 'video.movie')
+
+@section('twitter_title', $movie->display_title . ' - Película | Dorasia')
+@section('twitter_description', Str::limit($movie->display_overview ?? 'Película coreana con subtítulos en español.', 150))
 
 @section('content')
 <div style="margin-top: -1rem;">
@@ -715,4 +727,80 @@ function toggleDetailsAccordion(button) {
 
 {{-- Incluir Modal de Trailer --}}
 @include('components.trailer-modal')
+
+<!-- JSON-LD Datos Estructurados para la Película -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    "name": "{{ $movie->display_title }}",
+    @if($movie->original_title && $movie->original_title !== $movie->display_title)
+    "alternateName": "{{ $movie->original_title }}",
+    @endif
+    "description": "{{ Str::limit($movie->display_overview ?? 'Película coreana disponible en Dorasia con subtítulos en español.', 300) }}",
+    @if($movie->poster_path)
+    "image": "{{ $movie->posterUrl('w500') }}",
+    @endif
+    @if($movie->release_date)
+    "datePublished": "{{ $movie->release_date->format('Y-m-d') }}",
+    @endif
+    @if($movie->runtime)
+    "duration": "PT{{ $movie->runtime }}M",
+    @endif
+    @if($movie->vote_average > 0)
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ $movie->vote_average }}",
+        "bestRating": "10",
+        "worstRating": "1"
+        @if($movie->vote_count > 0)
+        ,"ratingCount": {{ $movie->vote_count }}
+        @endif
+    },
+    @endif
+    @if($movie->genres && $movie->genres->count() > 0)
+    "genre": [
+        @foreach($movie->genres as $genre)
+        "{{ $genre->name }}"@if(!$loop->last),@endif
+        @endforeach
+    ],
+    @endif
+    "inLanguage": "ko",
+    "subtitleLanguage": "es",
+    "countryOfOrigin": {
+        "@type": "Country",
+        "name": "Corea del Sur"
+    },
+    @if($movie->actors && $movie->actors->count() > 0)
+    "actor": [
+        @foreach($movie->actors->take(5) as $actor)
+        {
+            "@type": "Person",
+            "name": "{{ $actor->name }}"
+        }@if(!$loop->last),@endif
+        @endforeach
+    ],
+    @endif
+    @if($movie->directors && $movie->directors->count() > 0)
+    "director": [
+        @foreach($movie->directors->take(3) as $director)
+        {
+            "@type": "Person",
+            "name": "{{ $director->name }}"
+        }@if(!$loop->last),@endif
+        @endforeach
+    ],
+    @endif
+    "url": "{{ url()->current() }}",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Dorasia",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ url('/icons/icon-192x192.png') }}"
+        }
+    }
+}
+</script>
+
 @endsection

@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
-@section('title', $series->title . ' - Dorasia')
+@section('title', $series->title . ' - Ver K-Drama Online | Dorasia')
+
+@section('description', 'Ver ' . $series->title . ' online con subtítulos en español. ' . Str::limit($series->display_overview ?? 'K-Drama coreano disponible en Dorasia.', 140) . ' Reparto, temporadas, episodios y más.')
+
+@section('keywords', 'ver ' . strtolower($series->title) . ' online, ' . strtolower($series->title) . ' subtítulos español, k-drama ' . strtolower($series->title) . ', drama coreano, dorasia, ' . ($series->genres ? $series->genres->pluck('name')->map(fn($g) => strtolower($g))->implode(', ') : 'drama, romance'))
+
+@section('og_title', $series->title . ' - K-Drama Coreano | Dorasia')
+@section('og_description', 'Descubre ' . $series->title . '. ' . Str::limit($series->display_overview ?? 'K-Drama coreano con subtítulos en español.', 150))
+@section('og_image', $series->poster_path ? $series->posterUrl('w500') : '/og-image.png')
+@section('og_type', 'video.tv_show')
+
+@section('twitter_title', $series->title . ' - K-Drama | Dorasia')
+@section('twitter_description', Str::limit($series->display_overview ?? 'K-Drama coreano con subtítulos en español.', 150))
 
 @section('content')
 <!-- Hero Section Rediseñado -->
@@ -778,5 +790,73 @@ function toggleDetailsAccordion(button) {
 </script>
 
 @include('components.trailer-modal')
+
+<!-- JSON-LD Datos Estructurados para la Serie -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    "name": "{{ $series->title }}",
+    @if($series->original_title && $series->original_title !== $series->title)
+    "alternateName": "{{ $series->original_title }}",
+    @endif
+    "description": "{{ Str::limit($series->display_overview ?? 'K-Drama coreano disponible en Dorasia con subtítulos en español.', 300) }}",
+    @if($series->poster_path)
+    "image": "{{ $series->posterUrl('w500') }}",
+    @endif
+    @if($series->first_air_date)
+    "datePublished": "{{ $series->first_air_date->format('Y-m-d') }}",
+    @endif
+    @if($series->number_of_seasons)
+    "numberOfSeasons": {{ $series->number_of_seasons }},
+    @endif
+    @if($series->number_of_episodes)
+    "numberOfEpisodes": {{ $series->number_of_episodes }},
+    @endif
+    @if($series->vote_average > 0)
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ $series->vote_average }}",
+        "bestRating": "10",
+        "worstRating": "1"
+        @if($series->vote_count > 0)
+        ,"ratingCount": {{ $series->vote_count }}
+        @endif
+    },
+    @endif
+    @if($series->genres && $series->genres->count() > 0)
+    "genre": [
+        @foreach($series->genres as $genre)
+        "{{ $genre->name }}"@if(!$loop->last),@endif
+        @endforeach
+    ],
+    @endif
+    "inLanguage": "ko",
+    "subtitleLanguage": "es",
+    "countryOfOrigin": {
+        "@type": "Country",
+        "name": "Corea del Sur"
+    },
+    @if($series->actors && $series->actors->count() > 0)
+    "actor": [
+        @foreach($series->actors->take(5) as $actor)
+        {
+            "@type": "Person",
+            "name": "{{ $actor->name }}"
+        }@if(!$loop->last),@endif
+        @endforeach
+    ],
+    @endif
+    "url": "{{ url()->current() }}",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Dorasia",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ url('/icons/icon-192x192.png') }}"
+        }
+    }
+}
+</script>
 
 @endsection

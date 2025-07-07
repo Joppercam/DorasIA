@@ -22,13 +22,71 @@
     <meta name="msapplication-TileColor" content="#00d4ff">
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
     
-    <!-- Meta tags para SEO y redes sociales -->
-    <meta name="description" content="Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.">
-    <meta property="og:title" content="@yield('title', 'Dorasia - K-Dramas y Películas Coreanas')">
-    <meta property="og:description" content="Descubre los mejores K-Dramas y películas coreanas con subtítulos en español.">
-    <meta property="og:image" content="/og-image.png">
-    <meta property="og:type" content="website">
+    <!-- SEO Meta Tags Optimizados -->
+    <meta name="description" content="@yield('description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. Dorasia es la plataforma definitiva para fans del entretenimiento coreano. Ver trailers, reparto, bandas sonoras y más.')">
+    <meta name="keywords" content="@yield('keywords', 'k-dramas, dramas coreanos, películas coreanas, subtítulos español, entretenimiento coreano, series coreanas, kdrama, doramas, dorasia, crash landing on you, squid game, vincenzo, kingdom')">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+    <meta name="author" content="Dorasia">
+    <meta name="language" content="es">
+    <meta name="revisit-after" content="7 days">
+    <meta name="rating" content="general">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="@yield('og_title', '@yield('title', 'Dorasia - Los Mejores K-Dramas y Películas Coreanas')')">
+    <meta property="og:description" content="@yield('og_description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.')">
+    <meta property="og:image" content="@yield('og_image', '/og-image.png')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="Dorasia">
+    <meta property="og:locale" content="es_ES">
+    
+    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('twitter_title', '@yield('title', 'Dorasia - K-Dramas y Películas Coreanas')')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español.')">
+    <meta name="twitter:image" content="@yield('twitter_image', '/og-image.png')">
+    <meta name="twitter:site" content="@dorasia_oficial">
+    <meta name="twitter:creator" content="@dorasia_oficial">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <!-- DNS Prefetch para mejor rendimiento -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//youtube.com">
+    <link rel="dns-prefetch" href="//img.youtube.com">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml">
+    
+    <!-- Alternate languages (futuro) -->
+    <link rel="alternate" hreflang="es" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+    
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Dorasia",
+        "alternateName": "Dorasia - K-Dramas",
+        "url": "{{ url('/') }}",
+        "description": "La plataforma definitiva para descubrir K-Dramas y películas coreanas con subtítulos en español",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Dorasia",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ url('/icons/icon-192x192.png') }}"
+            }
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ url('/') }}?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>

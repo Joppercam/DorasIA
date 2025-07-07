@@ -1,6 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Dorasia - Los Mejores K-Dramas')
+@section('title', 'Dorasia - Los Mejores K-Dramas y Películas Coreanas Online')
+
+@section('description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español. Ver series como Squid Game, Crash Landing on You, Vincenzo, Kingdom y más. La mejor plataforma de entretenimiento coreano.')
+
+@section('keywords', 'k-dramas, dramas coreanos, películas coreanas, subtítulos español, entretenimiento coreano, series coreanas, kdrama, doramas, dorasia, squid game, crash landing on you, vincenzo, kingdom, descendientes del sol, goblin, hotel del luna')
+
+@section('og_title', 'Dorasia - La Mejor Plataforma de K-Dramas y Películas Coreanas')
+@section('og_description', 'Descubre miles de K-Dramas y películas coreanas con subtítulos en español. La plataforma definitiva para fans del entretenimiento coreano.')
+
+@section('twitter_title', 'Dorasia - K-Dramas y Películas Coreanas')
+@section('twitter_description', 'La mejor plataforma para descubrir K-Dramas y películas coreanas con subtítulos en español.')
 
 @section('content')
 <div class="netflix-mobile-home">

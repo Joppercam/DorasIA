@@ -9,6 +9,7 @@ use App\Http\Controllers\ActorsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SitemapController;
 
 // === RUTAS PRINCIPALES ===
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -901,6 +902,14 @@ Route::get('/clear-cache-hosting', function() {
         ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 })->name('clear.cache.hosting');
+
+Route::get('/test-movie-images', function() { return view('test-movie-images'); });
+
+// === SEO ROUTES ===
+// Sitemap dinámico
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])
+    ->name('sitemap')
+    ->middleware('cache.headers:public;max_age=3600'); // Cache por 1 hora
 
 // === SOCIAL FEATURES FOR ACTOR CONTENT ===
 Route::middleware('auth')->group(function () {
