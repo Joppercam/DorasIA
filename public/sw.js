@@ -1,9 +1,9 @@
-// Dorasia Service Worker v1.0
-// PWA + Push Notifications + Offline Cache
+// Dorasia Service Worker v1.1
+// PWA + Push Notifications + Offline Cache + Error Handling
 
-const CACHE_NAME = 'dorasia-v1.0';
-const STATIC_CACHE = 'dorasia-static-v1.0';
-const DYNAMIC_CACHE = 'dorasia-dynamic-v1.0';
+const CACHE_NAME = 'dorasia-v1.1';
+const STATIC_CACHE = 'dorasia-static-v1.1';
+const DYNAMIC_CACHE = 'dorasia-dynamic-v1.1';
 
 // Archivos críticos que se cachean inmediatamente
 const STATIC_ASSETS = [
@@ -89,26 +89,35 @@ async function handleFetch(request) {
   const url = new URL(request.url);
   
   try {
+    let response;
+    
     // 1. Archivos estáticos - Cache First
     if (isStaticAsset(url.pathname)) {
-      return await cacheFirst(request);
+      response = await cacheFirst(request);
     }
-    
     // 2. API y datos dinámicos - Network First
-    if (isApiRequest(url.pathname)) {
-      return await networkFirst(request);
+    else if (isApiRequest(url.pathname)) {
+      response = await networkFirst(request);
     }
-    
     // 3. Páginas de contenido - Stale While Revalidate
-    if (isContentPage(url.pathname)) {
-      return await staleWhileRevalidate(request);
+    else if (isContentPage(url.pathname)) {
+      response = await staleWhileRevalidate(request);
+    }
+    // 4. Default - Network First con fallback
+    else {
+      response = await networkFirst(request);
     }
     
-    // 4. Default - Network First con fallback
-    return await networkFirst(request);
+    // Verificar que tenemos una respuesta válida
+    if (!response || !(response instanceof Response)) {
+      console.warn('Invalid response for:', request.url, response);
+      return await handleOffline(request);
+    }
+    
+    return response;
     
   } catch (error) {
-    console.error('🚨 Dorasia SW: Error en fetch:', error);
+    console.error('🚨 Dorasia SW: Error en fetch:', error, 'for URL:', request.url);
     return await handleOffline(request);
   }
 }
@@ -118,20 +127,30 @@ async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
   
-  const response = await fetch(request);
-  const cache = await caches.open(STATIC_CACHE);
-  cache.put(request, response.clone());
-  return response;
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    console.log('Cache first failed for:', request.url, error);
+    return await handleOffline(request);
+  }
 }
 
 // Network First - Para datos frescos
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
-    const cache = await caches.open(DYNAMIC_CACHE);
-    cache.put(request, response.clone());
+    if (response.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, response.clone());
+    }
     return response;
-  } catch {
+  } catch (error) {
+    console.log('Network failed for:', request.url, error);
     const cached = await caches.match(request);
     return cached || await handleOffline(request);
   }
@@ -145,9 +164,13 @@ async function staleWhileRevalidate(request) {
     const cache = caches.open(DYNAMIC_CACHE);
     cache.then(c => c.put(request, response.clone()));
     return response;
+  }).catch(async () => {
+    // Si fetch falla, devolver cached si existe, sino offline
+    return cached || await handleOffline(request);
   });
   
-  return cached || fetchPromise;
+  // Si hay cached, devolverlo inmediatamente, sino esperar el fetch
+  return cached || await fetchPromise;
 }
 
 // === HELPERS ===
@@ -176,19 +199,61 @@ function isContentPage(pathname) {
 }
 
 async function handleOffline(request) {
+  console.log('Handling offline request:', request.url);
+  
   // Para navegación, mostrar página offline
-  if (request.mode === 'navigate') {
+  if (request.mode === 'navigate' || request.destination === 'document') {
     const offlinePage = await caches.match('/offline.html');
-    return offlinePage || new Response('Dorasia - Sin conexión', {
+    if (offlinePage) {
+      return offlinePage;
+    }
+    
+    // Fallback offline page
+    return new Response(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Dorasia - Sin conexión</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background: #0a0a0a; color: white; }
+          .offline-message { max-width: 400px; margin: 0 auto; }
+          .offline-icon { font-size: 4rem; margin-bottom: 1rem; }
+        </style>
+      </head>
+      <body>
+        <div class="offline-message">
+          <div class="offline-icon">📱</div>
+          <h1>Sin conexión</h1>
+          <p>No hay conexión a internet. Revisa tu conexión e intenta de nuevo.</p>
+        </div>
+      </body>
+      </html>
+    `, {
       status: 200,
-      headers: { 'Content-Type': 'text/html' }
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
   }
   
-  // Para assets, devolver respuesta básica
+  // Para assets y API requests
+  if (request.url.includes('.json') || request.url.includes('/api/')) {
+    return new Response(JSON.stringify({
+      error: 'No hay conexión',
+      offline: true,
+      message: 'Este contenido no está disponible offline'
+    }), {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Para otros recursos
   return new Response('Recurso no disponible offline', {
     status: 503,
-    statusText: 'Service Unavailable'
+    statusText: 'Service Unavailable',
+    headers: { 'Content-Type': 'text/plain' }
   });
 }
 
@@ -282,4 +347,4 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('🎬 Dorasia Service Worker v1.0 cargado');
+console.log('🎬 Dorasia Service Worker v1.1 cargado - Error handling improved');

@@ -76,11 +76,34 @@
                     </div>
                     
                     <!-- Overview -->
-                    @if($movie->display_overview || $movie->overview)
-                    <p class="movie-overview">
-                        {{ $movie->display_overview ?: $movie->overview }}
-                    </p>
+                    @if($movie->display_overview)
+                    <div class="movie-overview-section">
+                        <p class="movie-overview">
+                            {{ $movie->display_overview }}
+                        </p>
+                    </div>
                     @endif
+                    
+                    <!-- Trailer and Streaming Actions -->
+                    <div class="hero-actions">
+                        {{-- Botón de Trailer --}}
+                        @if($movie->hasTrailer())
+                        <button class="action-btn trailer-btn" onclick="playTrailer('{{ $movie->trailer_youtube_id }}', '{{ addslashes($movie->display_title) }}')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            Ver Trailer
+                            @if($movie->has_spanish_trailer)
+                                <span class="spanish-badge">🇪🇸 DOBLADO</span>
+                            @else
+                                <span class="subtitle-badge">🔤 SUB ES</span>
+                            @endif
+                        </button>
+                        @endif
+                        
+                        {{-- Botón de Reproducción Gratuita eliminado en esta versión --}}
+                        
+                    </div>
                     
                     <!-- User Actions for Movies -->
                     @auth
@@ -377,14 +400,96 @@
     border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
+.movie-overview-section {
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
 .movie-overview {
     color: rgba(255,255,255,0.9);
     font-size: 1.1rem;
     line-height: 1.6;
-    margin: 0;
-    max-width: 600px;
+    margin: 0 0 1rem 0;
 }
 
+/* Read more button styles removed - showing full text now */
+
+/* Hero Actions */
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.trailer-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    border: none;
+}
+
+.trailer-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.play-btn {
+    background: linear-gradient(135deg, #00d4ff, #0099cc);
+    color: white;
+    border: none;
+}
+
+.play-btn:hover {
+    background: linear-gradient(135deg, #0099cc, #0077aa);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+}
+
+.info-btn {
+    background: rgba(109, 109, 110, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-btn:hover {
+    background: rgba(109, 109, 110, 0.9);
+}
+
+.lang-badge, .free-badge {
+    background: #e50914;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+.free-badge {
+    background: #46d369;
+    color: #000;
+}
+
+.spanish-badge {
+    background: linear-gradient(135deg, #d32f2f, #f57c00);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+.subtitle-badge {
+    background: linear-gradient(135deg, #1976d2, #0288d1);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
 /* Movie Actions */
 .movie-actions {
     margin-top: 2rem;
@@ -498,6 +603,18 @@
     font-size: 0.9rem;
 }
 
+/* Details Card with Accordion */
+.details-full-card {
+    grid-column: 1 / -1; /* Span full width */
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.details-full-card .detail-content {
+    margin-bottom: 1rem;
+}
+
+/* Details accordion styles removed to avoid conflicts with component CSS */
 /* Related Movies */
 .movie-related-card {
     min-width: 200px;
@@ -569,4 +686,33 @@
 }
 </style>
 
+{{-- Modal de Reproductor de Película --}}
+<!-- Movie streaming player modal removed -->
+
+<!-- Movie streaming player styles removed -->
+
+<script>
+// JavaScript for movie page - streaming functionality removed
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Movie page JavaScript loaded');
+});
+
+// Function to toggle details accordion
+function toggleDetailsAccordion(button) {
+    const accordion = button.closest('.details-accordion');
+    const content = accordion.querySelector('.accordion-content');
+    const isOpen = content.style.display !== 'none';
+    
+    if (isOpen) {
+        content.style.display = 'none';
+        button.classList.remove('active');
+    } else {
+        content.style.display = 'block';
+        button.classList.add('active');
+    }
+}
+</script>
+
+{{-- Incluir Modal de Trailer --}}
+@include('components.trailer-modal')
 @endsection

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use App\Models\Genre;
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MovieController extends Controller
 {
@@ -167,7 +169,7 @@ class MovieController extends Controller
      */
     public function show($movieId)
     {
-        $movie = Movie::with(['genres', 'people'])->find($movieId);
+        $movie = Movie::with(['genres', 'people', 'professionalReviews', 'soundtracks', 'streamingSources'])->find($movieId);
         
         if (!$movie) {
             abort(404, 'Película no encontrada');
@@ -333,5 +335,32 @@ class MovieController extends Controller
                 'in_watchlist' => true
             ]);
         }
+    }
+
+    public function storeComment(Request $request, Movie $movie)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:comments,id',
+            'is_spoiler' => 'boolean'
+        ]);
+
+        $comment = Comment::create([
+            'user_id' => Auth::id(),
+            'commentable_type' => Movie::class,
+            'commentable_id' => $movie->id,
+            'content' => $request->comment,
+            'parent_id' => $request->parent_id,
+            'is_spoiler' => $request->boolean('is_spoiler'),
+            'is_approved' => true // Auto-approve for now
+        ]);
+
+        $comment->load('user');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comentario agregado correctamente',
+            'comment' => $comment
+        ]);
     }
 }

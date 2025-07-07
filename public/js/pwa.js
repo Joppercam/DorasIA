@@ -31,6 +31,32 @@ class DorasyaPWA {
     // === SERVICE WORKER ===
     
     async registerServiceWorker() {
+        // Temporarily disable Service Worker due to fetch errors
+        console.warn('⚠️ Service Worker desactivado temporalmente');
+        
+        // Unregister existing service workers and clear caches
+        if ('serviceWorker' in navigator) {
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                    console.log('🗑️ Service Worker unregistered:', registration.scope);
+                }
+                
+                // Clear all caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    for (let cacheName of cacheNames) {
+                        await caches.delete(cacheName);
+                        console.log('🗑️ Cache deleted:', cacheName);
+                    }
+                }
+            } catch (error) {
+                console.error('Error unregistering service workers:', error);
+            }
+        }
+        return;
+        
         if (!('serviceWorker' in navigator)) {
             console.warn('⚠️ Service Worker no soportado');
             return;

@@ -538,6 +538,8 @@
         </section>
         @endif
 
+        <!-- Carrusel de Streaming Gratuito eliminado en esta versión -->
+
     </div>
 </div>
 

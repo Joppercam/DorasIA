@@ -15,6 +15,16 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/explorar', [HomeController::class, 'browse'])->name('browse');
 Route::get('/series/{id}', [HomeController::class, 'series'])->name('series.show');
 
+// Ruta de prueba para soundtracks
+Route::get('/test-soundtracks', function() {
+    return view('test-soundtracks');
+})->name('test.soundtracks');
+
+// Ruta de prueba para visibilidad de soundtracks
+Route::get('/test-soundtrack-visibility', function() {
+    return view('test-soundtrack-visibility');
+})->name('test.soundtrack.visibility');
+
 // === API ROUTES ===
 // Search API route - Rate limited to 30 requests per minute
 Route::get('/api/search', [HomeController::class, 'search'])
@@ -137,6 +147,7 @@ Route::get('/noticias/{news:slug}', [NewsController::class, 'show'])->name('news
 
 // Movies routes
 Route::get('/peliculas', [MovieController::class, 'index'])->name('movies.index');
+// Streaming API route removed - watch online functionality disabled
 Route::get('/peliculas/{movie}', function($movie) {
     // First check if this ID exists as a movie
     $movieExists = \App\Models\Movie::find($movie);
@@ -765,6 +776,14 @@ Route::middleware('auth')->group(function () {
 
     // Upcoming series interaction
     Route::post('/upcoming/{upcomingSeries}/interest', [App\Http\Controllers\UpcomingController::class, 'toggleInterest'])->name('upcoming.interest');
+    
+    // Liked content routes
+    Route::get('/perfil/peliculas-favoritas', [App\Http\Controllers\LikeController::class, 'getUserLikedMovies'])->name('profile.liked.movies');
+    Route::get('/perfil/series-favoritas', [App\Http\Controllers\LikeController::class, 'getUserLikedSeries'])->name('profile.liked.series');
+    
+    // Loved content routes
+    Route::get('/perfil/peliculas-amadas', [App\Http\Controllers\LikeController::class, 'getUserLovedMovies'])->name('profile.loved.movies');
+    Route::get('/perfil/series-amadas', [App\Http\Controllers\LikeController::class, 'getUserLovedSeries'])->name('profile.loved.series');
 });
 
 // === PUBLIC PROFILE ROUTES ===
@@ -773,8 +792,26 @@ Route::get('/usuario/{user}/lista-seguimiento', [ProfileController::class, 'watc
 Route::get('/usuario/{user}/calificaciones', [ProfileController::class, 'ratings'])->name('user.ratings');
 Route::get('/usuario/{user}/series-vistas', [ProfileController::class, 'watchedSeries'])->name('user.watched');
 
+// === REACTION ROUTES (AJAX) ===
+// Like routes (backward compatibility)
+Route::post('/movies/{movie}/like', [App\Http\Controllers\LikeController::class, 'toggleMovieLike'])->name('movies.like.toggle');
+Route::post('/series/{series}/like', [App\Http\Controllers\LikeController::class, 'toggleSeriesLike'])->name('series.like.toggle');
+
+// Love routes (new functionality)
+Route::post('/movies/{movie}/love', [App\Http\Controllers\LikeController::class, 'toggleMovieLove'])->name('movies.love.toggle');
+Route::post('/series/{series}/love', [App\Http\Controllers\LikeController::class, 'toggleSeriesLove'])->name('series.love.toggle');
+
+// Get reactions info
+Route::get('/movies/{movie}/reactions', [App\Http\Controllers\LikeController::class, 'getMovieReactions'])->name('movies.reactions.get');
+Route::get('/series/{series}/reactions', [App\Http\Controllers\LikeController::class, 'getSeriesReactions'])->name('series.reactions.get');
+
+// Legacy likes routes (backward compatibility)
+Route::get('/movies/{movie}/likes', [App\Http\Controllers\LikeController::class, 'getMovieLikes'])->name('movies.likes.get');
+Route::get('/series/{series}/likes', [App\Http\Controllers\LikeController::class, 'getSeriesLikes'])->name('series.likes.get');
+
 // === COMMENT ROUTES (AJAX) ===
 // Outside auth group to work with StaticAuth
+Route::post('/movies/{movie}/comments', [MovieController::class, 'storeComment'])->name('movies.comments.store');
 Route::post('/series/{series}/comments', [HomeController::class, 'storeComment'])->name('series.comments.store');
 Route::post('/actores/{actor}/comments', [ActorsController::class, 'storeComment'])->name('actors.comments.store');
 

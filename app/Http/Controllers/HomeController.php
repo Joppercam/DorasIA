@@ -344,7 +344,12 @@ class HomeController extends Controller
                       ->orderBy('series_person.department', 'desc'); // Acting first
             }, 
             'seasons.episodes', 
-            'professionalReviews'
+            'professionalReviews',
+            'soundtracks' => function($query) {
+                $query->orderBy('is_main_theme', 'desc')
+                      ->orderBy('track_number', 'asc');
+            },
+            'streamingSources'
         ])->withCount([
             'ratings as like_count' => function ($query) {
                 $query->where('rating_type', 'like');

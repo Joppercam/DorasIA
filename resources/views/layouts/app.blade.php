@@ -4756,5 +4756,10 @@
         localStorage.setItem('dorasia_user_id', '{{ Auth::id() }}');
     </script>
     @endauth
+    
+    <!-- Chatbot Widget -->
+    @include('components.chatbot')
+    
+    <!-- Global JavaScript cleaned up -->
 </body>
 </html>

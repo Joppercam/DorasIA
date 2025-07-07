@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Service Worker</title>
+</head>
+<body>
+    <h1>Clearing Service Worker...</h1>
+    <div id="status">Processing...</div>
+
+    <script>
+    async function clearServiceWorker() {
+        const statusDiv = document.getElementById('status');
+        
+        try {
+            // Unregister all service workers
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                    console.log('Service Worker unregistered:', registration.scope);
+                }
+                statusDiv.innerHTML += '<br>✅ Service Workers unregistered';
+            }
+            
+            // Clear all caches
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                for (let cacheName of cacheNames) {
+                    await caches.delete(cacheName);
+                    console.log('Cache deleted:', cacheName);
+                }
+                statusDiv.innerHTML += '<br>✅ All caches cleared';
+            }
+            
+            // Clear localStorage
+            localStorage.clear();
+            statusDiv.innerHTML += '<br>✅ localStorage cleared';
+            
+            statusDiv.innerHTML += '<br><br>🎉 All cleared! You can now go back to the main site.';
+            statusDiv.innerHTML += '<br><a href="/">← Back to Dorasia</a>';
+            
+        } catch (error) {
+            console.error('Error:', error);
+            statusDiv.innerHTML += '<br>❌ Error: ' + error.message;
+        }
+    }
+    
+    // Run immediately
+    clearServiceWorker();
+    </script>
+</body>
+</html>
