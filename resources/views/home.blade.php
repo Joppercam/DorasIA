@@ -13,55 +13,61 @@
 @section('twitter_description', 'La mejor plataforma para descubrir K-Dramas y películas coreanas con subtítulos en español.')
 
 @section('content')
-<div class="netflix-mobile-home">
-    <!-- Hero Section -->
-    @if($popularSeries->first())
-    @php $heroSeries = $popularSeries->first(); @endphp
-    <div class="mobile-hero">
-        <div class="mobile-hero-image" style="background-image: url('{{ $heroSeries->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $heroSeries->backdrop_path : '/images/no-backdrop.svg' }}')">
-            <div class="mobile-hero-overlay"></div>
-            <div class="mobile-hero-content">
-                <div class="mobile-hero-logo">
-                    <span class="hero-badge">SERIE</span>
-                    <h1 class="mobile-hero-title">{{ $heroSeries->display_title }}</h1>
+<!-- Hero Section with Rotation -->
+@if($featuredSeries)
+<section class="hero-section" id="heroSection" style="background-image: url('{{ $featuredSeries->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $featuredSeries->backdrop_path : '/images/no-backdrop.svg' }}')">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="hero-info-box">
+            <!-- Poster para móvil -->
+            <img src="{{ $featuredSeries->poster_path ? 'https://image.tmdb.org/t/p/w500' . $featuredSeries->poster_path : '/images/no-poster-series.svg' }}" 
+                 alt="{{ $featuredSeries->display_title }}" 
+                 class="mobile-hero-poster d-block d-md-none">
+            
+            <!-- Categories -->
+            @if($featuredSeries->genres->count() > 0)
+            <div class="hero-categories">
+                @foreach($featuredSeries->genres->take(3) as $genre)
+                    <span class="hero-category">{{ $genre->display_name ?: $genre->name }}</span>
+                @endforeach
+            </div>
+            @endif
+            
+            <h1 class="hero-title">{{ $featuredSeries->display_title }}</h1>
+            
+            <!-- Rating and Year -->
+            <div class="hero-meta">
+                @if($featuredSeries->vote_average > 0)
+                <div class="hero-rating">
+                    <span class="rating-stars">⭐</span>
+                    <span class="rating-number">{{ number_format($featuredSeries->vote_average, 1) }}</span>
                 </div>
-                <div class="mobile-hero-info">
-                    @if($heroSeries->vote_average > 0)
-                    <div class="hero-rating">
-                        <span class="rating-stars">⭐</span>
-                        <span class="rating-number">{{ number_format($heroSeries->vote_average, 1) }}</span>
-                    </div>
-                    @endif
-                    @if(auth()->check() && $heroSeries->vote_average > 0)
-                    <span class="hero-match">{{ number_format($heroSeries->vote_average * 10) }}% de coincidencia</span>
-                    @endif
-                    @if($heroSeries->first_air_date)
-                    <span class="hero-year">{{ $heroSeries->first_air_date->format('Y') }}</span>
-                    @endif
-                    <span class="hero-maturity">16+</span>
-                    @if($heroSeries->number_of_seasons)
-                    <span class="hero-seasons">{{ $heroSeries->number_of_seasons }} temporada{{ $heroSeries->number_of_seasons > 1 ? 's' : '' }}</span>
-                    @endif
-                </div>
-                
-                @if($heroSeries->display_overview)
-                <p class="mobile-hero-description">
-                    {{ Str::limit($heroSeries->display_overview, 200) }}
-                </p>
                 @endif
-                
-                <div class="mobile-hero-actions">
-                    <a href="{{ route('series.show', $heroSeries->id) }}" class="mobile-info-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                        </svg>
-                        Ver información
-                    </a>
-                </div>
+                @if($featuredSeries->first_air_date)
+                <span class="hero-year">{{ $featuredSeries->first_air_date->format('Y') }}</span>
+                @endif
+                @if($featuredSeries->number_of_episodes)
+                <span class="hero-episodes">{{ $featuredSeries->number_of_episodes }} episodios</span>
+                @endif
+            </div>
+            
+            <p class="hero-description">
+                {{ Str::limit($featuredSeries->display_overview ?: 'Descubre este increíble K-Drama y sumérgete en una historia única llena de emociones.', 280) }}
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="{{ route('series.show', $featuredSeries->id) }}" class="btn btn-hero">
+                    Más Información
+                </a>
             </div>
         </div>
     </div>
-    @endif
+</section>
+@endif
+
+<!-- Content Sections -->
+<div style="margin-top: -100px; position: relative; z-index: 20;">
+<div class="netflix-mobile-home"
 
     <!-- Categories -->
     <div class="mobile-categories">
@@ -554,6 +560,204 @@
 </div>
 
 <style>
+/* Hero Section Styles */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    color: white;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.8) 0%,
+        rgba(0,0,0,0.6) 40%,
+        rgba(0,0,0,0.4) 70%,
+        transparent 100%
+    );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+}
+
+.hero-info-box {
+    max-width: 550px;
+}
+
+.mobile-hero-poster {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.hero-categories {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-category {
+    background: rgba(255,255,255,0.2);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.hero-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.rating-stars {
+    font-size: 1.2rem;
+}
+
+.rating-number {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.hero-year, .hero-episodes {
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn-hero {
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
+.btn-hero:hover {
+    background: rgba(255,255,255,1);
+    transform: scale(1.05);
+    color: #000;
+    text-decoration: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 80vh;
+        min-height: 600px;
+        background-attachment: scroll;
+    }
+    
+    .hero-content {
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .hero-info-box {
+        text-align: center;
+        max-width: 100%;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .hero-meta {
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .hero-description {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .mobile-hero-poster {
+        width: 150px;
+        margin: 0 auto 1rem auto;
+    }
+    
+    .hero-categories {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-description {
+        font-size: 0.9rem;
+    }
+    
+    .btn-hero {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
 .netflix-mobile-home {
     background: #141414;
     color: white;
@@ -1388,4 +1592,99 @@
     }
 }
 </style>
+
+<script>
+// Hero Rotation System
+@if(isset($heroSeriesList) && $heroSeriesList->count() > 1)
+const heroSeries = @json($heroSeriesList->map(function($series) {
+    return [
+        'id' => $series->id,
+        'title' => $series->display_title,
+        'description' => Str::limit($series->display_overview ?: 'Descubre este increíble K-Drama y sumérgete en una historia única llena de emociones.', 280),
+        'backdrop' => $series->backdrop_path ? 'https://image.tmdb.org/t/p/original' . $series->backdrop_path : '/images/no-backdrop.svg',
+        'poster' => $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : '/images/no-poster-series.svg',
+        'rating' => $series->vote_average,
+        'year' => $series->first_air_date ? $series->first_air_date->format('Y') : null,
+        'episodes' => $series->number_of_episodes,
+        'genres' => $series->genres->take(3)->pluck('display_name')->filter()->implode(', '),
+        'url' => route('series.show', $series->id)
+    ];
+}));
+
+let currentHeroIndex = 0;
+
+function rotateHero() {
+    if (heroSeries.length <= 1) return;
+    
+    currentHeroIndex = (currentHeroIndex + 1) % heroSeries.length;
+    const currentSeries = heroSeries[currentHeroIndex];
+    
+    const heroSection = document.getElementById('heroSection');
+    if (!heroSection) return;
+    
+    // Fade out
+    heroSection.style.transition = 'opacity 0.5s ease-in-out';
+    heroSection.style.opacity = '0.7';
+    
+    setTimeout(() => {
+        // Update background
+        heroSection.style.backgroundImage = `url('${currentSeries.backdrop}')`;
+        
+        // Update title
+        const titleElement = heroSection.querySelector('.hero-title');
+        if (titleElement) titleElement.textContent = currentSeries.title;
+        
+        // Update description
+        const descElement = heroSection.querySelector('.hero-description');
+        if (descElement) descElement.textContent = currentSeries.description;
+        
+        // Update rating
+        const ratingElement = heroSection.querySelector('.rating-number');
+        if (ratingElement && currentSeries.rating > 0) {
+            ratingElement.textContent = currentSeries.rating.toFixed(1);
+        }
+        
+        // Update year
+        const yearElement = heroSection.querySelector('.hero-year');
+        if (yearElement && currentSeries.year) {
+            yearElement.textContent = currentSeries.year;
+        }
+        
+        // Update episodes
+        const episodesElement = heroSection.querySelector('.hero-episodes');
+        if (episodesElement && currentSeries.episodes) {
+            episodesElement.textContent = `${currentSeries.episodes} episodios`;
+        }
+        
+        // Update genres
+        const genresContainer = heroSection.querySelector('.hero-categories');
+        if (genresContainer && currentSeries.genres) {
+            const genres = currentSeries.genres.split(', ');
+            genresContainer.innerHTML = genres.map(genre => 
+                `<span class="hero-category">${genre}</span>`
+            ).join('');
+        }
+        
+        // Update button URL
+        const buttonElement = heroSection.querySelector('.btn-hero');
+        if (buttonElement) buttonElement.href = currentSeries.url;
+        
+        // Update mobile poster
+        const posterElement = heroSection.querySelector('.mobile-hero-poster');
+        if (posterElement) posterElement.src = currentSeries.poster;
+        
+        // Fade in
+        setTimeout(() => {
+            heroSection.style.opacity = '1';
+        }, 100);
+    }, 800);
+}
+
+// Initialize rotation after page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Rotate hero every 8 seconds
+    setInterval(rotateHero, 8000);
+});
+@endif
+</script>
 @endsection
