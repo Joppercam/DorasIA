@@ -1596,7 +1596,8 @@
 <script>
 // Hero Rotation System
 @if(isset($heroSeriesList) && $heroSeriesList->count() > 1)
-const heroSeries = @json($heroSeriesList->map(function($series) {
+@php
+$heroSeriesData = $heroSeriesList->map(function($series) {
     return [
         'id' => $series->id,
         'title' => $series->display_title,
@@ -1609,7 +1610,9 @@ const heroSeries = @json($heroSeriesList->map(function($series) {
         'genres' => $series->genres->take(3)->pluck('display_name')->filter()->implode(', '),
         'url' => route('series.show', $series->id)
     ];
-}));
+});
+@endphp
+const heroSeries = @json($heroSeriesData);
 
 let currentHeroIndex = 0;
 
