@@ -4816,7 +4816,7 @@
     @endauth
     
     <!-- Chatbot Widget -->
-    @include('components.chatbot')
+    {{-- @include('components.chatbot') --}}
     
     <!-- Global JavaScript cleaned up -->
 </body>
