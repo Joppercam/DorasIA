@@ -348,8 +348,7 @@ class HomeController extends Controller
             'soundtracks' => function($query) {
                 $query->orderBy('is_main_theme', 'desc')
                       ->orderBy('track_number', 'asc');
-            },
-            'streamingSources'
+            }
         ])->withCount([
             'ratings as like_count' => function ($query) {
                 $query->where('rating_type', 'like');

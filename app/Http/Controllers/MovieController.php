@@ -169,7 +169,7 @@ class MovieController extends Controller
      */
     public function show($movieId)
     {
-        $movie = Movie::with(['genres', 'people', 'professionalReviews', 'soundtracks', 'streamingSources'])->find($movieId);
+        $movie = Movie::with(['genres', 'people', 'professionalReviews', 'soundtracks'])->find($movieId);
         
         if (!$movie) {
             abort(404, 'Película no encontrada');
