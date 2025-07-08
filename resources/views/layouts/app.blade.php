@@ -42,7 +42,7 @@
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', '@yield('title', 'Dorasia - K-Dramas y Películas Coreanas')')">
+    <meta name="twitter:title" content="@yield('twitter_title', 'Dorasia - K-Dramas y Películas Coreanas')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Descubre los mejores K-Dramas y películas coreanas con subtítulos en español.')">
     <meta name="twitter:image" content="@yield('twitter_image', '/og-image.png')">
     <meta name="twitter:site" content="@dorasia_oficial">
