@@ -48,7 +48,9 @@ class Series extends Model
         'drama_type',
         'country_code',
         'country_name',
-        'language_name'
+        'language_name',
+        'like_count',
+        'love_count'
     ];
 
     protected $casts = [
@@ -119,6 +121,11 @@ class Series extends Model
     public function backdrops(): MorphMany
     {
         return $this->images()->where('type', 'backdrop');
+    }
+
+    public function hasTrailer(): bool
+    {
+        return !empty($this->trailer_youtube_id);
     }
 
     public function logos(): MorphMany
@@ -354,5 +361,47 @@ class Series extends Model
         return $this->watchlistItems()
             ->where('user_id', $userId)
             ->exists();
+    }
+
+    // === MÉTODOS PARA IMÁGENES DE TMDB ===
+    
+    /**
+     * Obtener URL del poster con tamaño específico
+     */
+    public function posterUrl($size = 'w500')
+    {
+        if (!$this->poster_path) {
+            return 'https://via.placeholder.com/500x750/333/666?text=K-Drama';
+        }
+        
+        return "https://image.tmdb.org/t/p/{$size}{$this->poster_path}";
+    }
+
+    /**
+     * Obtener URL del backdrop con tamaño específico
+     */
+    public function backdropUrl($size = 'original')
+    {
+        if (!$this->backdrop_path) {
+            return 'https://via.placeholder.com/1920x1080/333/666?text=K-Drama';
+        }
+        
+        return "https://image.tmdb.org/t/p/{$size}{$this->backdrop_path}";
+    }
+
+    /**
+     * Obtener URL del poster para vista de detalle
+     */
+    public function getDetailPosterUrlAttribute()
+    {
+        return $this->posterUrl('w500');
+    }
+
+    /**
+     * Obtener URL del backdrop original
+     */
+    public function getOriginalBackdropUrlAttribute()
+    {
+        return $this->backdropUrl('original');
     }
 }

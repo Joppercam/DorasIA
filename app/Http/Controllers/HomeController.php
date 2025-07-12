@@ -19,41 +19,36 @@ use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
-    private function getSeriesWithUserRatings()
+    private function getAsianSeriesWithUserRatings()
     {
-        return Series::with([
-            'genres',
-            'people' => function($query) {
-                $query->wherePivot('department', 'Acting')->take(4);
-            },
-            'ratings' => function($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
+        return Series::whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
+            ->with([
+                'genres',
+                'people' => function($query) {
+                    $query->wherePivot('department', 'Acting')->take(4);
+                },
+                'ratings' => function($query) {
+                    if (Auth::check()) {
+                        $query->where('user_id', Auth::id());
+                    }
+                }, 
+                'watchlistItems' => function($query) {
+                    if (Auth::check()) {
+                        $query->where('user_id', Auth::id());
+                    }
                 }
-            }, 
-            'watchlistItems' => function($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
+            ])->withCount([
+                'ratings as dislike_count' => function ($query) {
+                    $query->where('rating_type', 'dislike');
+                },
+                'watchlistItems as watchlist_count',
+                'watchlistItems as watched_count' => function ($query) {
+                    $query->where('status', 'completed');
+                },
+                'polymorphicComments as comments_count' => function ($query) {
+                    $query->where('is_approved', true)->whereNull('parent_id');
                 }
-            }
-        ])->withCount([
-            'ratings as like_count' => function ($query) {
-                $query->where('rating_type', 'like');
-            },
-            'ratings as dislike_count' => function ($query) {
-                $query->where('rating_type', 'dislike');
-            },
-            'ratings as love_count' => function ($query) {
-                $query->where('rating_type', 'love');
-            },
-            'watchlistItems as watchlist_count',
-            'watchlistItems as watched_count' => function ($query) {
-                $query->where('status', 'completed');
-            },
-            'polymorphicComments as comments_count' => function ($query) {
-                $query->where('is_approved', true)->whereNull('parent_id');
-            }
-        ]);
+            ]);
     }
 
     public function index()
@@ -62,45 +57,49 @@ class HomeController extends Controller
         $dailySeed = date('Y-m-d');
         $hourlySeed = date('Y-m-d-H'); // Para rotación cada hora
         
-        // Cache de series candidatas para el hero (30 minutos) - Optimizado con bonus de recencia
-        $featuredCandidates = Cache::remember('hero.featured_candidates', 1800, function () {
-            $candidates = Series::where('vote_average', '>', 7.5)
+        // Cache de series asiáticas candidatas para el hero (5 minutos) - Rotación frecuente
+        $featuredCandidates = Cache::remember('hero.asian_featured_candidates', 300, function () {
+            $candidates = Series::whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
+                ->with('genres')
+                ->where('vote_average', '>', 7.5)
                 ->where('vote_count', '>=', 100)
                 ->whereNotNull('backdrop_path')
-                ->whereNotNull('spanish_overview')
                 ->selectRaw('*, vote_average + (CASE WHEN first_air_date >= date("now", "-2 years") THEN 0.5 ELSE 0 END) as hero_score')
                 ->orderBy('hero_score', 'desc')
-                ->limit(50) // Aumentado para más variedad
+                ->limit(100) // Pool grande para máxima variedad
                 ->get();
 
-            // Si no hay suficientes candidatos, ampliar criterios
+            // Si no hay suficientes candidatos, ampliar criterios para contenido asiático
             if ($candidates->count() < 20) {
-                $candidates = Series::where('vote_average', '>', 7)
+                $candidates = Series::whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
+                    ->with('genres')
+                    ->where('vote_average', '>', 7)
                     ->where('vote_count', '>=', 50)
                     ->whereNotNull('backdrop_path')
                     ->selectRaw('*, vote_average + (CASE WHEN first_air_date >= date("now", "-2 years") THEN 0.3 ELSE 0 END) as hero_score')
                     ->orderBy('hero_score', 'desc')
-                    ->limit(50)
+                    ->limit(80)
                     ->get();
             }
 
             return $candidates;
         });
 
-        // Rotación del hero cada 2 horas usando una semilla temporal
-        $heroRotationSeed = floor(time() / 7200); // Cambia cada 2 horas
+        // Rotación del hero cada 5 minutos usando una semilla temporal
+        $heroRotationSeed = floor(time() / 300); // Cambia cada 5 minutos
         $featuredSeries = $this->getRotatedSelection($featuredCandidates, 1, $heroRotationSeed)->first();
         
         if (!$featuredSeries) {
-            $featuredSeries = Series::orderBy('vote_average', 'desc')->first();
+            $featuredSeries = Series::whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
+                ->orderBy('vote_average', 'desc')->first();
         }
         
-        // Lista de candidatos para rotación en el frontend (10 diferentes cada vez)
-        $heroSeriesList = $this->getRotatedSelection($featuredCandidates, 10, $heroRotationSeed);
+        // Lista de candidatos para rotación en el frontend (15 diferentes cada vez con rotación más frecuente)
+        $heroSeriesList = $this->getRotatedSelection($featuredCandidates, 15, $heroRotationSeed);
 
         // Series más populares con rotación diaria
         $popularSeriesPool = Cache::remember('series.popular.pool', 3600, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->selectRaw('*, (popularity * 0.6 + vote_average * 0.2 + (CASE WHEN first_air_date >= date("now", "-6 months") THEN 2 ELSE 0 END)) as trending_score')
                 ->where('vote_average', '>', 6)
                 ->orderBy('trending_score', 'desc')
@@ -111,7 +110,7 @@ class HomeController extends Controller
 
         // Series mejor calificadas con rotación diaria
         $topRatedSeriesPool = Cache::remember('series.top_rated.pool', 3600, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->where('vote_average', '>', 7)
                 ->where('vote_count', '>=', 50)
                 ->orderBy('vote_average', 'desc')
@@ -122,7 +121,7 @@ class HomeController extends Controller
 
         // Series recientes con rotación por hora
         $recentSeriesPool = Cache::remember('series.recent.pool', 1800, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereNotNull('first_air_date')
                 ->where('vote_average', '>', 6.5)
                 ->orderBy('first_air_date', 'desc')
@@ -133,7 +132,7 @@ class HomeController extends Controller
 
         // Series por género con rotación diaria
         $dramasSeriesPool = Cache::remember('series.genre.drama.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Drama');
                 })->orderBy('vote_average', 'desc')->limit(40)->get();
@@ -141,7 +140,7 @@ class HomeController extends Controller
         $dramasSeries = $this->getRotatedSelection($dramasSeriesPool, 25, $dailySeed);
 
         $comedySeriesPool = Cache::remember('series.genre.comedy.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Comedy');
                 })->orderBy('vote_average', 'desc')->limit(40)->get();
@@ -149,7 +148,7 @@ class HomeController extends Controller
         $comedySeries = $this->getRotatedSelection($comedySeriesPool, 25, $dailySeed);
 
         $romanceSeriesPool = Cache::remember('series.genre.romance.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->whereIn('name', ['Romance', 'Romantic Comedy', 'Family']);
                 })->where('vote_average', '>', 6)
@@ -158,7 +157,7 @@ class HomeController extends Controller
         $romanceSeries = $this->getRotatedSelection($romanceSeriesPool, 25, $dailySeed);
 
         $actionSeriesPool = Cache::remember('series.genre.action.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Action & Adventure');
                 })->orderBy('vote_average', 'desc')->limit(40)->get();
@@ -166,7 +165,7 @@ class HomeController extends Controller
         $actionSeries = $this->getRotatedSelection($actionSeriesPool, 25, $dailySeed);
 
         $mysterySeriesPool = Cache::remember('series.genre.mystery.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->where('name', 'Mystery');
                 })->orderBy('vote_average', 'desc')->limit(40)->get();
@@ -174,7 +173,7 @@ class HomeController extends Controller
         $mysterySeries = $this->getRotatedSelection($mysterySeriesPool, 25, $dailySeed);
 
         $historicalSeriesPool = Cache::remember('series.genre.historical.pool', 7200, function () {
-            return $this->getSeriesWithUserRatings()
+            return $this->getAsianSeriesWithUserRatings()
                 ->whereHas('genres', function($query) {
                     $query->whereIn('name', ['War & Politics', 'History', 'Period Drama']);
                 })
@@ -197,7 +196,7 @@ class HomeController extends Controller
         // Series más vistas (recently watched by users) - 25 para carrusel infinito
         $watchedSeries = null;
         if (Auth::check()) {
-            $watchedSeries = $this->getSeriesWithUserRatings()
+            $watchedSeries = $this->getAsianSeriesWithUserRatings()
                 ->whereHas('watchlistItems', function($query) {
                     $query->where('user_id', Auth::id())
                           ->where('status', 'completed');
@@ -215,9 +214,10 @@ class HomeController extends Controller
                 ->get();
         });
 
-        // Películas populares con rotación diaria
-        $popularMoviesPool = Cache::remember('movies.popular.pool', 3600, function () {
+        // Películas asiáticas populares con rotación diaria
+        $popularMoviesPool = Cache::remember('movies.asian_popular.pool', 3600, function () {
             return Movie::with('genres')
+                ->whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
                 ->where('vote_average', '>', 6)
                 ->orderBy('popularity', 'desc')
                 ->limit(40)
@@ -225,9 +225,10 @@ class HomeController extends Controller
         });
         $popularMovies = $this->getRotatedSelection($popularMoviesPool, 25, $dailySeed);
 
-        // Películas mejor calificadas con rotación diaria
-        $topRatedMoviesPool = Cache::remember('movies.top_rated.pool', 3600, function () {
+        // Películas asiáticas mejor calificadas con rotación diaria
+        $topRatedMoviesPool = Cache::remember('movies.asian_top_rated.pool', 3600, function () {
             return Movie::with('genres')
+                ->whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
                 ->where('vote_average', '>', 7)
                 ->where('vote_count', '>=', 50)
                 ->orderBy('vote_average', 'desc')
@@ -236,9 +237,10 @@ class HomeController extends Controller
         });
         $topRatedMovies = $this->getRotatedSelection($topRatedMoviesPool, 25, $dailySeed);
 
-        // Películas recientes con rotación por hora
-        $recentMoviesPool = Cache::remember('movies.recent.pool', 1800, function () {
+        // Películas asiáticas recientes con rotación por hora
+        $recentMoviesPool = Cache::remember('movies.asian_recent.pool', 1800, function () {
             return Movie::with('genres')
+                ->whereIn('original_language', ['ko', 'ja', 'zh', 'th'])
                 ->whereNotNull('release_date')
                 ->where('vote_average', '>', 6.5)
                 ->orderBy('release_date', 'desc')
@@ -247,68 +249,6 @@ class HomeController extends Controller
         });
         $recentMovies = $this->getRotatedSelection($recentMoviesPool, 25, $hourlySeed);
 
-        // ===== CONTENIDO EXCLUSIVO DE ACTORES =====
-        
-        // Contenido destacado de actores
-        $featuredActorContent = Cache::remember('actor.content.featured', 1800, function () {
-            return ActorContent::featured()
-                ->published()
-                ->with(['actor'])
-                ->orderBy('published_at', 'desc')
-                ->limit(6)
-                ->get();
-        });
-
-        // Contenido reciente de actores (últimos 7 días)
-        $recentActorContent = Cache::remember('actor.content.recent', 900, function () {
-            return ActorContent::published()
-                ->recent(7)
-                ->with(['actor'])
-                ->orderBy('published_at', 'desc')
-                ->limit(8)
-                ->get();
-        });
-
-        // Contenido más popular de actores (por vistas)
-        $popularActorContent = Cache::remember('actor.content.popular', 3600, function () {
-            return ActorContent::published()
-                ->with(['actor'])
-                ->where('view_count', '>', 100)
-                ->orderBy('view_count', 'desc')
-                ->limit(6)
-                ->get();
-        });
-
-        // Actores con más contenido exclusivo
-        $actorsWithContent = Cache::remember('actors.with.content', 7200, function () {
-            return Person::whereHas('exclusiveContent', function($query) {
-                $query->published();
-            })
-            ->withCount(['exclusiveContent as content_count' => function($query) {
-                $query->published();
-            }])
-            ->with(['exclusiveContent' => function($query) {
-                $query->published()->latest()->limit(3);
-            }])
-            ->orderBy('content_count', 'desc')
-            ->limit(8)
-            ->get();
-        });
-
-        // Contenido personalizado para usuarios autenticados
-        $personalizedActorContent = collect();
-        if (Auth::check()) {
-            $followedActorIds = Auth::user()->followedActors()->pluck('person_id');
-            
-            if ($followedActorIds->isNotEmpty()) {
-                $personalizedActorContent = ActorContent::whereIn('person_id', $followedActorIds)
-                    ->published()
-                    ->with(['actor'])
-                    ->orderBy('published_at', 'desc')
-                    ->limit(8)
-                    ->get();
-            }
-        }
 
         return view('home', compact(
             'featuredSeries',
@@ -326,12 +266,7 @@ class HomeController extends Controller
             'upcomingSeries',
             'popularMovies',
             'topRatedMovies',
-            'recentMovies',
-            'featuredActorContent',
-            'recentActorContent',
-            'popularActorContent',
-            'actorsWithContent',
-            'personalizedActorContent'
+            'recentMovies'
         ));
     }
 
@@ -350,14 +285,8 @@ class HomeController extends Controller
                       ->orderBy('track_number', 'asc');
             }
         ])->withCount([
-            'ratings as like_count' => function ($query) {
-                $query->where('rating_type', 'like');
-            },
             'ratings as dislike_count' => function ($query) {
                 $query->where('rating_type', 'dislike');
-            },
-            'ratings as love_count' => function ($query) {
-                $query->where('rating_type', 'love');
             },
             'watchlistItems as watchlist_count',
             'watchlistItems as watched_count' => function ($query) {
@@ -933,7 +862,7 @@ class HomeController extends Controller
         switch ($type) {
             case 'popular':
                 $pool = Cache::remember('series.popular.pool', 3600, function () {
-                    return $this->getSeriesWithUserRatings()
+                    return $this->getAsianSeriesWithUserRatings()
                         ->selectRaw('*, (popularity * 0.6 + vote_average * 0.2 + (CASE WHEN first_air_date >= date("now", "-6 months") THEN 2 ELSE 0 END)) as trending_score')
                         ->where('vote_average', '>', 6)
                         ->orderBy('trending_score', 'desc')
@@ -944,7 +873,7 @@ class HomeController extends Controller
 
             case 'top_rated':
                 $pool = Cache::remember('series.top_rated.pool', 3600, function () {
-                    return $this->getSeriesWithUserRatings()
+                    return $this->getAsianSeriesWithUserRatings()
                         ->where('vote_average', '>', 7)
                         ->where('vote_count', '>=', 50)
                         ->orderBy('vote_average', 'desc')
@@ -955,7 +884,7 @@ class HomeController extends Controller
 
             case 'recent':
                 $pool = Cache::remember('series.recent.pool', 1800, function () {
-                    return $this->getSeriesWithUserRatings()
+                    return $this->getAsianSeriesWithUserRatings()
                         ->whereNotNull('first_air_date')
                         ->where('vote_average', '>', 6.5)
                         ->orderBy('first_air_date', 'desc')
@@ -966,7 +895,7 @@ class HomeController extends Controller
 
             case 'romance':
                 $pool = Cache::remember('series.genre.romance.pool', 7200, function () {
-                    return $this->getSeriesWithUserRatings()
+                    return $this->getAsianSeriesWithUserRatings()
                         ->whereHas('genres', function($query) {
                             $query->whereIn('name', ['Romance', 'Romantic Comedy', 'Family']);
                         })->where('vote_average', '>', 6)
@@ -976,7 +905,7 @@ class HomeController extends Controller
 
             case 'drama':
                 $pool = Cache::remember('series.genre.drama.pool', 7200, function () {
-                    return $this->getSeriesWithUserRatings()
+                    return $this->getAsianSeriesWithUserRatings()
                         ->whereHas('genres', function($query) {
                             $query->where('name', 'Drama');
                         })->orderBy('vote_average', 'desc')->limit(40)->get();

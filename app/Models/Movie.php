@@ -36,7 +36,9 @@ class Movie extends Model
         'spoken_languages',
         'tagline',
         'adult',
-        'popularity'
+        'popularity',
+        'like_count',
+        'love_count'
     ];
 
     protected $casts = [
@@ -164,5 +166,47 @@ class Movie extends Model
             'like' => \DB::table('movie_ratings')->where('movie_id', $this->id)->where('rating_type', 'like')->count(),
             'dislike' => \DB::table('movie_ratings')->where('movie_id', $this->id)->where('rating_type', 'dislike')->count(),
         ];
+    }
+
+    // === MÉTODOS PARA IMÁGENES DE TMDB ===
+    
+    /**
+     * Obtener URL del poster con tamaño específico
+     */
+    public function posterUrl($size = 'w500')
+    {
+        if (!$this->poster_path) {
+            return 'https://via.placeholder.com/500x750/333/666?text=Película';
+        }
+        
+        return "https://image.tmdb.org/t/p/{$size}{$this->poster_path}";
+    }
+
+    /**
+     * Obtener URL del backdrop con tamaño específico
+     */
+    public function backdropUrl($size = 'original')
+    {
+        if (!$this->backdrop_path) {
+            return 'https://via.placeholder.com/1920x1080/333/666?text=Película';
+        }
+        
+        return "https://image.tmdb.org/t/p/{$size}{$this->backdrop_path}";
+    }
+
+    /**
+     * Obtener URL del poster para vista de detalle
+     */
+    public function getDetailPosterUrlAttribute()
+    {
+        return $this->posterUrl('w500');
+    }
+
+    /**
+     * Obtener URL del backdrop original
+     */
+    public function getOriginalBackdropUrlAttribute()
+    {
+        return $this->backdropUrl('original');
     }
 }

@@ -136,12 +136,93 @@
                         <span class="detail-value-new">{{ number_format($series->vote_count) }}</span>
                     </div>
                     @endif
+                    
+                    <!-- Categorías -->
+                    @if($series->genres && $series->genres->count() > 0)
+                    <div class="detail-item-new">
+                        <span class="detail-label-new">Categorías:</span>
+                        <span class="detail-value-new">
+                            <div class="detail-categories">
+                                @foreach($series->genres as $genre)
+                                <span class="detail-category-tag">{{ $genre->display_name ?: $genre->name }}</span>
+                                @endforeach
+                            </div>
+                        </span>
+                    </div>
+                    @endif
+                    
+                    <!-- Disponible en -->
+                    <div class="detail-item-new">
+                        <span class="detail-label-new">Disponible en:</span>
+                        <span class="detail-value-new">
+                            <div class="detail-availability">
+                                @if($series->netflix_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🔴 Netflix</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->disney_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🏰 Disney+</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->amazon_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">📦 Prime Video</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->apple_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🍎 Apple TV+</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->hbo_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🎭 HBO Max</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->crunchyroll_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🍊 Crunchyroll</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->viki_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">💜 Viki</span>
+                                    <span class="platform-status available">Disponible</span>
+                                </div>
+                                @endif
+                                
+                                @if($series->network)
+                                <div class="availability-item">
+                                    <span class="platform-name">📺 {{ $series->network }}</span>
+                                    <span class="platform-status available">Original</span>
+                                </div>
+                                @endif
+                                
+                                @if(!$series->netflix_available && !$series->disney_available && !$series->amazon_available && !$series->apple_available && !$series->hbo_available && !$series->crunchyroll_available && !$series->viki_available)
+                                <div class="availability-item">
+                                    <span class="platform-name">🔍 Información no disponible</span>
+                                    <span class="platform-status unavailable">Consultar</span>
+                                </div>
+                                @endif
+                            </div>
+                        </span>
+                    </div>
                 </div>
                 
-                <!-- Details Info Accordion inside the details card -->
-                <div class="details-accordion-container">
-                    @include('components.details-info-accordion', ['series' => $series])
-                </div>
             </div>
 
             <!-- Reparto -->
@@ -741,7 +822,89 @@
     }
 }
 
-/* Accordion styles for details - REMOVED to avoid conflicts with component CSS */
+/* Categorías y Disponibilidad en Detalles */
+.detail-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.detail-category-tag {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    font-weight: 500;
+}
+
+.detail-availability {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.detail-availability .availability-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-availability .platform-name {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+}
+
+.detail-availability .platform-status {
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.detail-availability .platform-status.available {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.detail-availability .platform-status.unavailable {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 768px) {
+    .detail-categories {
+        gap: 0.3rem;
+    }
+    
+    .detail-category-tag {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+    }
+    
+    .detail-availability .availability-item {
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .detail-availability .platform-name {
+        font-size: 0.8rem;
+    }
+    
+    .detail-availability .platform-status {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+    }
+}
 
 /* Spanish trailer badges */
 .spanish-trailer-badge {
